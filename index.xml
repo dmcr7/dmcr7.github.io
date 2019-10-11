@@ -5,29 +5,18 @@
     <link>/</link>
     <description>Recent content on Hello World, Dito Prabowo</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 11 Oct 2019 16:44:43 +0700</lastBuildDate>
+    <lastBuildDate>Fri, 11 Oct 2019 18:24:39 +0700</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Hello World</title>
-      <link>/posts/hello-world/</link>
-      <pubDate>Fri, 11 Oct 2019 16:44:43 +0700</pubDate>
-      
-      <guid>/posts/hello-world/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>About</title>
       <link>/about/</link>
-      <pubDate>Wed, 09 Apr 2014 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 11 Oct 2019 18:24:39 +0700</pubDate>
       
       <guid>/about/</guid>
-      <description>Hugo is the world’s fastest framework for building websites. It is written in Go.
-It makes use of a variety of open source projects including:
- https://github.com/russross/blackfriday https://github.com/alecthomas/chroma https://github.com/muesli/smartcrop https://github.com/spf13/cobra https://github.com/spf13/viper  Learn more and contribute on GitHub.</description>
+      <description>Hello World, tidak asing dengan sapaan ini kan? hehehe, web ini dibuat ketika lagi pengen buat blog, sudah lama sebenernya pengen tapi mesti ada urusan sehingga baru sekarang bisa tercapai u,u . Nantinya web ini akan penulis gunakan untuk menuliskan apa yang penulis ingin tuliskan (ya iyalah) dan juga untuk sharing berbagai ilmu dan pengalaman penulis. Karena penulis termasuk penyuka CyberSecurity dan CTF player, mungkin web ini juga akan saya isi writeup ctf.</description>
     </item>
     
   </channel>
