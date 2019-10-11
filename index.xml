@@ -5,10 +5,24 @@
     <link>/</link>
     <description>Recent content on Hello World. I am Dito Prabowo</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 11 Oct 2019 20:25:58 +0700</lastBuildDate>
+    <lastBuildDate>Fri, 11 Oct 2019 20:51:34 +0700</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Linux_Basic_Admin</title>
+      <link>/posts/linux_basic_admin/</link>
+      <pubDate>Fri, 11 Oct 2019 20:51:34 +0700</pubDate>
+      
+      <guid>/posts/linux_basic_admin/</guid>
+      <description>Untuk orang yang baru dalam menggunakan linux, menggunakan linux secara optimal tidaklah sangat mudah, hal pertama yang harus kita ketahui adalah basic command menggunakan terminal.
+Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
+ ls -l  Menampilkan list keseluruhan (termasuk dot file)
+ ls -la  Menampilkan list berdasarkan waktu
+ ls -t  Menampilkan list berdasarkan ukuran file
+ ls -S  Menampilkan list berdasarkan tipe file</description>
+    </item>
     
     <item>
       <title>Buffer_Overflow_Labs_From_SEEDlabs</title>

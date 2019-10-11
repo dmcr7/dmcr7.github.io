@@ -3,17 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/posts/buffer_overflow_labs_from_seedlabs/</loc>
-    <lastmod>2019-10-11T20:25:58+07:00</lastmod>
+    <loc>/</loc>
+    <lastmod>2019-10-11T20:51:34+07:00</lastmod>
   </url>
   
   <url>
-    <loc>/</loc>
-    <lastmod>2019-10-11T20:25:58+07:00</lastmod>
+    <loc>/posts/linux_basic_admin/</loc>
+    <lastmod>2019-10-11T20:51:34+07:00</lastmod>
   </url>
   
   <url>
     <loc>/posts/</loc>
+    <lastmod>2019-10-11T20:51:34+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/buffer_overflow_labs_from_seedlabs/</loc>
     <lastmod>2019-10-11T20:25:58+07:00</lastmod>
   </url>
   

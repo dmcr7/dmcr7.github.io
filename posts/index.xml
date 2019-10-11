@@ -4,8 +4,324 @@
         <link>/posts/</link>
         <description>Recent content in Posts on Hello World. I am Dito Prabowo</description>
         <generator>Hugo -- gohugo.io</generator>
-        <lastBuildDate>Fri, 11 Oct 2019 20:25:58 +0700</lastBuildDate>
+        <lastBuildDate>Fri, 11 Oct 2019 20:51:34 +0700</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Linux_Basic_Admin</title>
+            <link>/posts/linux_basic_admin/</link>
+            <pubDate>Fri, 11 Oct 2019 20:51:34 +0700</pubDate>
+            
+            <guid>/posts/linux_basic_admin/</guid>
+            <description>Untuk orang yang baru dalam menggunakan linux, menggunakan linux secara optimal tidaklah sangat mudah, hal pertama yang harus kita ketahui adalah basic command menggunakan terminal.
+Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
+ ls -l  Menampilkan list keseluruhan (termasuk dot file)
+ ls -la  Menampilkan list berdasarkan waktu
+ ls -t  Menampilkan list berdasarkan ukuran file
+ ls -S  Menampilkan list berdasarkan tipe file</description>
+            <content type="html"><![CDATA[
+
+<p>Untuk orang yang baru dalam menggunakan linux, menggunakan linux secara optimal tidaklah sangat mudah, hal pertama yang harus kita ketahui adalah basic command menggunakan terminal.</p>
+
+<h4 id="berikut-beberapa-command-yang-telah-kita-rangkum">Berikut beberapa command yang telah kita rangkum :</h4>
+
+<h5 id="list">list</h5>
+
+<p>Menampilkan list detail</p>
+
+<pre><code>      ls -l
+</code></pre>
+
+<p>Menampilkan list keseluruhan (termasuk dot file)</p>
+
+<pre><code>      ls -la
+</code></pre>
+
+<p>Menampilkan list berdasarkan waktu</p>
+
+<pre><code>      ls -t
+</code></pre>
+
+<p>Menampilkan list berdasarkan ukuran file</p>
+
+<pre><code>    ls -S
+</code></pre>
+
+<p>Menampilkan list berdasarkan tipe file</p>
+
+<pre><code>    ls -F
+</code></pre>
+
+<p>Menampilkan list dengan index file nya</p>
+
+<pre><code>    ls -i
+</code></pre>
+
+<h5 id="cat">cat</h5>
+
+<p>Print ke terminal isi dari file</p>
+
+<pre><code>    cat [ file ]
+</code></pre>
+
+<h5 id="mengubah-directori">Mengubah directori</h5>
+
+<p>Mengubah directori folder</p>
+
+<pre><code>  cd
+</code></pre>
+
+<h5 id="tail">Tail</h5>
+
+<p>Menampilkan baris akhir sebanyak n</p>
+
+<pre><code>  [perintah lain] | tail -n
+</code></pre>
+
+<p>Monitoring perubahan file</p>
+
+<pre><code>  tail -f [nama file]
+</code></pre>
+
+<h5 id="head">Head</h5>
+
+<p>Menampilkan baris awal sebanyak n</p>
+
+<pre><code>  [perintah lain] | head -n
+</code></pre>
+
+<h5 id="right-direction">Right Direction</h5>
+
+<p>Replace isi dari file output</p>
+
+<pre><code>  cat /proc/cpuinfo &gt; command.txt
+</code></pre>
+
+<h5 id="double-right-directioninsert-sesuatu-pada-file-output">Double Right DirectionInsert sesuatu pada file output</h5>
+
+<pre><code>  cat /proc/cpuinfo | wc -l &gt;&gt; command.txt
+</code></pre>
+
+<h5 id="left-direction">Left Direction</h5>
+
+<p>File sebagai input (yang diproses)</p>
+
+<pre><code>  ./program &lt; command.txt
+</code></pre>
+
+<h5 id="error-direction">Error Direction</h5>
+
+<p>Memasukkan error pada file output</p>
+
+<pre><code>    mkdir Music 2&gt; myerror.txt (replace)
+    mkdir Music 2&gt;&gt; myerror.txt (insert)
+</code></pre>
+
+<h5 id="sort">Sort</h5>
+
+<p>Mengurutkan isi file (per baris)</p>
+
+<pre><code>    sort -u [namafile]
+</code></pre>
+
+<h5 id="uniq">Uniq</h5>
+
+<p>Menghitung jumlah elemen per nilai dalam data</p>
+
+<pre><code>    uniq -c [namafile]
+</code></pre>
+
+<h5 id="grep">Grep</h5>
+
+<p>Mencari kata dalam suatu file</p>
+
+<pre><code>    [perintah] | grep [keyword]
+</code></pre>
+
+<h5 id="copy">Copy</h5>
+
+<p>Copy semua file dalam satu direktori</p>
+
+<pre><code>    cp * [direktori tujuan]
+</code></pre>
+
+<p>Copy semua file dan sub direktori</p>
+
+<pre><code>    cp -R * [direktori tujuan]
+</code></pre>
+
+<p>Copy file</p>
+
+<pre><code>    cp [namafile] [direktori tujuan]
+</code></pre>
+
+<p>Copy tanpa merubah date timestamps</p>
+
+<pre><code>    cp -p
+</code></pre>
+
+<h5 id="move">Move</h5>
+
+<p>Jika belum ada nama, membuat file baru. Jika sudah ada nama, memindahkan</p>
+
+<pre><code>    mv
+</code></pre>
+
+<h5 id="ssh">SSH</h5>
+
+<p>Komputer A SSH komputer B</p>
+
+<pre><code>    ssh B@ip
+</code></pre>
+
+<p>A kirim file ke B</p>
+
+<pre><code>    scp [nama file] B@ip:direktori
+</code></pre>
+
+<p>B mengambil file dari A</p>
+
+<pre><code>    scp A@ip:direktori [direktori lokal]
+</code></pre>
+
+<p>SSH tanpa password</p>
+
+<pre><code>    sshpass -p [password]
+</code></pre>
+
+<p>ssh dengan perintah</p>
+
+<pre><code>    A@ip [perintah]
+</code></pre>
+
+<h5 id="create-new-file">Create New File</h5>
+
+<p>Membuat file baru</p>
+
+<pre><code>    touch [nama file]
+</code></pre>
+
+<h5 id="check-direction">Check Direction</h5>
+
+<p>Menampilkan alamat direktori aktif</p>
+
+<pre><code>    pwd
+</code></pre>
+
+<h5 id="locate">Locate</h5>
+
+<p>Mencari file pada semua direktori</p>
+
+<pre><code>  locate [keyword]
+</code></pre>
+
+<h5 id="find">Find</h5>
+
+<p>Mencari file pada direktori aktif</p>
+
+<pre><code>  Find [keyword]
+</code></pre>
+
+<h5 id="remove">Remove</h5>
+
+<p>Menghapus folder yang kosong</p>
+
+<pre><code>  rmdir
+</code></pre>
+
+<p>Menghapus file</p>
+
+<pre><code>  rm [direktori file]
+</code></pre>
+
+<p>Menghapus semua isi direktori</p>
+
+<pre><code>  rm -r [direktori]
+</code></pre>
+
+<p>Menghapus Paksa semua isi dir (force)</p>
+
+<pre><code>  rm -rf [file / dir]
+</code></pre>
+
+<h5 id="check-ip-address">Check IP Address</h5>
+
+<p>Mengecek IP Addres</p>
+
+<pre><code>  ifconfig
+  ip address
+</code></pre>
+
+<h5 id="show-process">Show Process</h5>
+
+<p>Untuk melihat process status</p>
+
+<pre><code>  ps -ef
+</code></pre>
+
+<h5 id="check-env">Check env</h5>
+
+<p>Print Environment Variable</p>
+
+<pre><code>  env
+</code></pre>
+
+<h5 id="displays-and-updates-sorted-process-information">Displays and updates sorted process information</h5>
+
+<p>Menampilkan process secara update dan terurut</p>
+
+<pre><code>  top
+  htop
+</code></pre>
+
+<h5 id="shows-the-network-status">Shows the network status</h5>
+
+<p>Menampilkan status network</p>
+
+<pre><code>  netstat
+</code></pre>
+
+<h5 id="display-free-disk-space">Display free disk space</h5>
+
+<p>Menampilkan disk space yang bisa dipakai</p>
+
+<pre><code>  df -h
+</code></pre>
+
+<p>-h prints out the information in human-readable format</p>
+
+<h5 id="to-check-the-user-running-the-application">To check the user running the application</h5>
+
+<p>Melihat user id yang berjalan</p>
+
+<pre><code>  id
+</code></pre>
+
+<h5 id="change-permision">Change permision</h5>
+
+<p>Mengubah permision suatu File</p>
+
+<pre><code>  chmod [parameter] [file]
+</code></pre>
+
+<p>contoh : chmod +x bash.sh, chmod 777 bash.sh</p>
+
+<h5 id="dig-nslookup">dig/nslookup</h5>
+
+<p>dig (DNS lookup utility) or nslookup (query Internet name servers)</p>
+
+<pre><code>  dig equnix.asia
+  nslookup equnix.asia
+</code></pre>
+
+<h5 id="history">history</h5>
+
+<p>melihat history command</p>
+
+<pre><code>  history
+</code></pre>
+]]></content>
+        </item>
         
         <item>
             <title>Buffer_Overflow_Labs_From_SEEDlabs</title>
