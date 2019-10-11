@@ -23,9 +23,9 @@ Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
 
 <p>Untuk orang yang baru dalam menggunakan linux, menggunakan linux secara optimal tidaklah sangat mudah, hal pertama yang harus kita ketahui adalah basic command menggunakan terminal.</p>
 
-<h4 id="berikut-beberapa-command-yang-telah-kita-rangkum">Berikut beberapa command yang telah kita rangkum :</h4>
+<h3 id="berikut-beberapa-command-yang-telah-kita-rangkum">Berikut beberapa command yang telah kita rangkum :</h3>
 
-<h5 id="list">list</h5>
+<h4 id="list">list</h4>
 
 <p>Menampilkan list detail</p>
 
@@ -57,21 +57,21 @@ Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
 <pre><code>    ls -i
 </code></pre>
 
-<h5 id="cat">cat</h5>
+<h4 id="cat">cat</h4>
 
 <p>Print ke terminal isi dari file</p>
 
 <pre><code>    cat [ file ]
 </code></pre>
 
-<h5 id="mengubah-directori">Mengubah directori</h5>
+<h4 id="mengubah-directori">Mengubah directori</h4>
 
 <p>Mengubah directori folder</p>
 
 <pre><code>  cd
 </code></pre>
 
-<h5 id="tail">Tail</h5>
+<h4 id="tail">Tail</h4>
 
 <p>Menampilkan baris akhir sebanyak n</p>
 
@@ -83,33 +83,33 @@ Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
 <pre><code>  tail -f [nama file]
 </code></pre>
 
-<h5 id="head">Head</h5>
+<h4 id="head">Head</h4>
 
 <p>Menampilkan baris awal sebanyak n</p>
 
 <pre><code>  [perintah lain] | head -n
 </code></pre>
 
-<h5 id="right-direction">Right Direction</h5>
+<h4 id="right-direction">Right Direction</h4>
 
 <p>Replace isi dari file output</p>
 
 <pre><code>  cat /proc/cpuinfo &gt; command.txt
 </code></pre>
 
-<h5 id="double-right-directioninsert-sesuatu-pada-file-output">Double Right DirectionInsert sesuatu pada file output</h5>
+<h4 id="double-right-directioninsert-sesuatu-pada-file-output">Double Right DirectionInsert sesuatu pada file output</h4>
 
 <pre><code>  cat /proc/cpuinfo | wc -l &gt;&gt; command.txt
 </code></pre>
 
-<h5 id="left-direction">Left Direction</h5>
+<h4 id="left-direction">Left Direction</h4>
 
 <p>File sebagai input (yang diproses)</p>
 
 <pre><code>  ./program &lt; command.txt
 </code></pre>
 
-<h5 id="error-direction">Error Direction</h5>
+<h4 id="error-direction">Error Direction</h4>
 
 <p>Memasukkan error pada file output</p>
 
@@ -117,28 +117,28 @@ Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
     mkdir Music 2&gt;&gt; myerror.txt (insert)
 </code></pre>
 
-<h5 id="sort">Sort</h5>
+<h4 id="sort">Sort</h4>
 
 <p>Mengurutkan isi file (per baris)</p>
 
 <pre><code>    sort -u [namafile]
 </code></pre>
 
-<h5 id="uniq">Uniq</h5>
+<h4 id="uniq">Uniq</h4>
 
 <p>Menghitung jumlah elemen per nilai dalam data</p>
 
 <pre><code>    uniq -c [namafile]
 </code></pre>
 
-<h5 id="grep">Grep</h5>
+<h4 id="grep">Grep</h4>
 
 <p>Mencari kata dalam suatu file</p>
 
 <pre><code>    [perintah] | grep [keyword]
 </code></pre>
 
-<h5 id="copy">Copy</h5>
+<h4 id="copy">Copy</h4>
 
 <p>Copy semua file dalam satu direktori</p>
 
@@ -160,14 +160,14 @@ Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
 <pre><code>    cp -p
 </code></pre>
 
-<h5 id="move">Move</h5>
+<h4 id="move">Move</h4>
 
 <p>Jika belum ada nama, membuat file baru. Jika sudah ada nama, memindahkan</p>
 
 <pre><code>    mv
 </code></pre>
 
-<h5 id="ssh">SSH</h5>
+<h4 id="ssh">SSH</h4>
 
 <p>Komputer A SSH komputer B</p>
 
@@ -194,35 +194,35 @@ Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
 <pre><code>    A@ip [perintah]
 </code></pre>
 
-<h5 id="create-new-file">Create New File</h5>
+<h4 id="create-new-file">Create New File</h4>
 
 <p>Membuat file baru</p>
 
 <pre><code>    touch [nama file]
 </code></pre>
 
-<h5 id="check-direction">Check Direction</h5>
+<h4 id="check-direction">Check Direction</h4>
 
 <p>Menampilkan alamat direktori aktif</p>
 
 <pre><code>    pwd
 </code></pre>
 
-<h5 id="locate">Locate</h5>
+<h4 id="locate">Locate</h4>
 
 <p>Mencari file pada semua direktori</p>
 
 <pre><code>  locate [keyword]
 </code></pre>
 
-<h5 id="find">Find</h5>
+<h4 id="find">Find</h4>
 
 <p>Mencari file pada direktori aktif</p>
 
 <pre><code>  Find [keyword]
 </code></pre>
 
-<h5 id="remove">Remove</h5>
+<h4 id="remove">Remove</h4>
 
 <p>Menghapus folder yang kosong</p>
 
@@ -244,7 +244,7 @@ Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
 <pre><code>  rm -rf [file / dir]
 </code></pre>
 
-<h5 id="check-ip-address">Check IP Address</h5>
+<h4 id="check-ip-address">Check IP Address</h4>
 
 <p>Mengecek IP Addres</p>
 
@@ -252,21 +252,21 @@ Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
   ip address
 </code></pre>
 
-<h5 id="show-process">Show Process</h5>
+<h4 id="show-process">Show Process</h4>
 
 <p>Untuk melihat process status</p>
 
 <pre><code>  ps -ef
 </code></pre>
 
-<h5 id="check-env">Check env</h5>
+<h4 id="check-env">Check env</h4>
 
 <p>Print Environment Variable</p>
 
 <pre><code>  env
 </code></pre>
 
-<h5 id="displays-and-updates-sorted-process-information">Displays and updates sorted process information</h5>
+<h4 id="displays-and-updates-sorted-process-information">Displays and updates sorted process information</h4>
 
 <p>Menampilkan process secara update dan terurut</p>
 
@@ -274,14 +274,14 @@ Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
   htop
 </code></pre>
 
-<h5 id="shows-the-network-status">Shows the network status</h5>
+<h4 id="shows-the-network-status">Shows the network status</h4>
 
 <p>Menampilkan status network</p>
 
 <pre><code>  netstat
 </code></pre>
 
-<h5 id="display-free-disk-space">Display free disk space</h5>
+<h4 id="display-free-disk-space">Display free disk space</h4>
 
 <p>Menampilkan disk space yang bisa dipakai</p>
 
@@ -290,14 +290,14 @@ Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
 
 <p>-h prints out the information in human-readable format</p>
 
-<h5 id="to-check-the-user-running-the-application">To check the user running the application</h5>
+<h4 id="to-check-the-user-running-the-application">To check the user running the application</h4>
 
 <p>Melihat user id yang berjalan</p>
 
 <pre><code>  id
 </code></pre>
 
-<h5 id="change-permision">Change permision</h5>
+<h4 id="change-permision">Change permision</h4>
 
 <p>Mengubah permision suatu File</p>
 
@@ -306,7 +306,7 @@ Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
 
 <p>contoh : chmod +x bash.sh, chmod 777 bash.sh</p>
 
-<h5 id="dig-nslookup">dig/nslookup</h5>
+<h4 id="dig-nslookup">dig/nslookup</h4>
 
 <p>dig (DNS lookup utility) or nslookup (query Internet name servers)</p>
 
@@ -314,7 +314,7 @@ Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
   nslookup equnix.asia
 </code></pre>
 
-<h5 id="history">history</h5>
+<h4 id="history">history</h4>
 
 <p>melihat history command</p>
 
