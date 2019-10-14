@@ -3,36 +3,47 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/</loc>
+    <loc>https://dmcr7.github.io/</loc>
+    <lastmod>2019-10-14T11:31:53+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dmcr7.github.io/posts/ketika-sholat-mu-hanya-untuk-kewajiban-semata/</loc>
+    <lastmod>2019-10-14T11:31:53+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dmcr7.github.io/posts/</loc>
+    <lastmod>2019-10-14T11:31:53+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dmcr7.github.io/tags/</loc>
+    <lastmod>2019-10-14T11:31:53+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dmcr7.github.io/tags/untagged/</loc>
+    <lastmod>2019-10-14T11:31:53+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dmcr7.github.io/posts/linux_basic_admin/</loc>
     <lastmod>2019-10-11T20:51:34+07:00</lastmod>
   </url>
   
   <url>
-    <loc>/posts/linux_basic_admin/</loc>
-    <lastmod>2019-10-11T20:51:34+07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/posts/</loc>
-    <lastmod>2019-10-11T20:51:34+07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/posts/buffer_overflow_labs_from_seedlabs/</loc>
+    <loc>https://dmcr7.github.io/posts/buffer_overflow_labs_from_seedlabs/</loc>
     <lastmod>2019-10-11T20:25:58+07:00</lastmod>
   </url>
   
   <url>
-    <loc>/about/</loc>
+    <loc>https://dmcr7.github.io/about/</loc>
     <lastmod>2019-10-11T18:24:39+07:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/</loc>
-  </url>
-  
-  <url>
-    <loc>/tags/</loc>
+    <loc>https://dmcr7.github.io/categories/</loc>
   </url>
   
 </urlset>
