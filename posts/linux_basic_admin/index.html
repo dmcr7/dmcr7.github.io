@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author"
+    content="">
+<meta name="description"
+    content="Untuk orang yang baru dalam menggunakan linux, menggunakan linux secara optimal tidaklah sangat mudah, hal pertama yang harus kita ketahui adalah basic command menggunakan terminal.
+Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
+ ls -l  Menampilkan list keseluruhan (termasuk dot file)
+ ls -la  Menampilkan list berdasarkan waktu
+ ls -t  Menampilkan list berdasarkan ukuran file
+ ls -S  Menampilkan list berdasarkan tipe file" />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="https://dmcr7.github.io/posts/linux_basic_admin/" />
+
+
+<title>
+    
+    Linux_Basic_Admin :: Hello World. I am Dito Prabowo 
+    
+</title>
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css" rel="stylesheet"
+    type="text/css">
+
+
+
+<link rel="stylesheet" href="/main.min.7bfbbe12786fa0ded4b4c0d792cbb36a5bd0bdb0b856dde57aa7b1f6fe0f2b87.css">
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#252627">
+<link rel="shortcut icon" href="/favicon.ico">
+<meta name="theme-color" content="#252627"><meta itemprop="name" content="Linux_Basic_Admin">
+<meta itemprop="description" content="Untuk orang yang baru dalam menggunakan linux, menggunakan linux secara optimal tidaklah sangat mudah, hal pertama yang harus kita ketahui adalah basic command menggunakan terminal.
+Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
+ ls -l  Menampilkan list keseluruhan (termasuk dot file)
+ ls -la  Menampilkan list berdasarkan waktu
+ ls -t  Menampilkan list berdasarkan ukuran file
+ ls -S  Menampilkan list berdasarkan tipe file">
+
+
+<meta itemprop="datePublished" content="2019-10-11T20:51:34&#43;07:00" />
+<meta itemprop="dateModified" content="2019-10-11T20:51:34&#43;07:00" />
+<meta itemprop="wordCount" content="465">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://dmcr7.github.io"/>
+
+<meta name="twitter:title" content="Linux_Basic_Admin"/>
+<meta name="twitter:description" content="Untuk orang yang baru dalam menggunakan linux, menggunakan linux secara optimal tidaklah sangat mudah, hal pertama yang harus kita ketahui adalah basic command menggunakan terminal.
+Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
+ ls -l  Menampilkan list keseluruhan (termasuk dot file)
+ ls -la  Menampilkan list berdasarkan waktu
+ ls -t  Menampilkan list berdasarkan ukuran file
+ ls -S  Menampilkan list berdasarkan tipe file"/>
+
+
+
+
+<meta property="article:published_time" content="2019-10-11 20:51:34 &#43;0700 WIB" />
+
+
+
+
+
+
+
+    </head>
+
+    <body class="dark-theme">
+        <div class="container">
+            <header class="header">
+    <span class="header__inner">
+        <a href="/" style="text-decoration: none;">
+    <div class="logo">
+        
+            <span class="logo__mark">></span>
+            <span class="logo__text">$ cd /home/dmcr7</span>
+            <span class="logo__cursor"></span>
+        
+    </div>
+</a>
+
+
+        <span class="header__right">
+            
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="https://dmcr7.github.io/about">About</a></li><li><a href="https://dmcr7.github.io/posts">Posts</a></li>
+    </ul>
+</nav>
+
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
+            
+
+            <span class="theme-toggle unselectable"><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
+  3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7
+  13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"/>
+</svg>
+</span>
+        </span>
+    </span>
+</header>
+
+
+            <div class="content">
+                
+    <main class="post">
+
+        <div class="post-info">
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>3 minutes
+
+            
+
+            </p>
+        </div>
+
+        <article>
+            <h1 class="post-title"><a href="https://dmcr7.github.io/posts/linux_basic_admin/">Linux_Basic_Admin</a></h1>
+
+            
+
+            <div class="post-content">
+                
+
+<p>Untuk orang yang baru dalam menggunakan linux, menggunakan linux secara optimal tidaklah sangat mudah, hal pertama yang harus kita ketahui adalah basic command menggunakan terminal.</p>
+
+<h3 id="berikut-beberapa-command-yang-telah-kita-rangkum">Berikut beberapa command yang telah kita rangkum :</h3>
+
+<h4 id="list">list</h4>
+
+<p>Menampilkan list detail</p>
+
+<pre><code>      ls -l
+</code></pre>
+
+<p>Menampilkan list keseluruhan (termasuk dot file)</p>
+
+<pre><code>      ls -la
+</code></pre>
+
+<p>Menampilkan list berdasarkan waktu</p>
+
+<pre><code>      ls -t
+</code></pre>
+
+<p>Menampilkan list berdasarkan ukuran file</p>
+
+<pre><code>    ls -S
+</code></pre>
+
+<p>Menampilkan list berdasarkan tipe file</p>
+
+<pre><code>    ls -F
+</code></pre>
+
+<p>Menampilkan list dengan index file nya</p>
+
+<pre><code>    ls -i
+</code></pre>
+
+<h4 id="cat">cat</h4>
+
+<p>Print ke terminal isi dari file</p>
+
+<pre><code>    cat [ file ]
+</code></pre>
+
+<h4 id="mengubah-directori">Mengubah directori</h4>
+
+<p>Mengubah directori folder</p>
+
+<pre><code>  cd
+</code></pre>
+
+<h4 id="tail">Tail</h4>
+
+<p>Menampilkan baris akhir sebanyak n</p>
+
+<pre><code>  [perintah lain] | tail -n
+</code></pre>
+
+<p>Monitoring perubahan file</p>
+
+<pre><code>  tail -f [nama file]
+</code></pre>
+
+<h4 id="head">Head</h4>
+
+<p>Menampilkan baris awal sebanyak n</p>
+
+<pre><code>  [perintah lain] | head -n
+</code></pre>
+
+<h4 id="right-direction">Right Direction</h4>
+
+<p>Replace isi dari file output</p>
+
+<pre><code>  cat /proc/cpuinfo &gt; command.txt
+</code></pre>
+
+<h4 id="double-right-directioninsert-sesuatu-pada-file-output">Double Right DirectionInsert sesuatu pada file output</h4>
+
+<pre><code>  cat /proc/cpuinfo | wc -l &gt;&gt; command.txt
+</code></pre>
+
+<h4 id="left-direction">Left Direction</h4>
+
+<p>File sebagai input (yang diproses)</p>
+
+<pre><code>  ./program &lt; command.txt
+</code></pre>
+
+<h4 id="error-direction">Error Direction</h4>
+
+<p>Memasukkan error pada file output</p>
+
+<pre><code>    mkdir Music 2&gt; myerror.txt (replace)
+    mkdir Music 2&gt;&gt; myerror.txt (insert)
+</code></pre>
+
+<h4 id="sort">Sort</h4>
+
+<p>Mengurutkan isi file (per baris)</p>
+
+<pre><code>    sort -u [namafile]
+</code></pre>
+
+<h4 id="uniq">Uniq</h4>
+
+<p>Menghitung jumlah elemen per nilai dalam data</p>
+
+<pre><code>    uniq -c [namafile]
+</code></pre>
+
+<h4 id="grep">Grep</h4>
+
+<p>Mencari kata dalam suatu file</p>
+
+<pre><code>    [perintah] | grep [keyword]
+</code></pre>
+
+<h4 id="copy">Copy</h4>
+
+<p>Copy semua file dalam satu direktori</p>
+
+<pre><code>    cp * [direktori tujuan]
+</code></pre>
+
+<p>Copy semua file dan sub direktori</p>
+
+<pre><code>    cp -R * [direktori tujuan]
+</code></pre>
+
+<p>Copy file</p>
+
+<pre><code>    cp [namafile] [direktori tujuan]
+</code></pre>
+
+<p>Copy tanpa merubah date timestamps</p>
+
+<pre><code>    cp -p
+</code></pre>
+
+<h4 id="move">Move</h4>
+
+<p>Jika belum ada nama, membuat file baru. Jika sudah ada nama, memindahkan</p>
+
+<pre><code>    mv
+</code></pre>
+
+<h4 id="ssh">SSH</h4>
+
+<p>Komputer A SSH komputer B</p>
+
+<pre><code>    ssh B@ip
+</code></pre>
+
+<p>A kirim file ke B</p>
+
+<pre><code>    scp [nama file] B@ip:direktori
+</code></pre>
+
+<p>B mengambil file dari A</p>
+
+<pre><code>    scp A@ip:direktori [direktori lokal]
+</code></pre>
+
+<p>SSH tanpa password</p>
+
+<pre><code>    sshpass -p [password]
+</code></pre>
+
+<p>ssh dengan perintah</p>
+
+<pre><code>    A@ip [perintah]
+</code></pre>
+
+<h4 id="create-new-file">Create New File</h4>
+
+<p>Membuat file baru</p>
+
+<pre><code>    touch [nama file]
+</code></pre>
+
+<h4 id="check-direction">Check Direction</h4>
+
+<p>Menampilkan alamat direktori aktif</p>
+
+<pre><code>    pwd
+</code></pre>
+
+<h4 id="locate">Locate</h4>
+
+<p>Mencari file pada semua direktori</p>
+
+<pre><code>  locate [keyword]
+</code></pre>
+
+<h4 id="find">Find</h4>
+
+<p>Mencari file pada direktori aktif</p>
+
+<pre><code>  Find [keyword]
+</code></pre>
+
+<h4 id="remove">Remove</h4>
+
+<p>Menghapus folder yang kosong</p>
+
+<pre><code>  rmdir
+</code></pre>
+
+<p>Menghapus file</p>
+
+<pre><code>  rm [direktori file]
+</code></pre>
+
+<p>Menghapus semua isi direktori</p>
+
+<pre><code>  rm -r [direktori]
+</code></pre>
+
+<p>Menghapus Paksa semua isi dir (force)</p>
+
+<pre><code>  rm -rf [file / dir]
+</code></pre>
+
+<h4 id="check-ip-address">Check IP Address</h4>
+
+<p>Mengecek IP Addres</p>
+
+<pre><code>  ifconfig
+  ip address
+</code></pre>
+
+<h4 id="show-process">Show Process</h4>
+
+<p>Untuk melihat process status</p>
+
+<pre><code>  ps -ef
+</code></pre>
+
+<h4 id="check-env">Check env</h4>
+
+<p>Print Environment Variable</p>
+
+<pre><code>  env
+</code></pre>
+
+<h4 id="displays-and-updates-sorted-process-information">Displays and updates sorted process information</h4>
+
+<p>Menampilkan process secara update dan terurut</p>
+
+<pre><code>  top
+  htop
+</code></pre>
+
+<h4 id="shows-the-network-status">Shows the network status</h4>
+
+<p>Menampilkan status network</p>
+
+<pre><code>  netstat
+</code></pre>
+
+<h4 id="display-free-disk-space">Display free disk space</h4>
+
+<p>Menampilkan disk space yang bisa dipakai</p>
+
+<pre><code>  df -h
+</code></pre>
+
+<p>-h prints out the information in human-readable format</p>
+
+<h4 id="to-check-the-user-running-the-application">To check the user running the application</h4>
+
+<p>Melihat user id yang berjalan</p>
+
+<pre><code>  id
+</code></pre>
+
+<h4 id="change-permision">Change permision</h4>
+
+<p>Mengubah permision suatu File</p>
+
+<pre><code>  chmod [parameter] [file]
+</code></pre>
+
+<p>contoh : chmod +x bash.sh, chmod 777 bash.sh</p>
+
+<h4 id="dig-nslookup">dig/nslookup</h4>
+
+<p>dig (DNS lookup utility) or nslookup (query Internet name servers)</p>
+
+<pre><code>  dig equnix.asia
+  nslookup equnix.asia
+</code></pre>
+
+<h4 id="history">history</h4>
+
+<p>melihat history command</p>
+
+<pre><code>  history
+</code></pre>
+
+            </div>
+        </article>
+
+        <hr />
+
+        <div class="post-info">
+
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>465 Words</p>
+
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2019-10-11 20:51 &#43;0700</p>
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Read other posts</span>
+                    <hr />
+                </div>
+
+                <div class="pagination__buttons">
+                    
+                        <span class="button previous">
+                            <a href="https://dmcr7.github.io/posts/ketika-sholat-mu-hanya-untuk-kewajiban-semata/">
+                                <span class="button__icon">←</span>
+                                <span class="button__text">Ketika Sholat mu Hanya Untuk Kewajiban Semata</span>
+                            </a>
+                        </span>
+                    
+
+                    
+                        <span class="button next">
+                            <a href="https://dmcr7.github.io/posts/buffer_overflow_labs_from_seedlabs/">
+                                <span class="button__text">Buffer_Overflow_Labs_From_SEEDlabs</span>
+                                <span class="button__icon">→</span>
+                            </a>
+                        </span>
+                    
+                </div>
+            </div>
+        
+
+        
+    </main>
+
+            </div>
+
+            
+                <footer class="footer">
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>&copy; 2019</span>
+            
+            <span></span>
+            <span> <a href="https://dmcr7.github.io/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></span>
+        </div>
+    </div>
+
+    <div class="footer__inner">
+        <div class="footer__content">
+
+        </div>
+    </div>
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>Powered by <a href="http://gohugo.io">Hugo</a></span>
+            <span>Made with &#10084; by <a href="https://github.com/rhazdon">rhazdon</a></span>
+        </div>
+    </div>
+
+
+</footer>
+
+            
+        </div>
+
+        
+
+
+
+
+<script type="text/javascript" src="/bundle.min.4c3fb12a087ceed4a52cb5d57068a9795c7069617a01ca70f788052ad66e1791779e6c72686e1dc0ca13dc03b0203204b6566bb0dd1ee80de2b7ff4d8fe53db2.js" integrity="sha512-TD&#43;xKgh87tSlLLXVcGipeVxwaWF6Acpw94gFKtZuF5F3nmxyaG4dwMoT3AOwIDIEtlZrsN0e6A3it/9Nj&#43;U9sg=="></script>
+
+
+
+    </body>
+</html>
