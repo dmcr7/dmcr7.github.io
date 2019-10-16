@@ -461,19 +461,12 @@ $  cp ditoprabowo.key /etc/ssl/private/ditoprabowo.key
 </code></pre></li>
 </ul>
 
-<p>Sekarang saat kita akses https web kita, akan muncul error saat membuka karena kita menggunakan certificate yang tidak valid pada client, maka dari itu kita harus membuat certificate dan private key ke dalam pkcs#12 format untuk client</p>
+<p>pindahkan file ditoprabowo_CA.pem ke local laptop</p>
 
-<pre><code>    $ openssl pkcs12 -export -inkey ditoprabowo.key -in ditoprabowo.crt -out ditoprabowo.p12
+<pre><code>    $  scp ditoprabowo_CA.pem dito@10.122.1.53:~
 </code></pre>
 
-<p>pindahkan file ditoprabowo.p12 ke local laptop</p>
-
-<pre><code>    $  scp ditoprabowo.p12 dito@10.122.1.53:~
-</code></pre>
-
-<p>lalu pada browser, disini saya memakai chrome, import file diatas agar dikenali valid oleh chrome.</p>
-
-<p>di chrome ada di setting manage HTTPS, import lalu jangan lupa dikasih trust</p>
+<p>lalu pada browser, disini saya memakai chrome, klik setting &gt; manage certificate, pada root authorization import file diatas agar dikenali valid oleh chrome.</p>
 
 <p><img src="/img/webj4.png" alt="" /></p>
 
