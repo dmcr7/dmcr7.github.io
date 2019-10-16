@@ -448,11 +448,12 @@ $  cp ditoprabowo.key /etc/ssl/private/ditoprabowo.key
 
 <li><p>ditambahkan certificate pada apache</p>
 
-<p>SSLCACertificateFile /etc/ssl/certs/ditoprabowo_CA.pem</p>
+<pre><code>  SSLCACertificateFile /etc/ssl/certs/ditoprabowo_CA.pem
 
-<p>SSLCertificateFile    /etc/ssl/certs/ditoprabowo.crt</p>
+  SSLCertificateFile    /etc/ssl/certs/ditoprabowo.crt
 
-<p>SSLCertificateKeyFile /etc/ssl/private/ditoprabowo.key</p></li>
+  SSLCertificateKeyFile /etc/ssl/private/ditoprabowo.key
+</code></pre></li>
 
 <li><p>Restart apache2</p>
 
