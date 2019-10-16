@@ -46,7 +46,7 @@ IP server : 10.">
 
 <meta itemprop="datePublished" content="2019-10-16T09:09:46&#43;07:00" />
 <meta itemprop="dateModified" content="2019-10-16T09:09:46&#43;07:00" />
-<meta itemprop="wordCount" content="1428">
+<meta itemprop="wordCount" content="1445">
 
 
 
@@ -148,7 +148,7 @@ IP laptop : 10.122.1.53</p>
 
 <p>Web server yang saya gunakan adalah apache2, untuk install gunakan command berikut :</p>
 
-<pre><code>sudo apt-get install apache2
+<pre><code> $ sudo apt-get install apache2
 </code></pre>
 
 <p>setelah selesai, tanpa disetting apapun harusnya jika dibuka ip anda disini saya (10.122.1.70) sudah menampilkan web apache.</p>
@@ -186,11 +186,11 @@ IP laptop : 10.122.1.53</p>
 <ul>
 <li><p>install dulu bind9 nya :</p>
 
-<p>sudo apt-get install bind9</p></li>
+<p>$  sudo apt-get install bind9</p></li>
 
 <li><p>Selanjutnya configure local file</p>
 
-<p>sudo vim /etc/bind/named.conf</p>
+<p>$  sudo vim /etc/bind/named.conf</p>
 
 <pre><code>//
 // Do any local configuration here
@@ -217,10 +217,10 @@ file &quot;/etc/bind/zones/rev.1.122.10.in-addr.arpa&quot;;
 <ul>
 <li><p>Buat directory folder zones &amp; file di domain.com.db di directory /etc/bind [Forward Zone]</p>
 
-<p>cd /etc/bind
-  sudo mkdir zones
-  cd zones
-  vim ditoprabowo.com.db</p>
+<p>$  cd /etc/bind
+  $  sudo mkdir zones
+  $  cd zones
+  $  vim ditoprabowo.com.db</p>
 
 <pre><code>; BIND data file for ditoprabowo.com
 ;
@@ -248,7 +248,8 @@ testing IN TXT &quot;v=spf1 a -all&quot;
 
 <li><p>Creating the Reverse Zone File(s)</p>
 
-<p>sudo vim /etc/bind/zones/1.122.10.in-addr.arpa</p>
+<pre><code>$  sudo vim /etc/bind/zones/1.122.10.in-addr.arpa
+</code></pre>
 
 <pre><code>@ IN SOA ditoprabowo.com. root.ditoprabowo.com. (
 1;  
@@ -263,7 +264,8 @@ IN NS ns1.ditoprabowo.com.
 
 <li><p>lalu kita coba test domain kita, caranya dengan menggunakan nameserver ip dns kita.</p>
 
-<p>sudo vim /etc/resolv.conf</p>
+<pre><code>$  sudo vim /etc/resolv.conf
+</code></pre>
 
 <pre><code>nameserver 10.122.1.70
 </code></pre></li>
@@ -540,20 +542,24 @@ safeExit
 <ul>
 <li><p>copy ca cert ke /etc/ssl/certs.</p>
 
-<p>sudo cp ditoprabowo_CA.pem /etc/ssl/certs/</p></li>
+<pre><code>$ sudo cp ditoprabowo_CA.pem /etc/ssl/certs/
+</code></pre></li>
 
 <li><p>copy server cert dan private key ke folder ssl</p>
 
-<p>cp ditoprabowo.crt /etc/ssl/certs/ditoprabowo.crt
-  cp ditoprabowo.key /etc/ssl/private/ditoprabowo.key</p></li>
+<pre><code>$  cp ditoprabowo.crt /etc/ssl/certs/ditoprabowo.crt
+$  cp ditoprabowo.key /etc/ssl/private/ditoprabowo.key
+</code></pre></li>
 
 <li><p>aktifkan SSL module</p>
 
-<p>a2enmod ssl</p></li>
+<pre><code>$  a2enmod ssl
+</code></pre></li>
 
 <li><p>aktifkan SSL site in apache</p>
 
-<p>a2ensite default-ssl</p></li>
+<pre><code>$ a2ensite default-ssl
+</code></pre></li>
 
 <li><p>ditambahkan certificate pada apache</p>
 
@@ -563,17 +569,18 @@ safeExit
 
 <li><p>Restart apache2</p>
 
-<p>sudo service apache2 restart</p></li>
+<pre><code>$  sudo service apache2 restart
+</code></pre></li>
 </ul>
 
 <p>Sekarang saat kita akses https web kita, akan muncul error saat membuka karena kita menggunakan certificate yang tidak valid pada client, maka dari itu kita harus membuat certificate dan private key ke dalam pkcs#12 format untuk client</p>
 
-<pre><code>  openssl pkcs12 -export -inkey ditoprabowo.key -in ditoprabowo.crt -out ditoprabowo.p12
+<pre><code>    $ openssl pkcs12 -export -inkey ditoprabowo.key -in ditoprabowo.crt -out ditoprabowo.p12
 </code></pre>
 
 <p>pindahkan file ditoprabowo.p12 ke local laptop</p>
 
-<pre><code>  scp ditoprabowo.p12 dito@10.122.1.53:~
+<pre><code>    $  scp ditoprabowo.p12 dito@10.122.1.53:~
 </code></pre>
 
 <p>lalu pada browser, disini saya memakai chrome, import file diatas agar dikenali valid oleh chrome.</p>
@@ -601,7 +608,7 @@ Google Image</p>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="/tags/untagged">untagged</a></span>
                 </p>
 
-            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1428 Words</p>
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1445 Words</p>
 
             <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2019-10-16 09:09 &#43;0700</p>
         </div>

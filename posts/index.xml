@@ -33,7 +33,7 @@ IP laptop : 10.122.1.53</p>
 
 <p>Web server yang saya gunakan adalah apache2, untuk install gunakan command berikut :</p>
 
-<pre><code>sudo apt-get install apache2
+<pre><code> $ sudo apt-get install apache2
 </code></pre>
 
 <p>setelah selesai, tanpa disetting apapun harusnya jika dibuka ip anda disini saya (10.122.1.70) sudah menampilkan web apache.</p>
@@ -71,11 +71,11 @@ IP laptop : 10.122.1.53</p>
 <ul>
 <li><p>install dulu bind9 nya :</p>
 
-<p>sudo apt-get install bind9</p></li>
+<p>$  sudo apt-get install bind9</p></li>
 
 <li><p>Selanjutnya configure local file</p>
 
-<p>sudo vim /etc/bind/named.conf</p>
+<p>$  sudo vim /etc/bind/named.conf</p>
 
 <pre><code>//
 // Do any local configuration here
@@ -102,10 +102,10 @@ file &quot;/etc/bind/zones/rev.1.122.10.in-addr.arpa&quot;;
 <ul>
 <li><p>Buat directory folder zones &amp; file di domain.com.db di directory /etc/bind [Forward Zone]</p>
 
-<p>cd /etc/bind
-  sudo mkdir zones
-  cd zones
-  vim ditoprabowo.com.db</p>
+<p>$  cd /etc/bind
+  $  sudo mkdir zones
+  $  cd zones
+  $  vim ditoprabowo.com.db</p>
 
 <pre><code>; BIND data file for ditoprabowo.com
 ;
@@ -133,7 +133,8 @@ testing IN TXT &quot;v=spf1 a -all&quot;
 
 <li><p>Creating the Reverse Zone File(s)</p>
 
-<p>sudo vim /etc/bind/zones/1.122.10.in-addr.arpa</p>
+<pre><code>$  sudo vim /etc/bind/zones/1.122.10.in-addr.arpa
+</code></pre>
 
 <pre><code>@ IN SOA ditoprabowo.com. root.ditoprabowo.com. (
 1;  
@@ -148,7 +149,8 @@ IN NS ns1.ditoprabowo.com.
 
 <li><p>lalu kita coba test domain kita, caranya dengan menggunakan nameserver ip dns kita.</p>
 
-<p>sudo vim /etc/resolv.conf</p>
+<pre><code>$  sudo vim /etc/resolv.conf
+</code></pre>
 
 <pre><code>nameserver 10.122.1.70
 </code></pre></li>
@@ -425,20 +427,24 @@ safeExit
 <ul>
 <li><p>copy ca cert ke /etc/ssl/certs.</p>
 
-<p>sudo cp ditoprabowo_CA.pem /etc/ssl/certs/</p></li>
+<pre><code>$ sudo cp ditoprabowo_CA.pem /etc/ssl/certs/
+</code></pre></li>
 
 <li><p>copy server cert dan private key ke folder ssl</p>
 
-<p>cp ditoprabowo.crt /etc/ssl/certs/ditoprabowo.crt
-  cp ditoprabowo.key /etc/ssl/private/ditoprabowo.key</p></li>
+<pre><code>$  cp ditoprabowo.crt /etc/ssl/certs/ditoprabowo.crt
+$  cp ditoprabowo.key /etc/ssl/private/ditoprabowo.key
+</code></pre></li>
 
 <li><p>aktifkan SSL module</p>
 
-<p>a2enmod ssl</p></li>
+<pre><code>$  a2enmod ssl
+</code></pre></li>
 
 <li><p>aktifkan SSL site in apache</p>
 
-<p>a2ensite default-ssl</p></li>
+<pre><code>$ a2ensite default-ssl
+</code></pre></li>
 
 <li><p>ditambahkan certificate pada apache</p>
 
@@ -448,17 +454,18 @@ safeExit
 
 <li><p>Restart apache2</p>
 
-<p>sudo service apache2 restart</p></li>
+<pre><code>$  sudo service apache2 restart
+</code></pre></li>
 </ul>
 
 <p>Sekarang saat kita akses https web kita, akan muncul error saat membuka karena kita menggunakan certificate yang tidak valid pada client, maka dari itu kita harus membuat certificate dan private key ke dalam pkcs#12 format untuk client</p>
 
-<pre><code>  openssl pkcs12 -export -inkey ditoprabowo.key -in ditoprabowo.crt -out ditoprabowo.p12
+<pre><code>    $ openssl pkcs12 -export -inkey ditoprabowo.key -in ditoprabowo.crt -out ditoprabowo.p12
 </code></pre>
 
 <p>pindahkan file ditoprabowo.p12 ke local laptop</p>
 
-<pre><code>  scp ditoprabowo.p12 dito@10.122.1.53:~
+<pre><code>    $  scp ditoprabowo.p12 dito@10.122.1.53:~
 </code></pre>
 
 <p>lalu pada browser, disini saya memakai chrome, import file diatas agar dikenali valid oleh chrome.</p>
