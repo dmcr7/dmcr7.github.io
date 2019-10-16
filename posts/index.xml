@@ -479,9 +479,9 @@ $  cp ditoprabowo.key /etc/ssl/private/ditoprabowo.key
 <p><img src="/img/web5.png" alt="" /></p>
 
 <p>Referensi :
-<a href="http://developer.erabelajar.com/konfigurasi-dns-server-menggunakan-bind9-di-ubuntu-server/">http://developer.erabelajar.com/konfigurasi-dns-server-menggunakan-bind9-di-ubuntu-server/</a>
-<a href="https://www.makethenmakeinstall.com/2014/05/ssl-client-authentication-step-by-step/">https://www.makethenmakeinstall.com/2014/05/ssl-client-authentication-step-by-step/</a>
-Google Image</p>
+1. <a href="http://developer.erabelajar.com/konfigurasi-dns-server-menggunakan-bind9-di-ubuntu-server/">http://developer.erabelajar.com/konfigurasi-dns-server-menggunakan-bind9-di-ubuntu-server/</a>
+2. <a href="https://www.makethenmakeinstall.com/2014/05/ssl-client-authentication-step-by-step/">https://www.makethenmakeinstall.com/2014/05/ssl-client-authentication-step-by-step/</a>
+3. Google Image</p>
 ]]></content>
         </item>
         
