@@ -4,8 +4,47 @@
         <link>/posts/</link>
         <description>Recent content in Posts on Hello World. I am Dito Prabowo</description>
         <generator>Hugo -- gohugo.io</generator>
-        <lastBuildDate>Tue, 15 Oct 2019 05:08:35 +0700</lastBuildDate>
+        <lastBuildDate>Wed, 16 Oct 2019 09:09:46 +0700</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>[LAB] Install Web Server With Private DNS and Secure With HTTPS</title>
+            <link>/posts/lab-install-web-server-with-private-dns-and-secure-with-https/</link>
+            <pubDate>Wed, 16 Oct 2019 09:09:46 +0700</pubDate>
+            
+            <guid>/posts/lab-install-web-server-with-private-dns-and-secure-with-https/</guid>
+            <description>0x0 Intro Sebelumnya saya jelaskan tujuan dari lab ini, yaitu kita membuat web server disini saya menggunakan apache, lalu Install bind9 untuk dns server dan membuat domain private kita sendiri, setelah bisa kita secure dengan HTTPS caranya dengan self signed certificate.
+Sebelumnya siapkan server yang akan kita gunakan, lalu pahami design jaringan dari server anda, disini saya menggunakan pengaturan network bridge dan menggunakan koneksi dari WIFI B201AP.
+IP server : 10.</description>
+            <content type="html"><![CDATA[
+
+<h3 id="0x0-intro">0x0 Intro</h3>
+
+<p>Sebelumnya saya jelaskan tujuan dari lab ini, yaitu kita membuat web server disini saya menggunakan apache, lalu Install bind9 untuk dns server dan membuat domain private kita sendiri, setelah bisa kita secure dengan HTTPS caranya dengan self signed certificate.</p>
+
+<p>Sebelumnya siapkan server yang akan kita gunakan, lalu pahami design jaringan dari server anda, disini saya menggunakan pengaturan network bridge dan menggunakan koneksi dari WIFI B201AP.</p>
+
+<p>IP server : 10.122.1.70
+IP laptop : 10.122.1.53</p>
+
+<p>silakan gunakan design jaringan kalian sendiri.</p>
+
+<h3 id="0x1-install-web-server">0x1 Install Web Server</h3>
+
+<p>Web server yang saya gunakan adalah apache2, untuk install gunakan command berikut :</p>
+
+<pre><code>sudo apt-get install apache2
+</code></pre>
+
+<p>setelah selesai, tanpa disetting apapun harusnya jika dibuka ip anda disini saya (10.122.1.70) sudah menampilkan web apache.</p>
+
+<p>untuk mengganti isi web, dapat di replace file di /var/www/html, disini saya mengganti default index.html dengan web saya, berikut hasilnya :</p>
+
+<p><img src="/img/webj1.png" alt="" /></p>
+
+<h3 id="0x2-install-private-dns">0x2 Install Private DNS</h3>
+]]></content>
+        </item>
         
         <item>
             <title>Apa Yang Seharusnya Dilakukan Oleh Seorang Engineer</title>

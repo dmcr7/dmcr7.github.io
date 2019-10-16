@@ -3,27 +3,32 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/posts/apa-yang-seharusnya-dilakukan-oleh-seorang-engineer/</loc>
-    <lastmod>2019-10-15T05:08:35+07:00</lastmod>
+    <loc>/posts/lab-install-web-server-with-private-dns-and-secure-with-https/</loc>
+    <lastmod>2019-10-16T09:09:46+07:00</lastmod>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2019-10-15T05:08:35+07:00</lastmod>
+    <lastmod>2019-10-16T09:09:46+07:00</lastmod>
   </url>
   
   <url>
     <loc>/posts/</loc>
-    <lastmod>2019-10-15T05:08:35+07:00</lastmod>
+    <lastmod>2019-10-16T09:09:46+07:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/</loc>
-    <lastmod>2019-10-15T05:08:35+07:00</lastmod>
+    <lastmod>2019-10-16T09:09:46+07:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/untagged/</loc>
+    <lastmod>2019-10-16T09:09:46+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/apa-yang-seharusnya-dilakukan-oleh-seorang-engineer/</loc>
     <lastmod>2019-10-15T05:08:35+07:00</lastmod>
   </url>
   
