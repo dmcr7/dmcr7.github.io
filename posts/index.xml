@@ -190,6 +190,291 @@ ns1.ditoprabowo.com.	14400	IN	A	10.122.1.70
 <p><img src="/img/webj2.png" alt="" /></p>
 
 <p><img src="/img/webj3.png" alt="" /></p>
+
+<h3 id="0x3-secure-with-https">0x3 Secure With HTTPS</h3>
+
+<p><img src="/img/SSL-flowchart.png" alt="" /></p>
+
+<p>nah kita bisa menggenerate certificate sendiri (Self-signed certificate) dengan openssl</p>
+
+<ol>
+<li>Generate a certificate authority (CA) cert</li>
+<li>Generate your Apache server SSL key and certificate</li>
+<li>Generate a client SSL certificate</li>
+</ol>
+
+<p>dan pada saat membuat server key jangan lupa ditambahkan DNS kita.</p>
+
+<p>Berikut script yang saya gunakan untuk Generate self-signed TLS Certificate yang isinya sebenernya seperti diatas step nya.</p>
+
+<pre><code>#!/bin/bash
+
+# Directories
+cur=$(pwd)
+tmp=$(mktemp -d)
+scriptName=$(basename &quot;$0&quot;)
+
+# Certificate Variables
+OUTPATH=&quot;./&quot;
+VERBOSE=0
+DURATION=3650 # 10 years
+
+safeExit() {
+  if [ -d &quot;$tmp&quot; ]; then
+    if [ $VERBOSE -eq 1 ]; then
+      echo &quot;Removing temporary directory '${tmp}'&quot;
+    fi
+    rm -rf &quot;$tmp&quot;
+  fi
+
+  trap - INT TERM EXIT
+  exit
+}
+
+# Help Screen
+help() {
+  echo -n &quot;${scriptName} [OPTIONS] -c=US --state=California
+Generate self-signed TLS certificate using OpenSSL
+ Options:
+  -c|--country         Country Name (2 letter code)
+  -s|--state           State or Province Name (full name)
+  -l|--locality        Locality Name (eg, city)
+  -o|--organization    Organization Name (eg, company)
+  -u|--unit            Organizational Unit Name (eg, section)
+  -n|--common-name     Common Name (e.g. server FQDN or YOUR name)
+  -e|--email           Email Address
+  -p|--path            Path to output generated keys
+  -d|--duration        Validity duration of the certificate (in days)
+  -h|--help            Display this help and exit
+  -v|--verbose         Verbose output
+&quot;
+}
+
+# Test output path is valid
+testPath() {
+  if [ ! -d $OUTPATH ]; then
+    echo &quot;The specified directory \&quot;${OUTPATH}\&quot; does not exist&quot;
+    exit 1
+  fi
+}
+
+# Process Arguments
+while [ &quot;$1&quot; != &quot;&quot; ]; do
+  PARAM=$(echo &quot;$1&quot; | awk -F= '{print $1}')
+  VALUE=$(echo &quot;$1&quot; | awk -F= '{print $2}')
+  case $PARAM in
+    -h|--help) help; safeExit ;;
+    -c|--country) C=$VALUE ;;
+    -s|--state) ST=$VALUE ;;
+    -l|--locality) L=$VALUE ;;
+    -o|--organization) O=$VALUE ;;
+    -u|--unit) OU=$VALUE ;;
+    -n|--common-name) CN=$VALUE ;;
+    -e|--email) emailAddress=$VALUE ;;
+    -p|--path) OUTPATH=$VALUE; testPath ;;
+	-d|--duration) DURATION=$VALUE ;;
+    -v|--verbose) VERBOSE=1 ;;
+    *) echo &quot;ERROR: unknown parameter \&quot;$PARAM\&quot;&quot;; help; exit 1 ;;
+  esac
+  shift
+done
+
+# Prompt for variables that were not provided in arguments
+checkVariables() {
+  # Country
+  if [ -z &quot;$C&quot; ]; then
+    echo -n &quot;Country Name (2 letter code) [AU]:&quot;
+    read -r C
+  fi
+
+  # State
+  if [ -z &quot;$ST&quot; ]; then
+    echo -n &quot;State or Province Name (full name) [Some-State]:&quot;
+    read -r ST
+  fi
+
+  # Locality
+  if [ -z &quot;$L&quot; ]; then
+    echo -n &quot;Locality Name (eg, city) []:&quot;
+    read -r L
+  fi
+
+  # Organization
+  if [ -z &quot;$O&quot; ]; then
+    echo -n &quot;Organization Name (eg, company) [Internet Widgits Pty Ltd]:&quot;
+    read -r O
+  fi
+
+  # Organizational Unit
+  if [ -z &quot;$OU&quot; ]; then
+    echo -n &quot;Organizational Unit Name (eg, section) []:&quot;
+    read -r OU
+  fi
+
+  # Common Name
+  if [ -z &quot;$CN&quot; ]; then
+    echo -n &quot;Common Name (e.g. server FQDN or YOUR name) []:&quot;
+    read -r CN
+  fi
+
+  # Email Address
+  if [ -z &quot;$emailAddress&quot; ]; then
+    echo -n &quot;Email Address []:&quot;
+    read -r emailAddress
+  fi
+}
+
+# Show variable values
+showVals() {
+  echo &quot;Country: ${C}&quot;;
+  echo &quot;State: ${ST}&quot;;
+  echo &quot;Locality: ${L}&quot;;
+  echo &quot;Organization: ${O}&quot;;
+  echo &quot;Organization Unit: ${OU}&quot;;
+  echo &quot;Common Name: ${CN}&quot;;
+  echo &quot;Email: ${emailAddress}&quot;;
+  echo &quot;Output Path: ${OUTPATH}&quot;;
+  echo &quot;Certificate Duration (Days): ${DURATION}&quot;;
+  echo &quot;Verbose: ${VERBOSE}&quot;;
+}
+
+# Init
+init() {
+  cd &quot;$tmp&quot; || exit
+  pwd
+}
+
+# Cleanup
+cleanup() {
+  echo &quot;Cleaning up&quot;
+  cd &quot;$cur&quot; || exit
+  rm -rf &quot;$tmp&quot;
+}
+
+buildCsrCnf() {
+cat &lt;&lt; EOF &gt; &quot;${tmp}/tmp.csr.cnf&quot;
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+[dn]
+C=${C}
+ST=${ST}
+L=${L}
+O=${O}
+OU=${OU}
+CN=${CN}
+emailAddress=${emailAddress}
+EOF
+}
+
+buildExtCnf() {
+cat &lt;&lt; EOF &gt; &quot;${tmp}/v3.ext&quot;
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = ${CN}
+DNS.2 = ditoprabowo.com
+DNS.3 = ns1.ditoprabowo.com
+DNS.4 = testing.ditoprabowo.com
+DNS.5 = 10.122.1.70
+EOF
+}
+
+# Build TLS Certificate
+build() {
+  # Santizie domain name for file name
+  FILENAME=${CN/\*\./}
+  # Generate CA key &amp; crt
+  openssl genrsa -out &quot;${tmp}/tmp.key&quot; 2048
+  openssl req -x509 -new -nodes -key &quot;${tmp}/tmp.key&quot; -sha256 -days &quot;${DURATION}&quot; -out &quot;${OUTPATH}${FILENAME}_CA.pem&quot; -subj &quot;/C=${C}/ST=${ST}/L=${L}/O=${O}/OU=${OU}/CN=${CN}/emailAddress=${emailAddress}&quot;
+
+  # CSR Configuration
+  buildCsrCnf
+
+  # Create v3.ext configuration file
+  buildExtCnf
+
+  # Server key
+  openssl req -new -sha256 -nodes -out &quot;${OUTPATH}${FILENAME}.csr&quot; -newkey rsa:2048 -keyout &quot;${OUTPATH}${FILENAME}.key&quot; -config &lt;( cat &quot;${tmp}/tmp.csr.cnf&quot; )
+
+  # Server certificate
+  openssl x509 -req -in &quot;${OUTPATH}${FILENAME}.csr&quot; -CA &quot;${OUTPATH}${FILENAME}_CA.pem&quot; -CAkey &quot;${tmp}/tmp.key&quot; -CAcreateserial -out &quot;${OUTPATH}${FILENAME}.crt&quot; -days &quot;${DURATION}&quot; -sha256 -extfile &quot;${tmp}/v3.ext&quot;
+}
+
+checkVariables
+build
+# showVals
+safeExit
+</code></pre>
+
+<p>hasilnya akan ada beberapa file yang tergenerate :</p>
+
+<ol>
+<li>ditoprabowo.crt</li>
+<li>ditoprabowo.csr</li>
+<li>ditoprabowo.key</li>
+<li>ditoprabowo_CA.pem</li>
+</ol>
+
+<p>Selanjutnya install sever certificate pada Apache</p>
+
+<ul>
+<li><p>copy ca cert ke /etc/ssl/certs.</p>
+
+<p>sudo cp ditoprabowo_CA.pem /etc/ssl/certs/</p></li>
+
+<li><p>copy server cert dan private key ke folder ssl</p>
+
+<p>cp ditoprabowo.crt /etc/ssl/certs/ditoprabowo.crt
+  cp ditoprabowo.key /etc/ssl/private/ditoprabowo.key</p></li>
+
+<li><p>aktifkan SSL module</p>
+
+<p>a2enmod ssl</p></li>
+
+<li><p>aktifkan SSL site in apache</p>
+
+<p>a2ensite default-ssl</p></li>
+
+<li><p>ditambahkan certificate pada apache</p>
+
+<p>SSLCACertificateFile /etc/ssl/certs/ditoprabowo_CA.pem
+  SSLCertificateFile    /etc/ssl/certs/ditoprabowo.crt
+  SSLCertificateKeyFile /etc/ssl/private/ditoprabowo.key</p></li>
+
+<li><p>Restart apache2</p>
+
+<p>sudo service apache2 restart</p></li>
+</ul>
+
+<p>Sekarang saat kita akses https web kita, akan muncul error saat membuka karena kita menggunakan certificate yang tidak valid pada client, maka dari itu kita harus membuat certificate dan private key ke dalam pkcs#12 format untuk client</p>
+
+<pre><code>  openssl pkcs12 -export -inkey ditoprabowo.key -in ditoprabowo.crt -out ditoprabowo.p12
+</code></pre>
+
+<p>pindahkan file ditoprabowo.p12 ke local laptop</p>
+
+<pre><code>  scp ditoprabowo.p12 dito@10.122.1.53:~
+</code></pre>
+
+<p>lalu pada browser, disini saya memakai chrome, import file diatas agar dikenali valid oleh chrome.</p>
+
+<p>di chrome ada di setting manage HTTPS, import lalu jangan lupa dikasih trust</p>
+
+<p><img src="/img/webj4.png" alt="" /></p>
+
+<p>hasilnya :</p>
+
+<p><img src="/img/web5.png" alt="" /></p>
+
+<p>Referensi :
+<a href="http://developer.erabelajar.com/konfigurasi-dns-server-menggunakan-bind9-di-ubuntu-server/">http://developer.erabelajar.com/konfigurasi-dns-server-menggunakan-bind9-di-ubuntu-server/</a>
+<a href="https://www.makethenmakeinstall.com/2014/05/ssl-client-authentication-step-by-step/">https://www.makethenmakeinstall.com/2014/05/ssl-client-authentication-step-by-step/</a>
+Google Image</p>
 ]]></content>
         </item>
         
