@@ -43,6 +43,153 @@ IP laptop : 10.122.1.53</p>
 <p><img src="/img/webj1.png" alt="" /></p>
 
 <h3 id="0x2-install-private-dns">0x2 Install Private DNS</h3>
+
+<p>Untuk menggunakan Private DNS saya menggunakan service bind9, dan membuat DNS di ip server yaitu 10.122.1.70</p>
+
+<p>Bind9 adalah suatu software yang di buat untuk mengatur DNS Server pada sistem operasi linux.</p>
+
+<p>Jenis-jenis DNS dan Fungsinya</p>
+
+<ol>
+<li>A Record, yaitu memetakan hostname ke IP adress 32-bit (IPv4).</li>
+<li>AAA Record, yaitu memetakan hostname ke IP address 128-bit (IPv6).</li>
+<li>MX Record, memetakan domain ke mail exchange server.</li>
+<li>CNAME Record, membuat nama alias dari sebuah domain.</li>
+<li>NS Record, memtakan domain ke dalam satu daftar dari DNS Server.</li>
+</ol>
+
+<p>Untuk membuat domain kita sendiri, ada 3 hal yang harus kita lakukan :</p>
+
+<ol>
+<li>Configuring the Local File</li>
+<li>Creating the Forward Zone File</li>
+<li>Creating the Reverse Zone File(s)</li>
+</ol>
+
+<p>Selanjutnya kita mulai proses install dan konfigurasinya.</p>
+
+<ul>
+<li><p>install dulu bind9 nya :</p>
+
+<p>sudo apt-get install bind9</p></li>
+
+<li><p>Selanjutnya configure local file</p>
+
+<p>sudo vim /etc/bind/named.conf</p>
+
+<pre><code>//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include &quot;/etc/bind/zones.rfc1918&quot;;
+
+zone &quot;ditoprabowo.com&quot; {
+type master;
+file &quot;/etc/bind/zones/ditoprabowo.com.db&quot;;
+};
+
+zone &quot;1.122.10.in-addr.arpa&quot; {
+type master;
+file &quot;/etc/bind/zones/rev.1.122.10.in-addr.arpa&quot;;
+};
+</code></pre></li>
+</ul>
+
+<p>1.122.10 merupakan 3 digit 10.122.1.70 yang dibalik.</p>
+
+<ul>
+<li><p>Buat directory folder zones &amp; file di domain.com.db di directory /etc/bind [Forward Zone]</p>
+
+<p>cd /etc/bind
+  sudo mkdir zones
+  cd zones
+  vim ditoprabowo.com.db</p>
+
+<pre><code>; BIND data file for ditoprabowo.com
+;
+$TTL 14400
+@ IN SOA ns1.ditoprabowo.com. root.ditoprabowo.com. (
+1 ; Serial  
+7200 ; Refresh  
+120 ; Retry
+2419200 ; Expire  
+604800) ; Default TTL  
+;
+
+ditoprabowo.com. IN NS ns1.ditoprabowo.com.
+ditoprabowo.com. IN MX 10 testing.ditoprabowo.com.
+ditoprabowo.com. IN A 10.122.1.70
+
+ns1 IN A 10.122.1.70
+
+www IN CNAME ditoprabowo.com.
+testing IN A 10.122.1.70
+ftp IN CNAME ditoprabowo.com.
+ditoprabowo.com. IN TXT &quot;v=spf1 ip4:10.122.1.70 a mx ~all&quot;
+testing IN TXT &quot;v=spf1 a -all&quot;
+</code></pre></li>
+
+<li><p>Creating the Reverse Zone File(s)</p>
+
+<p>sudo vim /etc/bind/zones/1.122.10.in-addr.arpa</p>
+
+<pre><code>@ IN SOA ditoprabowo.com. root.ditoprabowo.com. (
+1;  
+28800;  
+604800;  
+604800;  
+86400 );
+
+IN NS ns1.ditoprabowo.com.  
+4 IN PTR ditoprabowo.com.
+</code></pre></li>
+
+<li><p>lalu kita coba test domain kita, caranya dengan menggunakan nameserver ip dns kita.</p>
+
+<p>sudo vim /etc/resolv.conf</p>
+
+<pre><code>nameserver 10.122.1.70
+</code></pre></li>
+</ul>
+
+<p>hasilnya :</p>
+
+<pre><code>; &lt;&lt;&gt;&gt; DiG 9.11.3-1ubuntu1.9-Ubuntu &lt;&lt;&gt;&gt; ditoprabowo.com
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 45338
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 2
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+; COOKIE: a631a242020ee04e76887a075da68f41f580d1ab13c184ba (good)
+;; QUESTION SECTION:
+;ditoprabowo.com.		IN	A
+
+;; ANSWER SECTION:
+ditoprabowo.com.	14400	IN	A	10.122.1.70
+
+;; AUTHORITY SECTION:
+ditoprabowo.com.	14400	IN	NS	ns1.ditoprabowo.com.
+
+;; ADDITIONAL SECTION:
+ns1.ditoprabowo.com.	14400	IN	A	10.122.1.70
+
+;; Query time: 0 msec
+;; SERVER: 10.122.1.70#53(10.122.1.70)
+;; WHEN: Wed Oct 16 03:32:17 UTC 2019
+;; MSG SIZE  rcvd: 122
+</code></pre>
+
+<p>Testing pada selain server, gunakan dns ip server.</p>
+
+<p>configure dulu dns pada wifi, lalu coba buka ditoprabowo.com</p>
+
+<p><img src="/img/webj2.png" alt="" /></p>
+
+<p><img src="/img/webj3.png" alt="" /></p>
 ]]></content>
         </item>
         
