@@ -75,7 +75,7 @@ IP laptop : 10.122.1.53</p>
 
 <li><p>Selanjutnya configure local file</p>
 
-<p>$  sudo vim /etc/bind/named.conf</p>
+<p>$  sudo vim /etc/bind/named.conf.local</p>
 
 <pre><code>//
 // Do any local configuration here
@@ -102,10 +102,11 @@ file &quot;/etc/bind/zones/rev.1.122.10.in-addr.arpa&quot;;
 <ul>
 <li><p>Buat directory folder zones &amp; file di domain.com.db di directory /etc/bind [Forward Zone]</p>
 
-<p>$  cd /etc/bind
+<pre><code>  $  cd /etc/bind
   $  sudo mkdir zones
   $  cd zones
-  $  vim ditoprabowo.com.db</p>
+  $  vim ditoprabowo.com.db
+</code></pre>
 
 <pre><code>; BIND data file for ditoprabowo.com
 ;
