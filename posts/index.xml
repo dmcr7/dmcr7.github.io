@@ -144,10 +144,14 @@ testing IN TXT &quot;v=spf1 a -all&quot;
 604800;  
 86400 );
 
-IN NS ns1.ditoprabowo.com.  
-4 IN PTR ditoprabowo.com.
+@ IN NS ns1.ditoprabowo.com.  
+70 IN PTR ditoprabowo.com.
 </code></pre></li>
+</ul>
 
+<p>ganti 70 dengan akhiran ip kalian. test dengan nslookup.</p>
+
+<ul>
 <li><p>lalu kita coba test domain kita, caranya dengan menggunakan nameserver ip dns kita.</p>
 
 <pre><code>$  sudo vim /etc/resolv.conf
