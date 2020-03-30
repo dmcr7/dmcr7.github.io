@@ -5,10 +5,19 @@
     <link>/tags/untagged/</link>
     <description>Recent content in untagged on Hello World. I am Dito Prabowo</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 16 Oct 2019 09:09:46 +0700</lastBuildDate>
+    <lastBuildDate>Tue, 31 Mar 2020 00:20:10 +0700</lastBuildDate>
     
 	<atom:link href="/tags/untagged/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Cewek Cowok Logika Dan Perasaan</title>
+      <link>/posts/cewek-cowok-logika-dan-perasaan/</link>
+      <pubDate>Tue, 31 Mar 2020 00:20:10 +0700</pubDate>
+      
+      <guid>/posts/cewek-cowok-logika-dan-perasaan/</guid>
+      <description>Post ini hanya pemikiran sesaat saat jenuh ketika ngerjakan TA, jadi cari kegiatan untuk ngilangin hehehe (lul padahal kalo ngerjakan buku TA aja katanya males, kok malah nulis ginian). Jadi mohon maaf apabila banyak kekurangan atau membingungkan. Kita tau ada yang bilang cewek dan cowok sudah diberi takdir yang berbeda, cowok identik dengan logika nya dan cewek identik dengan Perasaan nya. Meskipun begitu cowok juga punya perasaan ya bahkan ada cowok yang perasaan nya kuat melebihi cewek , cewek juga bukan berarti selalu kalah logika, banyak cewek yang lebih pinter dari cowok.</description>
+    </item>
     
     <item>
       <title>[LAB] Install Web Server With Private DNS and Secure With HTTPS</title>
