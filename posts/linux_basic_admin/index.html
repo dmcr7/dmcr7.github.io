@@ -31,7 +31,7 @@ Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
 
 
 
-<link rel="stylesheet" href="/main.min.7bfbbe12786fa0ded4b4c0d792cbb36a5bd0bdb0b856dde57aa7b1f6fe0f2b87.css">
+<link rel="stylesheet" href="/main.min.1e3781b80dd16493473cb3568a87d70e1a30cee34b5558dc6a9114b007652d4d.css">
 
 
 
@@ -48,16 +48,14 @@ Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
  ls -la  Menampilkan list berdasarkan waktu
  ls -t  Menampilkan list berdasarkan ukuran file
  ls -S  Menampilkan list berdasarkan tipe file">
-
-
 <meta itemprop="datePublished" content="2019-10-11T20:51:34&#43;07:00" />
 <meta itemprop="dateModified" content="2019-10-11T20:51:34&#43;07:00" />
 <meta itemprop="wordCount" content="465">
+<meta itemprop="image" content="/"/>
 
 
 
-<meta itemprop="keywords" content="" />
-<meta name="twitter:card" content="summary_large_image"/>
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/"/>
 
 <meta name="twitter:title" content="Linux_Basic_Admin"/>
@@ -140,305 +138,179 @@ Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
             
 
             <div class="post-content">
-                
-
-<p>Untuk orang yang baru dalam menggunakan linux, menggunakan linux secara optimal tidaklah sangat mudah, hal pertama yang harus kita ketahui adalah basic command menggunakan terminal.</p>
-
-<h3 id="berikut-beberapa-command-yang-telah-kita-rangkum">Berikut beberapa command yang telah kita rangkum :</h3>
-
+                <p>Untuk orang yang baru dalam menggunakan linux, menggunakan linux secara optimal tidaklah sangat mudah, hal pertama yang harus kita ketahui adalah basic command menggunakan terminal.</p>
+<h3 id="berikut-beberapa-command-yang-telah-kita-rangkum-">Berikut beberapa command yang telah kita rangkum :</h3>
 <h4 id="list">list</h4>
-
 <p>Menampilkan list detail</p>
-
 <pre><code>      ls -l
 </code></pre>
-
 <p>Menampilkan list keseluruhan (termasuk dot file)</p>
-
 <pre><code>      ls -la
 </code></pre>
-
 <p>Menampilkan list berdasarkan waktu</p>
-
 <pre><code>      ls -t
 </code></pre>
-
 <p>Menampilkan list berdasarkan ukuran file</p>
-
 <pre><code>    ls -S
 </code></pre>
-
 <p>Menampilkan list berdasarkan tipe file</p>
-
 <pre><code>    ls -F
 </code></pre>
-
 <p>Menampilkan list dengan index file nya</p>
-
 <pre><code>    ls -i
 </code></pre>
-
 <h4 id="cat">cat</h4>
-
 <p>Print ke terminal isi dari file</p>
-
 <pre><code>    cat [ file ]
 </code></pre>
-
 <h4 id="mengubah-directori">Mengubah directori</h4>
-
 <p>Mengubah directori folder</p>
-
 <pre><code>  cd
 </code></pre>
-
 <h4 id="tail">Tail</h4>
-
 <p>Menampilkan baris akhir sebanyak n</p>
-
 <pre><code>  [perintah lain] | tail -n
 </code></pre>
-
 <p>Monitoring perubahan file</p>
-
 <pre><code>  tail -f [nama file]
 </code></pre>
-
 <h4 id="head">Head</h4>
-
 <p>Menampilkan baris awal sebanyak n</p>
-
 <pre><code>  [perintah lain] | head -n
 </code></pre>
-
 <h4 id="right-direction">Right Direction</h4>
-
 <p>Replace isi dari file output</p>
-
 <pre><code>  cat /proc/cpuinfo &gt; command.txt
 </code></pre>
-
 <h4 id="double-right-directioninsert-sesuatu-pada-file-output">Double Right DirectionInsert sesuatu pada file output</h4>
-
 <pre><code>  cat /proc/cpuinfo | wc -l &gt;&gt; command.txt
 </code></pre>
-
 <h4 id="left-direction">Left Direction</h4>
-
 <p>File sebagai input (yang diproses)</p>
-
 <pre><code>  ./program &lt; command.txt
 </code></pre>
-
 <h4 id="error-direction">Error Direction</h4>
-
 <p>Memasukkan error pada file output</p>
-
 <pre><code>    mkdir Music 2&gt; myerror.txt (replace)
     mkdir Music 2&gt;&gt; myerror.txt (insert)
 </code></pre>
-
 <h4 id="sort">Sort</h4>
-
 <p>Mengurutkan isi file (per baris)</p>
-
 <pre><code>    sort -u [namafile]
 </code></pre>
-
 <h4 id="uniq">Uniq</h4>
-
 <p>Menghitung jumlah elemen per nilai dalam data</p>
-
 <pre><code>    uniq -c [namafile]
 </code></pre>
-
 <h4 id="grep">Grep</h4>
-
 <p>Mencari kata dalam suatu file</p>
-
 <pre><code>    [perintah] | grep [keyword]
 </code></pre>
-
 <h4 id="copy">Copy</h4>
-
 <p>Copy semua file dalam satu direktori</p>
-
 <pre><code>    cp * [direktori tujuan]
 </code></pre>
-
 <p>Copy semua file dan sub direktori</p>
-
 <pre><code>    cp -R * [direktori tujuan]
 </code></pre>
-
 <p>Copy file</p>
-
 <pre><code>    cp [namafile] [direktori tujuan]
 </code></pre>
-
 <p>Copy tanpa merubah date timestamps</p>
-
 <pre><code>    cp -p
 </code></pre>
-
 <h4 id="move">Move</h4>
-
 <p>Jika belum ada nama, membuat file baru. Jika sudah ada nama, memindahkan</p>
-
 <pre><code>    mv
 </code></pre>
-
 <h4 id="ssh">SSH</h4>
-
 <p>Komputer A SSH komputer B</p>
-
 <pre><code>    ssh B@ip
 </code></pre>
-
 <p>A kirim file ke B</p>
-
 <pre><code>    scp [nama file] B@ip:direktori
 </code></pre>
-
 <p>B mengambil file dari A</p>
-
 <pre><code>    scp A@ip:direktori [direktori lokal]
 </code></pre>
-
 <p>SSH tanpa password</p>
-
 <pre><code>    sshpass -p [password]
 </code></pre>
-
 <p>ssh dengan perintah</p>
-
 <pre><code>    A@ip [perintah]
 </code></pre>
-
 <h4 id="create-new-file">Create New File</h4>
-
 <p>Membuat file baru</p>
-
 <pre><code>    touch [nama file]
 </code></pre>
-
 <h4 id="check-direction">Check Direction</h4>
-
 <p>Menampilkan alamat direktori aktif</p>
-
 <pre><code>    pwd
 </code></pre>
-
 <h4 id="locate">Locate</h4>
-
 <p>Mencari file pada semua direktori</p>
-
 <pre><code>  locate [keyword]
 </code></pre>
-
 <h4 id="find">Find</h4>
-
 <p>Mencari file pada direktori aktif</p>
-
 <pre><code>  Find [keyword]
 </code></pre>
-
 <h4 id="remove">Remove</h4>
-
 <p>Menghapus folder yang kosong</p>
-
 <pre><code>  rmdir
 </code></pre>
-
 <p>Menghapus file</p>
-
 <pre><code>  rm [direktori file]
 </code></pre>
-
 <p>Menghapus semua isi direktori</p>
-
 <pre><code>  rm -r [direktori]
 </code></pre>
-
 <p>Menghapus Paksa semua isi dir (force)</p>
-
 <pre><code>  rm -rf [file / dir]
 </code></pre>
-
 <h4 id="check-ip-address">Check IP Address</h4>
-
 <p>Mengecek IP Addres</p>
-
 <pre><code>  ifconfig
   ip address
 </code></pre>
-
 <h4 id="show-process">Show Process</h4>
-
 <p>Untuk melihat process status</p>
-
 <pre><code>  ps -ef
 </code></pre>
-
 <h4 id="check-env">Check env</h4>
-
 <p>Print Environment Variable</p>
-
 <pre><code>  env
 </code></pre>
-
 <h4 id="displays-and-updates-sorted-process-information">Displays and updates sorted process information</h4>
-
 <p>Menampilkan process secara update dan terurut</p>
-
 <pre><code>  top
   htop
 </code></pre>
-
 <h4 id="shows-the-network-status">Shows the network status</h4>
-
 <p>Menampilkan status network</p>
-
 <pre><code>  netstat
 </code></pre>
-
 <h4 id="display-free-disk-space">Display free disk space</h4>
-
 <p>Menampilkan disk space yang bisa dipakai</p>
-
 <pre><code>  df -h
 </code></pre>
-
 <p>-h prints out the information in human-readable format</p>
-
 <h4 id="to-check-the-user-running-the-application">To check the user running the application</h4>
-
 <p>Melihat user id yang berjalan</p>
-
 <pre><code>  id
 </code></pre>
-
 <h4 id="change-permision">Change permision</h4>
-
 <p>Mengubah permision suatu File</p>
-
 <pre><code>  chmod [parameter] [file]
 </code></pre>
-
 <p>contoh : chmod +x bash.sh, chmod 777 bash.sh</p>
-
-<h4 id="dig-nslookup">dig/nslookup</h4>
-
+<h4 id="dignslookup">dig/nslookup</h4>
 <p>dig (DNS lookup utility) or nslookup (query Internet name servers)</p>
-
 <pre><code>  dig equnix.asia
   nslookup equnix.asia
 </code></pre>
-
 <h4 id="history">history</h4>
-
 <p>melihat history command</p>
-
 <pre><code>  history
 </code></pre>
 
@@ -464,9 +336,9 @@ Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
                 <div class="pagination__buttons">
                     
                         <span class="button previous">
-                            <a href="/posts/ketika-sholat-mu-hanya-untuk-kewajiban-semata/">
+                            <a href="/posts/open-source-adalah-keajaiban-dunia/">
                                 <span class="button__icon">←</span>
-                                <span class="button__text">Ketika Sholat mu Hanya Untuk Kewajiban Semata</span>
+                                <span class="button__text">Open Source Adalah Keajaiban Dunia?</span>
                             </a>
                         </span>
                     

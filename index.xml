@@ -1,23 +1,14 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Hello World. I am Dito Prabowo</title>
     <link>/</link>
     <description>Recent content on Hello World. I am Dito Prabowo</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 31 Mar 2020 00:20:10 +0700</lastBuildDate>
+    <lastBuildDate>Fri, 11 Oct 2019 18:24:39 +0700</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Cewek Cowok Logika Dan Perasaan</title>
-      <link>/posts/cewek-cowok-logika-dan-perasaan/</link>
-      <pubDate>Tue, 31 Mar 2020 00:20:10 +0700</pubDate>
-      
-      <guid>/posts/cewek-cowok-logika-dan-perasaan/</guid>
-      <description>Post ini hanya pemikiran sesaat saat jenuh ketika ngerjakan TA, jadi cari kegiatan untuk ngilangin hehehe (lul padahal kalo ngerjakan buku TA aja katanya males, kok malah nulis ginian). Jadi mohon maaf apabila banyak kekurangan atau membingungkan. Kita tau ada yang bilang cewek dan cowok sudah diberi takdir yang berbeda, cowok identik dengan logika nya dan cewek identik dengan Perasaan nya. Meskipun begitu cowok juga punya perasaan ya bahkan ada cowok yang perasaan nya kuat melebihi cewek , cewek juga bukan berarti selalu kalah logika, banyak cewek yang lebih pinter dari cowok.</description>
-    </item>
     
     <item>
       <title>[LAB] Install Web Server With Private DNS and Secure With HTTPS</title>
@@ -55,16 +46,6 @@ IP server : 10.</description>
       
       <guid>/posts/open-source-adalah-keajaiban-dunia/</guid>
       <description>Seperti yang kita ketahui, Open source adalah istilah untuk software yang kode programnya disediakan oleh pengembangan untuk umum agar dapat dipelajari, diubah, atau dikembangkan. Jadi dengan adanya Open Source kita bisa melihat kode program dan bisa kita modifikasi untuk apapun yang kita inginkan dengan gratis, ya gratis. Lalu kenapa Open Source menjadi sebuah keajaiban dunia?. Banyak kisah menarik dari perusahaan IT besar yang lahir dari Open source,bahkan tidak hanya dari perusahaan IT, banyak perusahaan yang sekarang sudah menjadi perusahaan besar karena adanya Open source.</description>
-    </item>
-    
-    <item>
-      <title>Ketika Sholat mu Hanya Untuk Kewajiban Semata</title>
-      <link>/posts/ketika-sholat-mu-hanya-untuk-kewajiban-semata/</link>
-      <pubDate>Mon, 14 Oct 2019 11:31:53 +0700</pubDate>
-      
-      <guid>/posts/ketika-sholat-mu-hanya-untuk-kewajiban-semata/</guid>
-      <description>Sholat merupakan rukun Islam ke 2 dan memang merupakan Kewajiban yang harus kita laksanakan, tapi.. menurut kalian apakah hanya untuk itu saja? hanya karena melaksanakan Kewajiban saja?
-Saya mengakui bahwa memang manusia diciptakan tidak bisa sempurna, tapi setiap manusia saya percaya selalu punya kelebihan masing-masing entah diketahui atau tidak. Apabila seseorang telah menemukan apa yang dia nyaman melakukannya dan mempunyai suatu impian yang tinggi terhadap apa yang dilakukannya pastinya akan berusaha sekeras mungkin untuk mengejarnya.</description>
     </item>
     
     <item>

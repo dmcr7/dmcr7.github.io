@@ -28,7 +28,7 @@ IP server : 10." />
 
 
 
-<link rel="stylesheet" href="/main.min.7bfbbe12786fa0ded4b4c0d792cbb36a5bd0bdb0b856dde57aa7b1f6fe0f2b87.css">
+<link rel="stylesheet" href="/main.min.1e3781b80dd16493473cb3568a87d70e1a30cee34b5558dc6a9114b007652d4d.css">
 
 
 
@@ -42,16 +42,14 @@ IP server : 10." />
 <meta itemprop="description" content="0x0 Intro Sebelumnya saya jelaskan tujuan dari lab ini, yaitu kita membuat web server disini saya menggunakan apache, lalu Install bind9 untuk dns server dan membuat domain private kita sendiri, setelah bisa kita secure dengan HTTPS caranya dengan self signed certificate.
 Sebelumnya siapkan server yang akan kita gunakan, lalu pahami design jaringan dari server anda, disini saya menggunakan pengaturan network bridge dan menggunakan koneksi dari WIFI B201AP.
 IP server : 10.">
-
-
 <meta itemprop="datePublished" content="2019-10-16T09:09:46&#43;07:00" />
 <meta itemprop="dateModified" content="2019-10-16T09:09:46&#43;07:00" />
 <meta itemprop="wordCount" content="1404">
+<meta itemprop="image" content="/"/>
 
 
 
-<meta itemprop="keywords" content="untagged," />
-<meta name="twitter:card" content="summary_large_image"/>
+<meta itemprop="keywords" content="untagged," /><meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/"/>
 
 <meta name="twitter:title" content="[LAB] Install Web Server With Private DNS and Secure With HTTPS"/>
@@ -131,40 +129,23 @@ IP server : 10."/>
             
 
             <div class="post-content">
-                
-
-<h3 id="0x0-intro">0x0 Intro</h3>
-
+                <h3 id="0x0-intro">0x0 Intro</h3>
 <p>Sebelumnya saya jelaskan tujuan dari lab ini, yaitu kita membuat web server disini saya menggunakan apache, lalu Install bind9 untuk dns server dan membuat domain private kita sendiri, setelah bisa kita secure dengan HTTPS caranya dengan self signed certificate.</p>
-
 <p>Sebelumnya siapkan server yang akan kita gunakan, lalu pahami design jaringan dari server anda, disini saya menggunakan pengaturan network bridge dan menggunakan koneksi dari WIFI B201AP.</p>
-
 <p>IP server : 10.122.1.70
 IP laptop : 10.122.1.53</p>
-
 <p>silakan gunakan design jaringan kalian sendiri.</p>
-
 <h3 id="0x1-install-web-server">0x1 Install Web Server</h3>
-
 <p>Web server yang saya gunakan adalah apache2, untuk install gunakan command berikut :</p>
-
 <pre><code> $ sudo apt-get install apache2
 </code></pre>
-
 <p>setelah selesai, tanpa disetting apapun harusnya jika dibuka ip anda disini saya (10.122.1.70) sudah menampilkan web apache.</p>
-
 <p>untuk mengganti isi web, dapat di replace file di /var/www/html, disini saya mengganti default index.html dengan web saya, berikut hasilnya :</p>
-
-<p><img src="/img/webj1.png" alt="" /></p>
-
+<p><img src="/img/webj1.png" alt=""></p>
 <h3 id="0x2-install-private-dns">0x2 Install Private DNS</h3>
-
 <p>Untuk menggunakan Private DNS saya menggunakan service bind9, dan membuat DNS di ip server yaitu 10.122.1.70</p>
-
 <p>Bind9 adalah suatu software yang di buat untuk mengatur DNS Server pada sistem operasi linux.</p>
-
 <p>Jenis-jenis DNS dan Fungsinya</p>
-
 <ol>
 <li>A Record, yaitu memetakan hostname ke IP adress 32-bit (IPv4).</li>
 <li>AAA Record, yaitu memetakan hostname ke IP address 128-bit (IPv6).</li>
@@ -172,26 +153,24 @@ IP laptop : 10.122.1.53</p>
 <li>CNAME Record, membuat nama alias dari sebuah domain.</li>
 <li>NS Record, memtakan domain ke dalam satu daftar dari DNS Server.</li>
 </ol>
-
 <p>Untuk membuat domain kita sendiri, ada 3 hal yang harus kita lakukan :</p>
-
 <ol>
 <li>Configuring the Local File</li>
 <li>Creating the Forward Zone File</li>
 <li>Creating the Reverse Zone File(s)</li>
 </ol>
-
 <p>Selanjutnya kita mulai proses install dan konfigurasinya.</p>
-
 <ul>
-<li><p>install dulu bind9 nya :</p>
-
-<p>$  sudo apt-get install bind9</p></li>
-
-<li><p>Selanjutnya configure local file</p>
-
-<p>$  sudo vim /etc/bind/named.conf.local</p>
-
+<li>
+<p>install dulu bind9 nya :</p>
+<p>$  sudo apt-get install bind9</p>
+</li>
+<li>
+<p>Selanjutnya configure local file</p>
+<pre><code>$  sudo vim /etc/bind/named.conf.local
+</code></pre>
+</li>
+</ul>
 <pre><code>//
 // Do any local configuration here
 //
@@ -209,20 +188,17 @@ zone &quot;1.122.10.in-addr.arpa&quot; {
 type master;
 file &quot;/etc/bind/zones/rev.1.122.10.in-addr.arpa&quot;;
 };
-</code></pre></li>
-</ul>
-
-<p>1.122.10 merupakan 3 digit 10.122.1.70 yang dibalik.</p>
-
+</code></pre><p>1.122.10 merupakan 3 digit 10.122.1.70 yang dibalik.</p>
 <ul>
-<li><p>Buat directory folder zones &amp; file di domain.com.db di directory /etc/bind [Forward Zone]</p>
-
-<pre><code>  $  cd /etc/bind
-  $  sudo mkdir zones
-  $  cd zones
-  $  vim ditoprabowo.com.db
+<li>
+<p>Buat directory folder zones &amp; file di domain.com.db di directory /etc/bind [Forward Zone]</p>
+<pre><code>    $  cd /etc/bind
+    $  sudo mkdir zones
+    $  cd zones
+    $  vim ditoprabowo.com.db
 </code></pre>
-
+</li>
+</ul>
 <pre><code>; BIND data file for ditoprabowo.com
 ;
 $TTL 14400
@@ -245,13 +221,13 @@ testing IN A 10.122.1.70
 ftp IN CNAME ditoprabowo.com.
 ditoprabowo.com. IN TXT &quot;v=spf1 ip4:10.122.1.70 a mx ~all&quot;
 testing IN TXT &quot;v=spf1 a -all&quot;
-</code></pre></li>
-
-<li><p>Creating the Reverse Zone File(s)</p>
-
-<pre><code>$  sudo vim /etc/bind/zones/1.122.10.in-addr.arpa
+</code></pre><ul>
+<li>
+<p>Creating the Reverse Zone File(s)</p>
+<pre><code>  $  sudo vim /etc/bind/zones/1.122.10.in-addr.arpa
 </code></pre>
-
+</li>
+</ul>
 <pre><code>@ IN SOA ditoprabowo.com. root.ditoprabowo.com. (
 1;  
 28800;  
@@ -261,23 +237,16 @@ testing IN TXT &quot;v=spf1 a -all&quot;
 
 @ IN NS ns1.ditoprabowo.com.  
 70 IN PTR ditoprabowo.com.
-</code></pre></li>
-</ul>
-
-<p>ganti 70 dengan akhiran ip kalian. test dengan nslookup.</p>
-
+</code></pre><p>ganti 70 dengan akhiran ip kalian. test dengan nslookup.</p>
 <ul>
-<li><p>lalu kita coba test domain kita, caranya dengan menggunakan nameserver ip dns kita.</p>
-
-<pre><code>$  sudo vim /etc/resolv.conf
+<li>
+<p>lalu kita coba test domain kita, caranya dengan menggunakan nameserver ip dns kita.</p>
+<pre><code>  $  sudo vim /etc/resolv.conf
 </code></pre>
-
-<pre><code>nameserver 10.122.1.70
-</code></pre></li>
+</li>
 </ul>
-
-<p>hasilnya :</p>
-
+<pre><code>nameserver 10.122.1.70
+</code></pre><p>hasilnya :</p>
 <pre><code>; &lt;&lt;&gt;&gt; DiG 9.11.3-1ubuntu1.9-Ubuntu &lt;&lt;&gt;&gt; ditoprabowo.com
 ;; global options: +cmd
 ;; Got answer:
@@ -303,32 +272,20 @@ ns1.ditoprabowo.com.	14400	IN	A	10.122.1.70
 ;; SERVER: 10.122.1.70#53(10.122.1.70)
 ;; WHEN: Wed Oct 16 03:32:17 UTC 2019
 ;; MSG SIZE  rcvd: 122
-</code></pre>
-
-<p>Testing pada selain server, gunakan dns ip server.</p>
-
+</code></pre><p>Testing pada selain server, gunakan dns ip server.</p>
 <p>configure dulu dns pada wifi, lalu coba buka ditoprabowo.com</p>
-
-<p><img src="/img/webj2.png" alt="" /></p>
-
-<p><img src="/img/webj3.png" alt="" /></p>
-
+<p><img src="/img/webj2.png" alt=""></p>
+<p><img src="/img/webj3.png" alt=""></p>
 <h3 id="0x3-secure-with-https">0x3 Secure With HTTPS</h3>
-
-<p><img src="/img/SSL-flowchart.png" alt="" /></p>
-
+<p><img src="/img/SSL-flowchart.png" alt=""></p>
 <p>nah kita bisa menggenerate certificate sendiri (Self-signed certificate) dengan openssl</p>
-
 <ol>
 <li>Generate a certificate authority (CA) cert</li>
 <li>Generate your Apache server SSL key and certificate</li>
 <li>Generate a client SSL certificate</li>
 </ol>
-
 <p>dan pada saat membuat server key jangan lupa ditambahkan DNS kita.</p>
-
 <p>Berikut script yang saya gunakan untuk Generate self-signed TLS Certificate yang isinya sebenernya seperti diatas step nya.</p>
-
 <pre><code>#!/bin/bash
 
 # Directories
@@ -531,79 +488,72 @@ checkVariables
 build
 # showVals
 safeExit
-</code></pre>
-
-<p>hasilnya akan ada beberapa file yang tergenerate :</p>
-
+</code></pre><p>hasilnya akan ada beberapa file yang tergenerate :</p>
 <ol>
 <li>ditoprabowo.crt</li>
 <li>ditoprabowo.csr</li>
 <li>ditoprabowo.key</li>
 <li>ditoprabowo_CA.pem</li>
 </ol>
-
 <p>Selanjutnya install sever certificate pada Apache</p>
-
 <ul>
-<li><p>copy ca cert ke /etc/ssl/certs.</p>
+<li>
+<p>copy ca cert ke /etc/ssl/certs.</p>
+<pre><code>  $ sudo cp ditoprabowo_CA.pem /etc/ssl/certs/
+</code></pre>
+</li>
+<li>
+<p>copy server cert dan private key ke folder ssl</p>
+<pre><code>  $  cp ditoprabowo.crt /etc/ssl/certs/ditoprabowo.crt
+  $  cp ditoprabowo.key /etc/ssl/private/ditoprabowo.key
+</code></pre>
+</li>
+<li>
+<p>aktifkan SSL module</p>
+<pre><code>  $  a2enmod ssl
+</code></pre>
+</li>
+<li>
+<p>aktifkan SSL site in apache</p>
+<pre><code>  $ a2ensite default-ssl
+</code></pre>
+</li>
+<li>
+<p>ditambahkan certificate pada apache</p>
+<pre><code>    SSLCACertificateFile /etc/ssl/certs/ditoprabowo_CA.pem
 
-<pre><code>$ sudo cp ditoprabowo_CA.pem /etc/ssl/certs/
-</code></pre></li>
+    SSLCertificateFile	/etc/ssl/certs/ditoprabowo.crt
 
-<li><p>copy server cert dan private key ke folder ssl</p>
-
-<pre><code>$  cp ditoprabowo.crt /etc/ssl/certs/ditoprabowo.crt
-$  cp ditoprabowo.key /etc/ssl/private/ditoprabowo.key
-</code></pre></li>
-
-<li><p>aktifkan SSL module</p>
-
-<pre><code>$  a2enmod ssl
-</code></pre></li>
-
-<li><p>aktifkan SSL site in apache</p>
-
-<pre><code>$ a2ensite default-ssl
-</code></pre></li>
-
-<li><p>ditambahkan certificate pada apache</p>
-
-<pre><code>  SSLCACertificateFile /etc/ssl/certs/ditoprabowo_CA.pem
-
-  SSLCertificateFile    /etc/ssl/certs/ditoprabowo.crt
-
-  SSLCertificateKeyFile /etc/ssl/private/ditoprabowo.key
-</code></pre></li>
-
-<li><p>Restart apache2</p>
-
-<pre><code>$  sudo service apache2 restart
-</code></pre></li>
+    SSLCertificateKeyFile /etc/ssl/private/ditoprabowo.key
+</code></pre>
+</li>
+<li>
+<p>Restart apache2</p>
+<pre><code>  $  sudo service apache2 restart
+</code></pre>
+</li>
 </ul>
-
 <p>pindahkan file ditoprabowo_CA.pem ke local laptop</p>
-
 <pre><code>    $  scp ditoprabowo_CA.pem dito@10.122.1.53:~
 </code></pre>
-
 <p>lalu pada browser, disini saya memakai chrome, klik setting &gt; manage certificate, pada root authorization import file diatas agar dikenali valid oleh chrome.</p>
-
-<p><img src="/img/webj4.png" alt="" /></p>
-
+<p><img src="/img/webj4.png" alt=""></p>
 <p>hasilnya :</p>
-
-<p><img src="/img/webj5.png" alt="" /></p>
-
+<p><img src="/img/webj5.png" alt=""></p>
 <p>Referensi :</p>
-
 <ol>
-<li><p><a href="http://developer.erabelajar.com/konfigurasi-dns-server-menggunakan-bind9-di-ubuntu-server/">http://developer.erabelajar.com/konfigurasi-dns-server-menggunakan-bind9-di-ubuntu-server/</a></p></li>
-
-<li><p><a href="https://www.makethenmakeinstall.com/2014/05/ssl-client-authentication-step-by-step/">https://www.makethenmakeinstall.com/2014/05/ssl-client-authentication-step-by-step/</a></p></li>
-
-<li><p>Google Image</p></li>
-
-<li><p><a href="https://github.com/loganstellway/self-signed-ssl/blob/master/self-signed-tls">https://github.com/loganstellway/self-signed-ssl/blob/master/self-signed-tls</a></p></li>
+<li>
+<p><a href="http://developer.erabelajar.com/konfigurasi-dns-server-menggunakan-bind9-di-ubuntu-server/">http://developer.erabelajar.com/konfigurasi-dns-server-menggunakan-bind9-di-ubuntu-server/</a></p>
+</li>
+<li>
+<p><a href="https://www.makethenmakeinstall.com/2014/05/ssl-client-authentication-step-by-step/">https://www.makethenmakeinstall.com/2014/05/ssl-client-authentication-step-by-step/</a></p>
+</li>
+<li>
+<p>Google Image</p>
+</li>
+<li>
+<p><a href="https://github.com/loganstellway/self-signed-ssl/blob/master/self-signed-tls">https://github.com/loganstellway/self-signed-ssl/blob/master/self-signed-tls</a></p>
+</li>
 </ol>
 
             </div>
@@ -629,13 +579,6 @@ $  cp ditoprabowo.key /etc/ssl/private/ditoprabowo.key
                 </div>
 
                 <div class="pagination__buttons">
-                    
-                        <span class="button previous">
-                            <a href="/posts/cewek-cowok-logika-dan-perasaan/">
-                                <span class="button__icon">←</span>
-                                <span class="button__text">Cewek Cowok Logika Dan Perasaan</span>
-                            </a>
-                        </span>
                     
 
                     
