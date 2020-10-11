@@ -242,10 +242,10 @@ PIE:      PIE enabled
   sub_10E0(array[v2]);
   <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">sub_10F0</span>(<span style="color:#e6db74">&#34;Success&#34;</span>);
 }
-</code></pre></div><p>Vuln is in function deleteChunk, it free chunk but not delete array chunk in bss, which mean this can make Use After Free and we can do Double Free for Arbitary write.</p>
+</code></pre></div><p>Vuln is in function deleteChunk, it free chunk but not delete array chunk in bss, which mean this can make Use After Free and we can do Double Free for Arbitrary write.</p>
 <ol>
-<li>Add chunk with size 0x80 #1</li>
-<li>Add chunk with size 0x18 #2 (to prevent consolidate with top chunk)</li>
+<li>Add chunk with size 0x80 #0</li>
+<li>Add chunk with size 0x18 #1 (to prevent consolidate with top chunk)</li>
 <li>Delete chunk #0 8 time to fill tcache and get unsorted bin</li>
 <li>Leak libc with view(0)</li>
 <li>Do Double free on chunk #1</li>
