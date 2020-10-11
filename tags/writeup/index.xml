@@ -12,10 +12,10 @@
     
     <item>
       <title>Writeup PWN Bsides Delhi CTF</title>
-      <link>/posts/writeup-pwn-bsides-delhi-ctf/</link>
+      <link>/posts/writeup-pwn-bsides-delhi-ctf-2020/</link>
       <pubDate>Sun, 11 Oct 2020 06:32:57 +0700</pubDate>
       
-      <guid>/posts/writeup-pwn-bsides-delhi-ctf/</guid>
+      <guid>/posts/writeup-pwn-bsides-delhi-ctf-2020/</guid>
       <description>Play Bsides Delhi CTF with Heroes Cyber Security, we have got 1st Place. Here for PWN Writeups
 Thanks for Attending Binary Security Arch: i386-32-little RELRO: Partial RELRO Stack: No canary found NX: NX enabled PIE: No PIE (0x8048000) Vuln int __cdecl main(int argc, const char **argv, const char **envp) { int v3; // ebp  int v5; // [esp-28h] [ebp-28h]  int v6; // [esp-4h] [ebp-4h]  __asm { endbr32 } v6 = v3; sub_80490C0(stdin, 0, 2, 0); sub_80490C0(stdout, 0, 2, 0); sub_80490C0(stderr, 0, 2, 0); sub_80490A0(&amp;#34;It&amp;#39;s been fun, but here we are at the final challenge!</description>
     </item>
