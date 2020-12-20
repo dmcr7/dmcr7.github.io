@@ -5,10 +5,38 @@
     <link>/tags/untagged/</link>
     <description>Recent content in untagged on Hello World. I am Dito Prabowo</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 16 Oct 2019 09:09:46 +0700</lastBuildDate>
+    <lastBuildDate>Sun, 20 Dec 2020 16:59:57 +0700</lastBuildDate>
     
 	<atom:link href="/tags/untagged/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Writeup Web Vulncon CTF 2020 Swigger</title>
+      <link>/posts/writeup-web-vulncon-ctf-2020-swigger/</link>
+      <pubDate>Sun, 20 Dec 2020 16:59:57 +0700</pubDate>
+      
+      <guid>/posts/writeup-web-vulncon-ctf-2020-swigger/</guid>
+      <description>Vulcon Chall web Swigger
+WEB : http://cms.noobarmy.org/
+The url give we website that input search for upcoming event like quick cms chall we try xss,sqli, ect but not found the bug then, we try inject with query[]=a and its show popup alert, w0w same bug again?
+Lol you thought this was gonna be that easy? Anyways check this out: https://drive.google.com/file/d/1yd6HHon9Gtfxw0Hwuk6HHDRxiSTjnBif/view?usp=sharing
+We found swigger pdf file
+The flag shown in pdf in trap :(</description>
+    </item>
+    
+    <item>
+      <title>Writeup Web Vulncon CTF 2020 Quick CMS</title>
+      <link>/posts/writeup-web-vulncon-ctf-2020-quick-cms/</link>
+      <pubDate>Sun, 20 Dec 2020 16:37:10 +0700</pubDate>
+      
+      <guid>/posts/writeup-web-vulncon-ctf-2020-quick-cms/</guid>
+      <description>Vulcon Chall web Quick CMS
+WEB : http://cms.noobarmy.org/
+first time we try to enumerate on web, and we found good things in robots.txt
+# Have you tried checking out /recoverpasswordplox So lets go to this url
+In that url, we found login page, we must input name and password, but we dont know it. we try enumerate vuln with sqli, xss,etc and cant found bug.
+After that, we try to capture the POST request and edit input name with contain array</description>
+    </item>
     
     <item>
       <title>[LAB] Install Web Server With Private DNS and Secure With HTTPS</title>

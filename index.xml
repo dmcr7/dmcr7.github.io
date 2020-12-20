@@ -11,6 +11,54 @@
     
     
     <item>
+      <title>Writeup Web Vulncon CTF 2020 Swigger</title>
+      <link>/posts/writeup-web-vulncon-ctf-2020-swigger/</link>
+      <pubDate>Sun, 20 Dec 2020 16:59:57 +0700</pubDate>
+      
+      <guid>/posts/writeup-web-vulncon-ctf-2020-swigger/</guid>
+      <description>Vulcon Chall web Swigger
+WEB : http://cms.noobarmy.org/
+The url give we website that input search for upcoming event like quick cms chall we try xss,sqli, ect but not found the bug then, we try inject with query[]=a and its show popup alert, w0w same bug again?
+Lol you thought this was gonna be that easy? Anyways check this out: https://drive.google.com/file/d/1yd6HHon9Gtfxw0Hwuk6HHDRxiSTjnBif/view?usp=sharing
+We found swigger pdf file
+The flag shown in pdf in trap :(</description>
+    </item>
+    
+    <item>
+      <title>Writeup Web Vulncon CTF 2020 Quick CMS</title>
+      <link>/posts/writeup-web-vulncon-ctf-2020-quick-cms/</link>
+      <pubDate>Sun, 20 Dec 2020 16:37:10 +0700</pubDate>
+      
+      <guid>/posts/writeup-web-vulncon-ctf-2020-quick-cms/</guid>
+      <description>Vulcon Chall web Quick CMS
+WEB : http://cms.noobarmy.org/
+first time we try to enumerate on web, and we found good things in robots.txt
+# Have you tried checking out /recoverpasswordplox So lets go to this url
+In that url, we found login page, we must input name and password, but we dont know it. we try enumerate vuln with sqli, xss,etc and cant found bug.
+After that, we try to capture the POST request and edit input name with contain array</description>
+    </item>
+    
+    <item>
+      <title>Writeup PWN Vulncon CTF 2020 the Good Old Time</title>
+      <link>/posts/writeup-pwn-vulncon-ctf-2020-the-good-old-time/</link>
+      <pubDate>Sun, 20 Dec 2020 15:55:50 +0700</pubDate>
+      
+      <guid>/posts/writeup-pwn-vulncon-ctf-2020-the-good-old-time/</guid>
+      <description>Vulcon Chall pwn the Good Old Time, with use libc 2.32. It Has mitigation to write on __free_hook and __malloc_hookk
+Name Binary Security Arch: amd64-64-little RELRO: Full RELRO Stack: Canary found NX: NX enabled PIE: PIE enabled Vuln Main function Welcome! Deleted /bin/sh! [1] - create [2] - edit [3] - show [4] - delete [5] - exit Create function __int64 __usercall sub_141C@&amp;lt;rax&amp;gt;(__int64 a1@&amp;lt;rbp&amp;gt;) { int v1; // ST0C_4  __int64 v3; // [rsp-8h] [rbp-8h]  __asm { endbr64 } v3 = a1; v1 = sub_15DC(); sub_1140(&amp;#34;size: &amp;#34;); sub_11A0(&amp;#34;%d&amp;#34;, &amp;amp;dword_40E0[v1]); sub_1150(stdin); sub_1140(&amp;#34;input: &amp;#34;); qword_4060[v1] = sub_1180(dword_40E0[v1]); return sub_1170(qword_4060[v1]); } It looks like we can input size without limitation</description>
+    </item>
+    
+    <item>
+      <title>Writeup PWN Vulncon CTF 2020 Name</title>
+      <link>/posts/writeup-pwn-vulncon-ctf-2020-name/</link>
+      <pubDate>Sun, 20 Dec 2020 15:43:24 +0700</pubDate>
+      
+      <guid>/posts/writeup-pwn-vulncon-ctf-2020-name/</guid>
+      <description>Vulcon Chall pwn name
+Name Binary Security Arch: amd64-64-little RELRO: Partial RELRO Stack: No canary found NX: NX enabled PIE: No PIE (0x400000) Vuln &amp;amp; exploit __int64 __fastcall main(__int64 a1, char **a2, char **a3) { char s1; // [rsp+0h] [rbp-80h]  setvbuf(stdin, 0LL, 2, 0LL); setvbuf(stdout, 0LL, 2, 0LL); setvbuf(stderr, 0LL, 2, 0LL); alarm(0x14u); system(&amp;#34;echo -n &amp;#39;Enter your name: &amp;#39;&amp;#34;); gets(&amp;amp;s1, 0LL); if ( strcmp(&amp;amp;s1, &amp;#34;w3lc0m3&amp;#34;) ) exit(0); return 0LL; } We know gets not filter limit input, show we can overwrite the ret address and do system(“/bin/sh”).</description>
+    </item>
+    
+    <item>
       <title>Writeup PWN Bsides Delhi CTF 2020</title>
       <link>/posts/writeup-pwn-bsides-delhi-ctf-2020/</link>
       <pubDate>Sun, 11 Oct 2020 06:32:57 +0700</pubDate>

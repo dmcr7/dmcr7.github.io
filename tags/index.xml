@@ -5,26 +5,26 @@
     <link>/tags/</link>
     <description>Recent content in Tags on Hello World. I am Dito Prabowo</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 11 Oct 2020 06:32:57 +0700</lastBuildDate>
+    <lastBuildDate>Sun, 20 Dec 2020 16:59:57 +0700</lastBuildDate>
     
 	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Writeup</title>
-      <link>/tags/writeup/</link>
-      <pubDate>Sun, 11 Oct 2020 06:32:57 +0700</pubDate>
+      <title>untagged</title>
+      <link>/tags/untagged/</link>
+      <pubDate>Sun, 20 Dec 2020 16:59:57 +0700</pubDate>
       
-      <guid>/tags/writeup/</guid>
+      <guid>/tags/untagged/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>untagged</title>
-      <link>/tags/untagged/</link>
-      <pubDate>Wed, 16 Oct 2019 09:09:46 +0700</pubDate>
+      <title>Writeup</title>
+      <link>/tags/writeup/</link>
+      <pubDate>Sun, 20 Dec 2020 15:55:50 +0700</pubDate>
       
-      <guid>/tags/untagged/</guid>
+      <guid>/tags/writeup/</guid>
       <description></description>
     </item>
     
