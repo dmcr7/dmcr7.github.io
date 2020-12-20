@@ -13,13 +13,18 @@
   </url>
   
   <url>
-    <loc>/tags/untagged/</loc>
+    <loc>/tags/writeup/</loc>
     <lastmod>2020-12-20T18:43:33+07:00</lastmod>
   </url>
   
   <url>
     <loc>/posts/writeup-pwn-vulncon-ctf-2020/</loc>
     <lastmod>2020-12-20T18:43:33+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/untagged/</loc>
+    <lastmod>2020-12-20T16:59:57+07:00</lastmod>
   </url>
   
   <url>
@@ -30,11 +35,6 @@
   <url>
     <loc>/posts/writeup-web-vulncon-ctf-2020-quick-cms/</loc>
     <lastmod>2020-12-20T16:37:10+07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/writeup/</loc>
-    <lastmod>2020-12-20T15:55:50+07:00</lastmod>
   </url>
   
   <url>
