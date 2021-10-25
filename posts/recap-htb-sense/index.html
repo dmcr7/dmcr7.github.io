@@ -229,8 +229,8 @@ by OJ Reeves <span style="color:#f92672">(</span>@TheColonial<span style="color:
 /csrf                 <span style="color:#f92672">(</span>Status: 301<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 0<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--&gt; https://10.10.10.60/csrf/<span style="color:#f92672">]</span>
 /system-users.txt     <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 106<span style="color:#f92672">]</span>
 ...
-</code></pre></div><p>First time scaning this, i&rsquo;m stuck because iam not using http and always redirect it to https, iam not aware of this and set negative status code 302 :kek: i got nothing for result, after realize that i change to https and use <code>-k</code> to disable cert check.</p>
-<p>i found interesting file <code>system-users.txt</code>, the other file i think is from pfsense itself.
+</code></pre></div><p>First time scaning this, i&rsquo;m stuck because iam using http and always redirect it to https, iam not aware of this and set negative status code 302 :kek: i got nothing for result, after realize that, i change to https and use <code>-k</code> to disable cert check.</p>
+<p>i found interesting file <code>system-users.txt</code>, the other file i think is source from pfsense itself.
 inside that file :</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-txt" data-lang="txt">####Support ticket###
 
