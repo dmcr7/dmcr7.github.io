@@ -5,7 +5,34 @@
     <link>/tags/</link>
     <description>Recent content in Tags on Hello World. I am Dito Prabowo</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 25 Oct 2021 19:50:30 +0700</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 25 Oct 2021 20:27:53 +0700</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ctf</title>
+      <link>/tags/ctf/</link>
+      <pubDate>Mon, 25 Oct 2021 20:27:53 +0700</pubDate>
+      
+      <guid>/tags/ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>hackthebox</title>
+      <link>/tags/hackthebox/</link>
+      <pubDate>Mon, 25 Oct 2021 20:27:53 +0700</pubDate>
+      
+      <guid>/tags/hackthebox/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>oscp-like</title>
+      <link>/tags/oscp-like/</link>
+      <pubDate>Mon, 25 Oct 2021 20:27:53 +0700</pubDate>
+      
+      <guid>/tags/oscp-like/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>blog</title>
       <link>/tags/blog/</link>

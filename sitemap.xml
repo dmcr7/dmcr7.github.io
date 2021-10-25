@@ -2,19 +2,31 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>/tags/ctf/</loc>
+    <lastmod>2021-10-25T20:27:53+07:00</lastmod>
+  </url><url>
+    <loc>/tags/hackthebox/</loc>
+    <lastmod>2021-10-25T20:27:53+07:00</lastmod>
+  </url><url>
+    <loc>/</loc>
+    <lastmod>2021-10-25T20:27:53+07:00</lastmod>
+  </url><url>
+    <loc>/tags/oscp-like/</loc>
+    <lastmod>2021-10-25T20:27:53+07:00</lastmod>
+  </url><url>
+    <loc>/posts/</loc>
+    <lastmod>2021-10-25T20:27:53+07:00</lastmod>
+  </url><url>
+    <loc>/posts/recap-htb-sense/</loc>
+    <lastmod>2021-10-25T20:27:53+07:00</lastmod>
+  </url><url>
+    <loc>/tags/</loc>
+    <lastmod>2021-10-25T20:27:53+07:00</lastmod>
+  </url><url>
     <loc>/tags/blog/</loc>
     <lastmod>2021-10-25T19:50:30+07:00</lastmod>
   </url><url>
-    <loc>/</loc>
-    <lastmod>2021-10-25T19:50:30+07:00</lastmod>
-  </url><url>
     <loc>/posts/im-backkkk/</loc>
-    <lastmod>2021-10-25T19:50:30+07:00</lastmod>
-  </url><url>
-    <loc>/posts/</loc>
-    <lastmod>2021-10-25T19:50:30+07:00</lastmod>
-  </url><url>
-    <loc>/tags/</loc>
     <lastmod>2021-10-25T19:50:30+07:00</lastmod>
   </url><url>
     <loc>/tags/writeup/</loc>
