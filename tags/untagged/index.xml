@@ -5,11 +5,7 @@
     <link>/tags/untagged/</link>
     <description>Recent content in untagged on Hello World. I am Dito Prabowo</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 16 Oct 2019 09:09:46 +0700</lastBuildDate>
-    
-	<atom:link href="/tags/untagged/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 16 Oct 2019 09:09:46 +0700</lastBuildDate><atom:link href="/tags/untagged/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>[LAB] Install Web Server With Private DNS and Secure With HTTPS</title>
       <link>/posts/lab-install-web-server-with-private-dns-and-secure-with-https/</link>

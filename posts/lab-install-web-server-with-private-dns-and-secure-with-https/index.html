@@ -41,14 +41,9 @@ IP server : 10." />
 <meta name="theme-color" content="#252627"><meta itemprop="name" content="[LAB] Install Web Server With Private DNS and Secure With HTTPS">
 <meta itemprop="description" content="0x0 Intro Sebelumnya saya jelaskan tujuan dari lab ini, yaitu kita membuat web server disini saya menggunakan apache, lalu Install bind9 untuk dns server dan membuat domain private kita sendiri, setelah bisa kita secure dengan HTTPS caranya dengan self signed certificate.
 Sebelumnya siapkan server yang akan kita gunakan, lalu pahami design jaringan dari server anda, disini saya menggunakan pengaturan network bridge dan menggunakan koneksi dari WIFI B201AP.
-IP server : 10.">
-<meta itemprop="datePublished" content="2019-10-16T09:09:46&#43;07:00" />
-<meta itemprop="dateModified" content="2019-10-16T09:09:46&#43;07:00" />
-<meta itemprop="wordCount" content="1404">
-<meta itemprop="image" content="/"/>
-
-
-
+IP server : 10."><meta itemprop="datePublished" content="2019-10-16T09:09:46+07:00" />
+<meta itemprop="dateModified" content="2019-10-16T09:09:46+07:00" />
+<meta itemprop="wordCount" content="1404"><meta itemprop="image" content="/"/>
 <meta itemprop="keywords" content="untagged," /><meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/"/>
 
@@ -171,7 +166,7 @@ IP laptop : 10.122.1.53</p>
 </code></pre>
 </li>
 </ul>
-<pre><code>//
+<pre tabindex="0"><code>//
 // Do any local configuration here
 //
 
@@ -199,7 +194,7 @@ file &quot;/etc/bind/zones/rev.1.122.10.in-addr.arpa&quot;;
 </code></pre>
 </li>
 </ul>
-<pre><code>; BIND data file for ditoprabowo.com
+<pre tabindex="0"><code>; BIND data file for ditoprabowo.com
 ;
 $TTL 14400
 @ IN SOA ns1.ditoprabowo.com. root.ditoprabowo.com. (
@@ -228,7 +223,7 @@ testing IN TXT &quot;v=spf1 a -all&quot;
 </code></pre>
 </li>
 </ul>
-<pre><code>@ IN SOA ditoprabowo.com. root.ditoprabowo.com. (
+<pre tabindex="0"><code>@ IN SOA ditoprabowo.com. root.ditoprabowo.com. (
 1;  
 28800;  
 604800;  
@@ -245,9 +240,9 @@ testing IN TXT &quot;v=spf1 a -all&quot;
 </code></pre>
 </li>
 </ul>
-<pre><code>nameserver 10.122.1.70
+<pre tabindex="0"><code>nameserver 10.122.1.70
 </code></pre><p>hasilnya :</p>
-<pre><code>; &lt;&lt;&gt;&gt; DiG 9.11.3-1ubuntu1.9-Ubuntu &lt;&lt;&gt;&gt; ditoprabowo.com
+<pre tabindex="0"><code>; &lt;&lt;&gt;&gt; DiG 9.11.3-1ubuntu1.9-Ubuntu &lt;&lt;&gt;&gt; ditoprabowo.com
 ;; global options: +cmd
 ;; Got answer:
 ;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 45338
@@ -286,7 +281,7 @@ ns1.ditoprabowo.com.	14400	IN	A	10.122.1.70
 </ol>
 <p>dan pada saat membuat server key jangan lupa ditambahkan DNS kita.</p>
 <p>Berikut script yang saya gunakan untuk Generate self-signed TLS Certificate yang isinya sebenernya seperti diatas step nya.</p>
-<pre><code>#!/bin/bash
+<pre tabindex="0"><code>#!/bin/bash
 
 # Directories
 cur=$(pwd)
@@ -630,7 +625,7 @@ safeExit
                 <footer class="footer">
     <div class="footer__inner">
         <div class="footer__content">
-            <span>&copy; 2020</span>
+            <span>&copy; 2021</span>
             
             <span></span>
             <span> <a href="/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></span>
@@ -660,7 +655,7 @@ safeExit
 
 
 
-<script type="text/javascript" src="/bundle.min.4c3fb12a087ceed4a52cb5d57068a9795c7069617a01ca70f788052ad66e1791779e6c72686e1dc0ca13dc03b0203204b6566bb0dd1ee80de2b7ff4d8fe53db2.js" integrity="sha512-TD&#43;xKgh87tSlLLXVcGipeVxwaWF6Acpw94gFKtZuF5F3nmxyaG4dwMoT3AOwIDIEtlZrsN0e6A3it/9Nj&#43;U9sg=="></script>
+<script type="text/javascript" src="/bundle.min.766584e6ea536f54faf86b018d73f719fc520199a6c4d32cbd959eb87634c11b380ac646d80d67304313aac0f5f05e6715221bd99a619bbc905365b55f78147f.js" integrity="sha512-dmWE5upTb1T6&#43;GsBjXP3GfxSAZmmxNMsvZWeuHY0wRs4CsZG2A1nMEMTqsD18F5nFSIb2Zphm7yQU2W1X3gUfw=="></script>
 
 
 
