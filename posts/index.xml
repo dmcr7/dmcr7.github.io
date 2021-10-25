@@ -4,8 +4,22 @@
         <link>/posts/</link>
         <description>Recent content in Posts on Hello World. I am Dito Prabowo</description>
         <generator>Hugo -- gohugo.io</generator>
-        <lastBuildDate>Sun, 11 Oct 2020 06:32:57 +0700</lastBuildDate>
+        <lastBuildDate>Mon, 25 Oct 2021 19:50:30 +0700</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>I&#39;m Backkkk</title>
+            <link>/posts/im-backkkk/</link>
+            <pubDate>Mon, 25 Oct 2021 19:50:30 +0700</pubDate>
+            
+            <guid>/posts/im-backkkk/</guid>
+            <description>0x00 Intro Yooooo, setelah hampir setaun lebih berhenti nge blog berhenti self research berhenti belajar karena sudah nyaman dapat kerja ehe ga ada motivasi lagi buat bersusah susah sudah nyaman :(, karena cewek juga entah ada apa dengan cewek, dan karena sempet seneng banget balik main dota 2 beberapa bulan ini karena dulu pas kuliah jarang banget nge game malah ctf an haha, akhirnya menuntut untuk puas puas in nge game sampe sampe bosen sendiri :( susah banget naikin rank (gw yg cupu kali).</description>
+            <content type="html"><![CDATA[<h2 id="0x00-intro">0x00 Intro</h2>
+<p>Yooooo, setelah hampir setaun lebih berhenti nge blog berhenti self research berhenti belajar karena sudah nyaman dapat kerja ehe ga ada motivasi lagi buat bersusah susah sudah nyaman :(, karena cewek juga entah ada apa dengan cewek, dan karena sempet seneng banget balik main dota 2 beberapa bulan ini karena dulu pas kuliah jarang banget nge game malah ctf an haha, akhirnya menuntut untuk puas puas in nge game sampe sampe bosen sendiri :( susah banget naikin rank (gw yg cupu kali).</p>
+<p>Ya ya ya sehabis semua alasan alasan itu, entah kenapa ya pingin mbalik lagi self learning diluar urusan kantor aka DevSecOps, tapi selain alasan yg entah apa itu ada juga kok alasan pendukung nya, ya sertifikasi, Lets move to next step man, move to next level, masa iya stuck terus atau sudah berhenti belajar. Enggak puingin banget sih, tapi enggak apa lah, tidak ada salahnya kan punya sertifikasi.</p>
+<p><img src="/img/imback.jpg" alt=""></p>
+]]></content>
+        </item>
         
         <item>
             <title>Writeup PWN Bsides Delhi CTF 2020</title>

@@ -5,7 +5,16 @@
     <link>/tags/</link>
     <description>Recent content in Tags on Hello World. I am Dito Prabowo</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 11 Oct 2020 06:32:57 +0700</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 25 Oct 2021 19:50:30 +0700</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>blog</title>
+      <link>/tags/blog/</link>
+      <pubDate>Mon, 25 Oct 2021 19:50:30 +0700</pubDate>
+      
+      <guid>/tags/blog/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Writeup</title>
       <link>/tags/writeup/</link>
@@ -21,6 +30,15 @@
       <pubDate>Tue, 31 Mar 2020 00:20:10 +0700</pubDate>
       
       <guid>/tags/untagged/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>agama</title>
+      <link>/tags/agama/</link>
+      <pubDate>Mon, 14 Oct 2019 11:31:53 +0700</pubDate>
+      
+      <guid>/tags/agama/</guid>
       <description></description>
     </item>
     

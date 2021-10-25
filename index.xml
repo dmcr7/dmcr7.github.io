@@ -5,7 +5,16 @@
     <link>/</link>
     <description>Recent content on Hello World. I am Dito Prabowo</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 11 Oct 2020 06:32:57 +0700</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 25 Oct 2021 19:50:30 +0700</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>I&#39;m Backkkk</title>
+      <link>/posts/im-backkkk/</link>
+      <pubDate>Mon, 25 Oct 2021 19:50:30 +0700</pubDate>
+      
+      <guid>/posts/im-backkkk/</guid>
+      <description>0x00 Intro Yooooo, setelah hampir setaun lebih berhenti nge blog berhenti self research berhenti belajar karena sudah nyaman dapat kerja ehe ga ada motivasi lagi buat bersusah susah sudah nyaman :(, karena cewek juga entah ada apa dengan cewek, dan karena sempet seneng banget balik main dota 2 beberapa bulan ini karena dulu pas kuliah jarang banget nge game malah ctf an haha, akhirnya menuntut untuk puas puas in nge game sampe sampe bosen sendiri :( susah banget naikin rank (gw yg cupu kali).</description>
+    </item>
+    
     <item>
       <title>Writeup PWN Bsides Delhi CTF 2020</title>
       <link>/posts/writeup-pwn-bsides-delhi-ctf-2020/</link>
