@@ -113,7 +113,9 @@ Enter WORKGROUP<span style="color:#ae81ff">\d</span>ito<span style="color:#e6db7
 Anonymous login successful
 Try <span style="color:#e6db74">&#34;help&#34;</span> to get a list of possible commands.
 smb: <span style="color:#ae81ff">\&gt;</span> 
-</code></pre></div><p>But we got information it using samba <code>3.0.20-Debian</code>. In that version there is vulnerabiliry command injection. Try it :</p>
+</code></pre></div><p>But we got information it using samba <code>3.0.20-Debian</code>. In that version there is vulnerabiliry command injection.</p>
+<h2 id="0x2-exploit">0x2 Exploit</h2>
+<p>Try it :</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ smbclient <span style="color:#ae81ff">\\\\</span>10.10.10.3<span style="color:#ae81ff">\\</span>tmp --option<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;client min protocol=NT1&#39;</span>
 Enter WORKGROUP<span style="color:#ae81ff">\d</span>ito<span style="color:#e6db74">&#39;&#39;</span>s password:
 Anonymous login successful
