@@ -2,25 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>/tags/ctf/</loc>
-    <lastmod>2021-10-26T19:35:16+07:00</lastmod>
+    <loc>/tags/cloud/</loc>
+    <lastmod>2021-11-24T14:21:47+07:00</lastmod>
   </url><url>
-    <loc>/tags/hackthebox/</loc>
-    <lastmod>2021-10-26T19:35:16+07:00</lastmod>
+    <loc>/tags/ctf/</loc>
+    <lastmod>2021-11-24T14:21:47+07:00</lastmod>
   </url><url>
     <loc>/</loc>
+    <lastmod>2021-11-24T14:21:47+07:00</lastmod>
+  </url><url>
+    <loc>/posts/htb-uni-ctf-epsilon-writeup/</loc>
+    <lastmod>2021-11-24T14:21:47+07:00</lastmod>
+  </url><url>
+    <loc>/posts/</loc>
+    <lastmod>2021-11-24T14:21:47+07:00</lastmod>
+  </url><url>
+    <loc>/tags/</loc>
+    <lastmod>2021-11-24T14:21:47+07:00</lastmod>
+  </url><url>
+    <loc>/tags/writeup/</loc>
+    <lastmod>2021-11-24T14:21:47+07:00</lastmod>
+  </url><url>
+    <loc>/posts/htb-uni-ctf-steamcloud-writeup/</loc>
+    <lastmod>2021-11-24T13:46:24+07:00</lastmod>
+  </url><url>
+    <loc>/tags/hackthebox/</loc>
     <lastmod>2021-10-26T19:35:16+07:00</lastmod>
   </url><url>
     <loc>/tags/oscp-like/</loc>
     <lastmod>2021-10-26T19:35:16+07:00</lastmod>
   </url><url>
-    <loc>/posts/</loc>
-    <lastmod>2021-10-26T19:35:16+07:00</lastmod>
-  </url><url>
     <loc>/posts/recap-htb-shocker/</loc>
-    <lastmod>2021-10-26T19:35:16+07:00</lastmod>
-  </url><url>
-    <loc>/tags/</loc>
     <lastmod>2021-10-26T19:35:16+07:00</lastmod>
   </url><url>
     <loc>/posts/recap-htb-lame/</loc>
@@ -34,9 +46,6 @@
   </url><url>
     <loc>/posts/im-backkkk/</loc>
     <lastmod>2021-10-25T19:50:30+07:00</lastmod>
-  </url><url>
-    <loc>/tags/writeup/</loc>
-    <lastmod>2020-10-11T06:32:57+07:00</lastmod>
   </url><url>
     <loc>/posts/writeup-pwn-bsides-delhi-ctf-2020/</loc>
     <lastmod>2020-10-11T06:32:57+07:00</lastmod>

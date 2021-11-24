@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>cloud on Hello World. I am Dito Prabowo</title>
+    <link>/tags/cloud/</link>
+    <description>Recent content in cloud on Hello World. I am Dito Prabowo</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Wed, 24 Nov 2021 14:21:47 +0700</lastBuildDate><atom:link href="/tags/cloud/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>HTB UNI CTF - Cloud -  Epsilon Writeup</title>
+      <link>/posts/htb-uni-ctf-epsilon-writeup/</link>
+      <pubDate>Wed, 24 Nov 2021 14:21:47 +0700</pubDate>
+      
+      <guid>/posts/htb-uni-ctf-epsilon-writeup/</guid>
+      <description>Intro One of the local shops in your city is realising new costumes. Go grab them before they run out as the available stock is very limited.
+TLDR  Port 80 exposed public .git folder, dump it Found aws access key, use to get lambda function Found jwt secret key for app, use this to get admin login SSTI in app endpoint /order, get RCE and flag  Recon Nmap Open 10.</description>
+    </item>
+    
+  </channel>
+</rss>

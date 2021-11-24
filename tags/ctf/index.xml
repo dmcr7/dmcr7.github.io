@@ -5,7 +5,28 @@
     <link>/tags/ctf/</link>
     <description>Recent content in ctf on Hello World. I am Dito Prabowo</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 26 Oct 2021 19:35:16 +0700</lastBuildDate><atom:link href="/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 24 Nov 2021 14:21:47 +0700</lastBuildDate><atom:link href="/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>HTB UNI CTF - Cloud -  Epsilon Writeup</title>
+      <link>/posts/htb-uni-ctf-epsilon-writeup/</link>
+      <pubDate>Wed, 24 Nov 2021 14:21:47 +0700</pubDate>
+      
+      <guid>/posts/htb-uni-ctf-epsilon-writeup/</guid>
+      <description>Intro One of the local shops in your city is realising new costumes. Go grab them before they run out as the available stock is very limited.
+TLDR  Port 80 exposed public .git folder, dump it Found aws access key, use to get lambda function Found jwt secret key for app, use this to get admin login SSTI in app endpoint /order, get RCE and flag  Recon Nmap Open 10.</description>
+    </item>
+    
+    <item>
+      <title>HTB UNI CTF - Cloud - SteamCloud Writeup</title>
+      <link>/posts/htb-uni-ctf-steamcloud-writeup/</link>
+      <pubDate>Wed, 24 Nov 2021 13:46:24 +0700</pubDate>
+      
+      <guid>/posts/htb-uni-ctf-steamcloud-writeup/</guid>
+      <description>Intro We&amp;rsquo;ve installed our Kubernetes cluster inside a steam powered computer, however there&amp;rsquo;s a lot of smoke, therefore we think a bolt is missing. Could you please investigate?
+TLDR  Exposed and Unrestricted Kubelet RCE in POD nginx namespace default Get Service Account nginx Access Cluster using Service Account Spawn privileged pod/Mounting host on pod PWNED  Recon Nmap using nmap try to scan open port.
+Open 10.129.96.107:22 Open 10.129.96.107:2379 Open 10.</description>
+    </item>
+    
     <item>
       <title>Recap HTB: Shocker</title>
       <link>/posts/recap-htb-shocker/</link>
